@@ -1,0 +1,36 @@
+{
+    "format_version": "1.26.30",
+    "minecraft:recipe_shaped": {
+        "description": {
+            "identifier": "carry:key"
+        },
+        "unlock": [
+            {
+                "item": "minecraft:gold_nugget"
+            },
+            {
+                "item": "minecraft:gold_ingot"
+            }
+        ],
+        "tags": [
+            "crafting_table"
+        ],
+        "pattern": [
+            " # ",
+            " # ",
+            " X "
+        ],
+        "key": {
+            "#": {
+                "item": "minecraft:gold_nugget"
+            },
+            "X": {
+                "item": "minecraft:gold_ingot"
+            }
+        },
+        "result": {
+            "item": "carry:key",
+            "count": 1
+        }
+    }
+}
