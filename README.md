@@ -65,6 +65,12 @@ I = Iron Ingot, N = Iron Nugget (Handcuffs) / Gold Nugget (Key), G = Gold Ingot
 
 Iron Golem, Cow, Sheep, Chicken, Villager, Cod, Cat, Wolf, Copper Golem, Pig, Horse, Axolotl, Llama, Armadillo, Camel, Trader Llama, Wandering Trader, Camel Husk, Bee, Sulfur Cube, Rabbit, Fox, Frog, Goat, Sniffer, Panda, Snow Golem, Ocelot, Donkey.
 
+## ⚙️ Requirements & Compatibility
+
+- **No Experimental Settings Required!** This add-on is fully optimized using the stable Bedrock Script API. You **do not** need to enable "Beta APIs" or any other experimental toggles in your world settings.
+- **Multiplayer Ready:** Perfectly optimized for multiplayer servers and co-op worlds with local cache and memory management.
+
+
 ## 📅 Development Timeline
 
 - **October 15, 2026**: Core mechanics. Mob carrying and dropping, plus carrying other players.
