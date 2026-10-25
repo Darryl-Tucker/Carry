@@ -1,0 +1,52 @@
+{
+  "format_version": 2,
+  "header": {
+<<<<<<< HEAD
+    "name": "Carry BP",
+    "description": "Carrying mobs!",
+    "uuid": "a24b9c8d-713e-4d5a-8b6c-fe92a10b34ef",
+    "version": [ 1, 2, 2 ],
+    "min_engine_version": [1, 26, 0 ]
+  },
+  "modules": [
+    {
+      "type": "data",
+      "uuid": "310fed62-cf98-4d7f-890e-14390c9b4095",
+      "version": [ 1, 2, 2 ]
+    },
+    {
+      "type": "script",
+      "language": "javascript",
+      "uuid": "5c6d7e8f-9a0b-4c1d-8e2f-3a4b5c6d7e8f",
+      "version": [ 1, 2, 2 ],
+      "entry": "scripts/index.js"
+    }
+  ],
+  "dependencies": [
+    {
+      "module_name": "@minecraft/server",
+      "version": "2.9.0"
+    },
+    {
+      "module_name": "@minecraft/server-ui",
+      "version": "2.2.0"
+    },
+    {
+      "uuid": "fd6b6382-c53c-4ab4-82bc-be11ef3f45dc",
+      "version":[1, 0, 0 ]
+=======
+    "name": "Carry RP",
+    "description": "Carrying Mobs!",
+    "uuid": "fd6b6382-c53c-4ab4-82bc-be11ef3f45dc",
+    "version": [1, 0, 0 ],
+    "min_engine_version": [1, 26, 0]
+  },
+  "modules": [
+    {
+      "type": "resources",
+      "uuid": "0a5115ee-ed17-49d2-b386-c215a4523f72",
+      "version": [1, 0, 0 ]
+>>>>>>> 72295ea (Carry)
+    }
+  ]
+}
