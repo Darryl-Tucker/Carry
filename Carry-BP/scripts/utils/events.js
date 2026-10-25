@@ -17,15 +17,13 @@ world.beforeEvents.entityHurt.subscribe((eventData) => {
     if (hEntity && damagingEntity) {
         const entity = eventData.hurtEntity;
 
-        if (carryData.has(damagingEntity.id)) pushMob(eventData)
+        if (carryData.has(damagingEntity.id)) return pushMob(eventData)
 
-        else if (carrierData.has(entity.id)) {
-            clearRide_data(entity);
-            clearCarrier_data(entity)
-        }
+         clearCarrier_data(entity);
+         clearRide_data(entity)
     }
 
-    else if (!hEntity && carryData.has(eventData.hurtEntity.id)) carryData.delete(eventData.hurtEntity.id)
+    else if (!hEntity && carryData.has(eventData.hurtEntity.id)) carryData.delete(eventData.hurtEntity.id) // Oyuncu hasar aldığında canlıyı olduğu gibi bırakır
 });
 
 world.beforeEvents.playerInteractWithBlock.subscribe((eventData) => {

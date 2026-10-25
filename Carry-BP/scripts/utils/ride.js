@@ -34,7 +34,7 @@ export function playerRide() {
 export function addMob_ride(player, target) {
     const get_carryData = carryData.get(player.id);
     for (const carrier of player.dimension.getEntities({ excludeTypes: excludeMobs }).filter(c => get_carryData.id !== c.id && !riderData.has(c.id)))
-        for (target of carrier.dimension.getEntities({ type: carrier, location: carrier.location, maxDistance: 1.50 }).filter(t => get_carryData.id === t.id && !riderData.has(t.id) && !carrierData.has(t.id))) {
+        for (target of carrier.dimension.getEntities({ type: carrier, location: carrier.location, maxDistance: 1.50 }).filter(t => get_carryData.id === t.id && !riderData.has(t.id))) {
             let carriedLevel = carrierData.get(carrier.id)?.carriedLevel;
             carrierData.set(carrier.id, { carriedLevel: (carriedLevel ?? 0) + 1 })
 
