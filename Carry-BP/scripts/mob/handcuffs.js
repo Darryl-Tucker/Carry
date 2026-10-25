@@ -7,20 +7,6 @@ export const handcuffsData = new Map();
 export function mobHandcuffs(eventData = null) {
     if (eventData === null) {
         for (const player of world.getAllPlayers()) {
-            const container = player.getComponent("minecraft:inventory").container;
-            const selectedSlot = player.selectedSlotIndex;
-            const hand = container.getItem(selectedSlot);
-
-            if (hand?.typeId === "carry:key" && hand?.getLore()[0] === undefined) {
-                const key = new ItemStack("carry:key", 1);
-
-                system.run(() => {
-                    key.setLore([player.id]);
-                    container.setItem(selectedSlot, key);
-                })
-                continue
-            }
-
             const entities = player.dimension.getEntities();
             for (const entity of entities) {
                 if (!handcuffsData.has(entity.id) && (entity.getDynamicProperty("key") !== undefined || entity.getDynamicProperty("handcuffs") === true)) {
@@ -77,7 +63,7 @@ export function mobHandcuffs(eventData = null) {
                     return
                 }
 
-                if (hand.typeId === "carry:key" && handcuffsData.get(target.id)?.key === hand.getLore()[0]) {
+                if (hand.typeId === "carry:key" && handcuffsData.get(target.id)?.key === player.id) {
                     target.setDynamicProperty("key", undefined);
                     target.setDynamicProperty("handcuffs", undefined);
                     handcuffsData.delete(target.id);

@@ -50,6 +50,7 @@ function mobWeight(player) {
             case 12: // Llama
             case 15: // Trader llama
             case 26: // Snow golem
+            case 28: // Donkey
                 player.addEffect("slowness", 10, { amplifier: 2, showParticles: false }); 
                 break
 

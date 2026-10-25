@@ -26,7 +26,8 @@ export const allowMobs = [
     "minecraft:sniffer", // 24
     "minecraft:panda", // 25
     "minecraft:snow_golem", // 26
-    "minecraft:ocelot" // 27
+    "minecraft:ocelot", // 27
+    "minecraft:donkey" // 28
 ];
 
 export const excludeMobs = [
