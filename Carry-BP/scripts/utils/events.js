@@ -5,7 +5,6 @@ import { playerSettings, clearData } from "../player/playerData";
 import { addPlayer_ride, clearRide_data, clearCarrier_data, carrierData } from "./ride";
 import { mobHandcuffs, dropHandcuffs } from "../mob/handcuffs";
 
-world.beforeEvents.weatherChange.subscribe((eventData) => eventData.cancel = true); // Daha sonra kaldır
 world.beforeEvents.playerLeave.subscribe((eventData) => clearData(eventData));
 world.afterEvents.playerSpawn.subscribe((eventData) => playerSettings(eventData.player));
 
