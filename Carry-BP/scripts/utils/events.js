@@ -24,6 +24,8 @@ world.beforeEvents.entityHurt.subscribe((eventData) => {
             clearCarrier_data(entity)
         }
     }
+
+    else if (!hEntity && carryData.has(eventData.hurtEntity.id)) carryData.delete(eventData.hurtEntity.id);
 });
 
 world.beforeEvents.playerInteractWithBlock.subscribe((eventData) => {
