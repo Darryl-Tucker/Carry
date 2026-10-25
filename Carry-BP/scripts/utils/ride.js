@@ -60,10 +60,10 @@ export function clearRide_data(entity) {
 
     for (const carrier of entity.dimension.getEntities().filter(c => carrierData.has(c.id) && riderData.get(entity.id)?.id === c.id)) {
         let get_carrierData = carrierData.get(carrier.id);
-        let current_carriedLevel = carrierData.get(carrier.id)?.carriedLevel - 1; // Sıraya yeni girecek mob için yukarıdan girecek
+        let current_carriedLevel = carrierData.get(carrier.id)?.carriedLevel - 1; 
 
         if (get_carrierData.carriedLevel === riderData.get(entity.id).level) {
-            carrierData.set(carrier.id, { carriedLevel: get_carrierData.carriedLevel - 1 });  // Eğer üstten bir mob alınırsa sadece taşıyıcıdan eksilt
+            carrierData.set(carrier.id, { carriedLevel: get_carrierData.carriedLevel - 1 });  
             get_carrierData = carrierData.get(carrier.id);
 
             if (get_carrierData.carriedLevel < 1) carrierData.delete(carrier.id)
@@ -76,10 +76,10 @@ export function clearRide_data(entity) {
                 carrierData.set(carrier.id, { carriedLevel: get_carrierData.carriedLevel - 1 });
                 get_carrierData = carrierData.get(carrier.id);
 
-                riderData.set(rider.id, { ...riderData.get(rider.id), level: get_carrierData.carriedLevel }) // burada sıralamayı doğru yapsın diye
+                riderData.set(rider.id, { ...riderData.get(rider.id), level: get_carrierData.carriedLevel }) 
             }
         }
-        carrierData.set(carrier.id, { carriedLevel: current_carriedLevel }); // Sıra bozulmasını önlemek için
+        carrierData.set(carrier.id, { carriedLevel: current_carriedLevel }); 
     }
     riderData.delete(entity.id);
 }
