@@ -1,146 +1,127 @@
-# 🐄 Carry
+🐄 Carry
 
-**Pick up, carry, throw and stack mobs in Minecraft Bedrock Edition — and cuff them when they misbehave.**
+Pick up, carry, throw, and stack mobs in Minecraft Bedrock Edition — and handcuff them when they misbehave!
 
-Carry is a Bedrock add-on (Behavior Pack + Resource Pack) built on the `@minecraft/server` Script API. It adds a physics-flavoured mob-carrying system with charge-based throwing, mob stacking, player riding, and a craftable handcuffs & key mechanic.
+Carry is a Minecraft Bedrock Edition add-on consisting of a Behavior Pack and a Resource Pack. Built with the @minecraft/server Script API, it introduces a physics-inspired mob-carrying system featuring charge-based throwing, mob stacking, player riding, and craftable handcuffs and keys.
 
-![Minecraft Bedrock](https://img.shields.io/badge/Minecraft-Bedrock-62B47A)
-![Min Engine](https://img.shields.io/badge/min__engine-1.26.0-blue)
-![Script API](https://img.shields.io/badge/@minecraft/server-2.9.0-orange)
-![Language](https://img.shields.io/badge/language-JavaScript-F7DF1E)
+!Minecraft Bedrock Edition !Minimum Engine Version !Script API !Language
 
----
+📑 Table of Contents
+Features
+How to Play
+Crafting
+Supported Mobs
+Installation
+Project Structure
+Configuration
+Localization
+Development Timeline
+Known Issues and Notes
+Contributing
+✨ Features
+Mob Carrying — Pick up supported mobs and hold them in front of you.
+Charge-Based Throwing — Charge your throw and launch a mob up to 15 blocks, depending on the accumulated power.
+Dynamic Weight System — Heavier mobs, such as Iron Golems, Camels, and Pandas, slow you down more than lighter mobs.
+Mob Stacking — Stack mobs on top of one another using a bottom-up insertion system.
+Player Riding — Climb onto other players and ride them around.
+Handcuffs and Keys — Restrain supported mobs with craftable handcuffs and lock or unlock them using a personal key.
+Cross-Platform Controls — Use a toggle-based input system designed for PC, console, and mobile devices.
+Immersive Feedback — Enjoy sound effects, an action-bar power meter, and custom particles.
+Custom Resource Pack — Includes custom item textures and English (US) and Turkish localization.
+🎮 How to Play
+Carrying and Throwing
+Action	Control
+Pick up a mob	Sneak and interact with a supported mob while keeping both hands empty.
+Start or stop charging	Interact with the mob you're carrying. Charging uses a toggle system, so you don't need to hold the button.
+Throw the mob	Hit the carried mob while charging is active. The longer you charge, the farther the mob travels.
+Cancel a charge	Sneak.
+Place the mob	Hit the carried mob without charging. If another mob is nearby, the carried mob may be stacked on top of it.
+Drop the mob	Sprint or hold an item in either hand.
 
-## 📑 Table of Contents
+While carrying a mob, you cannot jump, break blocks, interact with blocks, or pick up items.
 
-- [Features](#-features)
-- [How to Play](#-how-to-play)
-- [Crafting](#-crafting)
-- [Supported Mobs](#-supported-mobs)
-- [Installation](#-installation)
-- [Project Structure](#-project-structure)
-- [Configuration](#-configuration)
-- [Localization](#-localization)
-- [Development Timeline](#-development-timeline)
-- [Known Notes](#-known-notes)
+💡 Tip: The action bar displays your current throwing power. The maximum throwing distance is 15 blocks.
+Stacking Mobs
 
----
+Throw or place a carried mob near another mob (within approximately 1.5 blocks) to stack it on top.
 
-## ✨ Features
+Hitting a mob in a stack removes it from the stack, and the remaining mobs are automatically rearranged.
 
-- **Mob carrying** – Lift supported mobs and hold them in front of you.
-- **Charge-based throwing** – Charge up power, then hit the mob to launch it up to 15 blocks.
-- **Dynamic weight** – Heavier mobs (Iron Golem, Camel, Panda…) slow you down much more than light ones.
-- **Mob stacking** – Throw a mob onto another one to stack them. Stacks are built with a bottom-up insertion mechanic.
-- **Player riding** – Climb onto other players and ride them around.
-- **Handcuffs & Key** – Restrain mobs with handcuffs and lock/unlock them with a personal key.
-- **Cross-platform controls** – Toggle-based input that works the same on PC, console and mobile.
-- **Feedback** – Sound effects, action-bar power meter and custom particles.
-- **Resource Pack** – Custom item textures and `en_US` / `tr_TR` localization.
+Riding Players
 
----
+Interact with another player without sneaking to mount them.
 
-## 🎮 How to Play
+The player being ridden receives a Slowness effect while carrying a rider. To dismount a rider, the carrier must press Sneak + Jump.
 
-### Carrying & Throwing
+Handcuffs and Keys
+Cuff a mob — Interact with a supported mob without sneaking while holding Handcuffs. The Handcuffs are consumed in the process.
+Lock a mob — Interact with a handcuffed mob while holding a Key. The key becomes associated with the mob, which is then immobilized.
+Unlock a mob — Interact with the locked mob using the matching Key. The Handcuffs are dropped, freeing the mob.
 
-| Action | Control |
-| --- | --- |
-| **Pick up a mob** | Sneak + interact with a supported mob (both hands must be empty) |
-| **Start / stop charging a throw** | Interact with the carried mob (toggle – no need to hold the button) |
-| **Throw the mob** | Hit the carried mob while charged – the farther the charge, the farther it flies |
-| **Cancel a charge** | Sneak |
-| **Place the mob down** | Hit it without charging (it will stack onto a nearby mob if one is in range) |
-| **Drop the mob** | Sprint, or hold any item in your main hand / off-hand |
+If a handcuffed mob dies, the Handcuffs drop at its location.
 
-While carrying a mob you cannot jump, break blocks, interact with blocks, or pick up items.
+Each Key stores its owner's ID in its lore, ensuring that only the player with the matching key can unlock the mob.
 
-> 💡 The power bar in the action bar shows your current charge (max 15 blocks).
+🔨 Crafting
 
-### Stacking Mobs
+Both items can be crafted at a Crafting Table. Their recipes are unlocked when you pick up the corresponding ingredient.
 
-Throw or place a carried mob next to another mob (within ~1.5 blocks) and it will be stacked on top. Hitting a mob in the stack removes it and re-orders the remaining mobs automatically.
+Handcuffs (carry:handcuffs)
+text
+I I I
+I N I
+I I I
 
-### Riding Players
+I = Iron Ingot
+N = Iron Nugget
 
-Interact with another player (without sneaking) to mount them. The carrier receives a slowness effect while being ridden. The carrier can dismount the rider by pressing **Sneak + Jump**.
+Key (carry:key)
+text
+  N
+  N
+  G
 
-### Handcuffs & Keys
+N = Gold Nugget
+G = Gold Ingot
 
-1. **Cuff** – Right-click a supported mob (not sneaking) while holding **Handcuffs**. The handcuffs are consumed.
-2. **Lock** – Right-click the cuffed mob with a **Key**. The key is bound to you and the mob becomes immobilized.
-3. **Unlock** – Right-click the mob with the **matching key**. The handcuffs drop and the mob is free again.
+🐾 Supported Mobs
 
-If a handcuffed mob dies, the handcuffs drop at its location. Keys store their owner's ID in their lore, so only the key that locked a mob can unlock it.
+Carry currently supports the following mobs:
 
----
+Iron Golem, Cow, Sheep, Chicken, Villager, Cod, Cat, Wolf, Copper Golem, Pig, Horse, Axolotl, Llama, Armadillo, Camel, Trader Llama, Wandering Trader, Camel Husk, Bee, Sulfur Cube, Rabbit, Fox, Frog, Goat, Sniffer, Panda, Snow Golem, and Ocelot.
 
-## 🔨 Crafting
+Weight Classes
 
-### Handcuffs (`carry:handcuffs`)
+The weight system determines how much the player is slowed down while carrying a mob.
 
-```
- I  I  I
- I  N  I        I = Iron Ingot
- I  I  I        N = Iron Nugget
-```
-
-### Key (`carry:key`)
-
-```
-    N
-    N           N = Gold Nugget
-    G           G = Gold Ingot
-```
-
-Both recipes are crafted at a crafting table and unlock when you pick up the related nugget or ingot.
-
----
-
-## 🐾 Supported Mobs
-
-Iron Golem, Cow, Sheep, Chicken, Villager, Cod, Cat, Wolf, Copper Golem, Pig, Horse, Axolotl, Llama, Armadillo, Camel, Trader Llama, Wandering Trader, Camel Husk, Bee, Sulfur Cube, Rabbit, Fox, Frog, Goat, Sniffer, Panda, Snow Golem, Ocelot.
-
-### Weight Classes
-
-| Slowness level | Mobs |
-| --- | --- |
-| **Very heavy** (5) | Iron Golem, Camel, Camel Husk, Sniffer, Panda |
-| **Heavy** (4) | Copper Golem |
-| **Medium** (2) | Villager, Wandering Trader, Horse, Llama, Trader Llama, Snow Golem |
-| **Light** (1) | Cow, Sheep, Pig, Goat |
-| **Featherweight** | Everything else |
-
----
-
-## 📦 Installation
-
-### Requirements
-
-- Minecraft Bedrock Edition with engine version **1.26.0** or newer
-- **Beta APIs / Script API** support enabled for the world
-- Both packs must be active (the Behavior Pack depends on the Resource Pack)
-
-### Steps
-
-1. Clone or download this repository.
-2. Copy the pack folders into your Minecraft development directories:
-   - `Carry-BP` → `.../minecraftWorlds/<world>/behavior_packs/` *(or* `development_behavior_packs/` *)*
-   - `Carry-RP` → `.../minecraftWorlds/<world>/resource_packs/` *(or* `development_resource_packs/` *)*
-3. Create or open a world and activate **Carry BP** and **Carry RP**.
-4. (Optional, for development) Run `npm install` inside `Carry-BP` to get the `@minecraft/server` typings.
-
----
-
-## 🗂️ Project Structure
-
-```
+Weight Class	Slowness Level	Mobs
+Very Heavy	5	Iron Golem, Camel, Camel Husk, Sniffer, Panda
+Heavy	4	Copper Golem
+Medium	2	Villager, Wandering Trader, Horse, Llama, Trader Llama, Snow Golem
+Light	1	Cow, Sheep, Pig, Goat
+Featherweight	—	All other supported mobs
+📦 Installation
+Requirements
+Minecraft Bedrock Edition with engine version 1.26.0 or later.
+Beta APIs / Script API support enabled for the world, as required by the pack.
+Both the Behavior Pack and Resource Pack must be installed and activated. The Behavior Pack depends on the Resource Pack.
+Installation Steps
+Clone or download this repository.
+Copy the pack folders into the appropriate Minecraft directories:
+Carry-BP → .../minecraftWorlds/<world>/behavior_packs/ or .../development_behavior_packs/
+Carry-RP → .../minecraftWorlds/<world>/resource_packs/ or .../development_resource_packs/
+Create a new world or open an existing one.
+Activate Carry BP and Carry RP in the world's pack settings.
+Enable the required experimental or Beta API features if prompted.
+(Optional, for development) Run npm install inside Carry-BP to install the @minecraft/server type definitions and other declared dependencies.
+🗂️ Project Structure
+text
 Carry/
 ├── Carry-BP/                      # Behavior Pack
 │   ├── manifest.json
 │   ├── package.json
 │   ├── entities/
-│   │   └── player.json            # Player entity override (rideable by players)
+│   │   └── player.json            # Player entity override for riding
 │   ├── items/
 │   │   ├── handcuffs.json
 │   │   └── key.json
@@ -148,96 +129,84 @@ Carry/
 │   │   ├── handcuffs.json
 │   │   └── key.json
 │   └── scripts/
-│       ├── index.js               # Entry point & main tick loops
+│       ├── index.js               # Entry point and main tick loops
 │       ├── mob/
-│       │   ├── carry.js           # Carry, throw, power charge, protection
-│       │   └── handcuffs.js       # Handcuffs & key logic
+│       │   ├── carry.js           # Carrying, throwing, charging, and protection
+│       │   └── handcuffs.js       # Handcuff and key mechanics
 │       ├── player/
-│       │   └── playerData.js      # Per-player state & input permissions
+│       │   └── playerData.js      # Per-player state and input permissions
 │       └── utils/
-│           ├── config.js          # Allowed / excluded mob lists
+│           ├── config.js          # Allowed and excluded mob lists
 │           ├── events.js          # World event subscriptions
-│           └── ride.js            # Mob stacking & player riding
+│           └── ride.js            # Mob stacking and player riding
 └── Carry-RP/                      # Resource Pack
     ├── manifest.json
-    ├── texts/                     # en_US / tr_TR language files
+    ├── texts/                     # en_US and tr_TR language files
     └── textures/
         ├── item_texture.json
-        └── items/                 # handcuffs.png, key.png
-```
+        └── items/                 # handcuffs.png and key.png
 
----
+⚙️ Configuration
 
-## ⚙️ Configuration
+You can customize the add-on by editing the following files.
 
-Edit [`Carry-BP/scripts/utils/config.js`](Carry-BP/scripts/utils/config.js):
+Supported and Excluded Mobs
 
-- `allowMobs` – list of mob type IDs that can be carried and handcuffed.
-- `excludeMobs` – entity types ignored by the stacking system.
+Edit Carry-BP/scripts/utils/config.js:
 
-To adjust how heavy a mob feels, edit the `mobWeight()` switch in [`scripts/mob/carry.js`](Carry-BP/scripts/mob/carry.js). Note that weights are currently matched by the **index** of the mob in `allowMobs`, so keep the list order in sync if you add or remove entries.
+allowMobs — Defines which mob types can be carried and handcuffed.
+excludeMobs — Defines which entity types are ignored by the stacking system.
+Adjusting Mob Weight
 
----
+To change how much a mob slows down the player, edit the mobWeight() switch statement in Carry-BP/scripts/mob/carry.js.
 
-## 🌍 Localization
+⚠️ Important: Mob weights are currently determined by each mob's index in allowMobs. If you add, remove, or reorder entries in this list, make sure the weight mapping remains synchronized to avoid assigning incorrect weights.
+🌍 Localization
 
-| Language | File |
-| --- | --- |
-| English (US) | `Carry-RP/texts/en_US.lang` |
-| Turkish (TR) | `Carry-RP/texts/tr_TR.lang` |
+Carry currently includes the following languages:
 
-Add new languages by creating a `<lang>.lang` file and registering it in `texts/languages.json`.
+Language	Locale	File
+English (United States)	en_US	Carry-RP/texts/en_US.lang
+Turkish	tr_TR	Carry-RP/texts/tr_TR.lang
+Adding a New Language
+Create a new <lang>.lang file in Carry-RP/texts/.
+Add the language to Carry-RP/texts/languages.json.
+Translate the existing localization keys.
+📅 Development Timeline
+🛠️ October 15, 2026 — Core Mechanics
+Implemented the initial mob-carrying and dropping mechanics.
+Added the ability for players to carry and transport other players.
+🎯 October 16, 2026 — Throwing and Physics
+Introduced charge-based throwing, with launch power determined by the accumulated charge.
+Added sound effects, floating text indicators, and custom particles.
+Implemented dynamic weight scaling based on mob type.
+🎮 October 17, 2026 — Cross-Platform Controls
+Improved input handling for a more consistent experience across PC, console, and mobile.
+Replaced the hold-to-charge mechanic with a toggle-based system, eliminating the need to hold a button on PC or mobile.
+Fixed initial integration and stability issues.
+🔄 October 18, 2026 — Mob Stacking
+Introduced mob stacking, allowing thrown mobs to land on and stack with nearby mobs.
+🏗️ October 20, 2026 — Stacking Overhaul
+Redesigned the stacking logic, replacing the top-down mounting approach with a bottom-up insertion system.
+🕹️ October 21, 2026 — Control Refinements
+Refined the control scheme for a more intuitive gameplay experience.
+Fixed additional bugs and improved stability.
+🐛 October 22, 2026 — Maintenance and Bug Fixes
+Focused on debugging, stability improvements, and polishing existing mechanics.
+🔗 October 24, 2026 — Handcuffs and Resource Pack
+Added the handcuff mechanic, including craftable Handcuffs and Keys.
+Integrated a custom Resource Pack with item textures and localization.
+Completed another round of bug fixes and performance adjustments.
+📝 Known Issues and Notes
+Weather changes: Weather changes are currently disabled by a debug line in scripts/utils/events.js. Remove or modify that line if you want normal weather behavior.
+Mob aggression: To prevent carried mobs from becoming aggressive, the script temporarily switches the player to Spectator mode for one tick. This behavior is skipped in Creative mode and on Peaceful difficulty.
+Handcuffed mobs: A mob locked with a Key is immobilized using a maximum-level Slowness effect.
+🤝 Contributing
 
----
+Contributions are welcome!
 
-## 📅 Development Timeline
+If you find a bug, have a feature request, or want to suggest an improvement, feel free to open an issue.
 
-### 🛠️ October 15, 2026
-- **Core Mechanics:** Introduced initial mob carrying and dropping features.
-- **Player Interaction:** Added the ability for players to carry and transport other players.
+For larger changes, please open an issue first so we can discuss the proposed approach before you start working on it.
 
-### 🎯 October 16, 2026
-- **Launch Mechanics:** Added a charge-based throwing mechanic determined by accumulated power.
-- **Audio & Visuals:** Integrated sound effects, floating text indicators, and custom particles.
-- **Physics System:** Implemented dynamic weight scaling based on the specific mob being carried.
-
-### 🎮 October 17, 2026
-- **Cross-Platform Optimization:** Overhauled input mechanics for a seamless multi-platform experience.
-- **Toggle System:** Replaced the tedious hold-to-charge mechanism (right-click on PC / tap-and-hold on mobile) with a much smoother **toggle (switch) mechanism**.
-- **Stability:** Resolved initial integration bugs.
-
-### 🔄 October 18, 2026
-- **Mob Stacking:** Introduced a feature allowing thrown mobs to stack on top of other mobs upon collision.
-
-### 🏗️ October 20, 2026
-- **Stacking Overhaul:** Redesigned the stacking logic, shifting from a **top-down** mounting system to a **bottom-up** insertion mechanic.
-
-### 🕹️ October 21, 2026
-- **Control Refinement:** Implemented new, intuitive control schemes.
-- **Bug Fixes:** Patched stability and performance issues.
-
-### 🐛 October 22, 2026
-- **Maintenance:** Dedicated session focused purely on debugging and polishing existing mechanics.
-
-### 🔗 October 24, 2026
-- **Handcuff Mechanic:** Added a specialized cuffing/restraining feature with craftable handcuffs and keys.
-- **Assets:** Integrated a custom Resource Pack for updated textures and visual elements.
-- **Stability:** Final round of bug fixes and performance balancing.
-
----
-
-## 📝 Known Notes
-
-- Weather changes are currently **cancelled** by a debug line in `utils/events.js`; remove it if you want natural weather.
-- To prevent carried mobs from turning aggressive, the script briefly switches the player to Spectator mode for one tick (skipped in Creative mode and on Peaceful difficulty).
-- Handcuffed mobs are immobilized with a maximum-level slowness effect while locked with a key.
-
----
-
-## 🤝 Contributing
-
-Issues and pull requests are welcome. If you plan a larger change, please open an issue first to discuss it.
-
-## 📄 License
-
-No license has been specified yet. Add a `LICENSE` file to define how others may use this project.
+Pull requests are welcome. Thank you for helping improve Carry!
