@@ -1,2 +1,17 @@
+## item_texture.json
 item.carry:handcuffs=Kelepçe
 item.carry:key=Anahtar
+
+## config.js
+tutorial.form.title=NASIL OYNANIR?
+
+tutorial.form.body.desktop=Masaüstü
+tutorial.form.label.desktop=Mob'u taşımak için shift ve  basın\n\nMob'u bırakmak için canlıya doğru  basın\n\nMob'u fırlatmak için canlıya doğru  basın ve fırlatmak istediğiniz seviyeye getirdikten sonra canlıya doğru  basın
+
+tutorial.form.body.mobile=Mobil
+tutorial.form.label.mobile=Mob'u taşımak için  ve  tıklayın\n\nMob'u bırakmak için canlıya doğru  tıklayın\n\nMob'u fırlatmak için canlıya doğru  tıklayın ve fırlatmak istediğiniz seviyeye getirdikten sonra canlıya doğru  tıklayın
+
+tutorial.form.body.console=Konsol
+tutorial.form.label.console=Mob'u taşımak için  basın\n\nMob'u bırakmak için canlıya doğru  tıklayın\n\nMob'u fırlatmak için canlıya doğru  tıklayın ve fırlatmak istediğiniz seviyeye getirdikten sonra canlıya doğru  tıklayın
+
+tutorial.form.button=Bunu bir daha gösterme

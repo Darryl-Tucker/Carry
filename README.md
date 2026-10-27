@@ -63,7 +63,7 @@ I = Iron Ingot, N = Iron Nugget (Handcuffs) / Gold Nugget (Key), G = Gold Ingot
 
 ### Supported Mobs
 
-Iron Golem, Cow, Sheep, Chicken, Villager, Cod, Cat, Wolf, Copper Golem, Pig, Horse, Axolotl, Llama, Armadillo, Camel, Trader Llama, Wandering Trader, Camel Husk, Bee, Sulfur Cube, Rabbit, Fox, Frog, Goat, Sniffer, Panda, Snow Golem, Ocelot, Donkey.
+Iron Golem, Cow, Sheep, Chicken, Villager, Cod, Cat, Wolf, Copper Golem, Pig, Horse, Axolotl, Llama, Armadillo, Camel, Trader Llama, Wandering Trader, Camel Husk, Bee, Sulfur Cube, Rabbit, Fox, Frog, Goat, Sniffer, Panda, Snow Golem, Ocelot, Donkey, Mooshroom, Mule, Parrot, Polar bear, Turtle.
 
 ## ⚙️ Requirements & Compatibility
 
@@ -81,3 +81,4 @@ Iron Golem, Cow, Sheep, Chicken, Villager, Cod, Cat, Wolf, Copper Golem, Pig, Ho
 - **October 21, 2026**: Control refinements and bug fixes.
 - **October 22, 2026**: Maintenance, stability improvements, and polish.
 - **October 24, 2026**: Handcuffs and keys with crafting recipes, plus the Resource Pack with textures and localization.
+- **October 27, 2026**: Tutorial and TR, EN languages added.

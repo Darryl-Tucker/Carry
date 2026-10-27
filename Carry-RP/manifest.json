@@ -4,14 +4,14 @@
     "name": "Carry RP",
     "description": "Carrying Mobs!",
     "uuid": "fd6b6382-c53c-4ab4-82bc-be11ef3f45dc",
-    "version": [1, 0, 0 ],
+    "version": [1, 0, 1 ],
     "min_engine_version": [1, 26, 0]
   },
   "modules": [
     {
       "type": "resources",
       "uuid": "0a5115ee-ed17-49d2-b386-c215a4523f72",
-      "version": [1, 0, 0 ]
+      "version": [1, 0, 1 ]
     }
   ]
 }

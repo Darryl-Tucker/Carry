@@ -6,6 +6,7 @@ export function playerSettings(player) {
     system.run(() => {
         if (carryData.has(player.id))
             player.inputPermissions.setPermissionCategory(InputPermissionCategory.Jump, false)
+
         else
             player.inputPermissions.setPermissionCategory(InputPermissionCategory.Jump, true)
     })

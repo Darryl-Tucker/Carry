@@ -33,8 +33,8 @@ export function playerRide() {
 
 export function addMob_ride(player, target) {
     const get_carryData = carryData.get(player.id);
-    for (const carrier of player.dimension.getEntities({ excludeTypes: excludeMobs }).filter(c => get_carryData.id !== c.id && !riderData.has(c.id)))
-        for (target of carrier.dimension.getEntities({ type: carrier, location: carrier.location, maxDistance: 1.50 }).filter(t => get_carryData.id === t.id && !riderData.has(t.id))) {
+    for (const carrier of player.dimension.getEntities({ excludeTypes: excludeMobs }).filter(c => get_carryData?.id !== c.id && !riderData.has(c.id)))
+        for (target of carrier.dimension.getEntities({ type: carrier, location: carrier.location, maxDistance: 1.50 }).filter(t => get_carryData.id === t.id && !riderData.has(t.id) && !carrierData.has(t.id))) {
             let carriedLevel = carrierData.get(carrier.id)?.carriedLevel;
             carrierData.set(carrier.id, { carriedLevel: (carriedLevel ?? 0) + 1 })
 
@@ -60,10 +60,10 @@ export function clearRide_data(entity) {
 
     for (const carrier of entity.dimension.getEntities().filter(c => carrierData.has(c.id) && riderData.get(entity.id)?.id === c.id)) {
         let get_carrierData = carrierData.get(carrier.id);
-        let current_carriedLevel = carrierData.get(carrier.id)?.carriedLevel - 1; 
+        let current_carriedLevel = carrierData.get(carrier.id)?.carriedLevel - 1;
 
         if (get_carrierData.carriedLevel === riderData.get(entity.id).level) {
-            carrierData.set(carrier.id, { carriedLevel: get_carrierData.carriedLevel - 1 });  
+            carrierData.set(carrier.id, { carriedLevel: get_carrierData.carriedLevel - 1 });
             get_carrierData = carrierData.get(carrier.id);
 
             if (get_carrierData.carriedLevel < 1) carrierData.delete(carrier.id)
@@ -76,10 +76,10 @@ export function clearRide_data(entity) {
                 carrierData.set(carrier.id, { carriedLevel: get_carrierData.carriedLevel - 1 });
                 get_carrierData = carrierData.get(carrier.id);
 
-                riderData.set(rider.id, { ...riderData.get(rider.id), level: get_carrierData.carriedLevel }) 
+                riderData.set(rider.id, { ...riderData.get(rider.id), level: get_carrierData.carriedLevel })
             }
         }
-        carrierData.set(carrier.id, { carriedLevel: current_carriedLevel }); 
+        carrierData.set(carrier.id, { carriedLevel: current_carriedLevel });
     }
     riderData.delete(entity.id);
 }

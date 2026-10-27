@@ -4,7 +4,7 @@ import { playerSettings } from "../player/playerData";
 import { addMob_ride, riderData } from "../utils/ride";
 import { clearRide_data, clearCarrier_data } from "../utils/ride";
 import { handcuffsData } from "./handcuffs";
-import { allowMobs } from "../utils/config";
+import { allowMobs, neutralMobs } from "../utils/config";
 
 export const carryData = new Map();
 
@@ -23,7 +23,7 @@ const sounds = {
     mobCarry_warn: "mob.villager.no"
 };
 
-const mobCarry_height = 1.35;
+const mobCarry_height = 0.50;
 
 function mobWeight(player) {
     for (const mob of allowMobs.filter(m => carryData.get(player.id)?.typeId === m)) {
@@ -34,13 +34,15 @@ function mobWeight(player) {
             case 17: // Camel husk
             case 24: // Sniffer
             case 25: // Panda
-                player.addEffect("slowness", 10, { amplifier: 5, showParticles: false }); 
+            case 32: // Polar bear
+                player.addEffect("slowness", 10, { amplifier: 5, showParticles: false });
                 break
 
             case 1: // Cow
             case 2: // Sheep
             case 9: // Pig
             case 23: // Goat
+            case 29: // Mooshroom
                 player.addEffect("slowness", 10, { amplifier: 1, showParticles: false });
                 break
 
@@ -51,10 +53,13 @@ function mobWeight(player) {
             case 15: // Trader llama
             case 26: // Snow golem
             case 28: // Donkey
-                player.addEffect("slowness", 10, { amplifier: 2, showParticles: false }); 
+            case 30: // Mule
+                player.addEffect("slowness", 10, { amplifier: 2, showParticles: false });
                 break
 
-            case 8: player.addEffect("slowness", 10, { amplifier: 4, showParticles: false }); break // Copper golem
+            case 8: // Copper golem
+            case 33: // Turtle
+                player.addEffect("slowness", 10, { amplifier: 4, showParticles: false }); break
         }
     }
 }
@@ -63,7 +68,7 @@ export function mobCarry(eventData = null) {
     if (eventData === null) {
         for (const player of world.getAllPlayers().filter(p => carryData.has(p.id))) {
             let get_carryData = carryData.get(player.id);
-
+            
             const container = player.getComponent("minecraft:inventory").container;
             const selectedSlot = player.selectedSlotIndex;
 
@@ -87,7 +92,7 @@ export function mobCarry(eventData = null) {
                     const playerLoc = player.location;
 
                     const viewDirection = player.getViewDirection();
-                    const distance = 1;
+                    const distance = 0.50;
                     const targetLoc = {
                         x: playerLoc.x + (viewDirection.x * distance),
                         y: playerLoc.y + mobCarry_height,
@@ -220,6 +225,8 @@ export function pushMob(eventData) {
         }
 
         system.run(() => { // Canlının agresifleşmesini önlemek için oyun motorunu sabote etme
+            if (neutralMobs.indexOf(target.typeId) === -1) return
+
             const playerGamemode = player.getGameMode();
             const difficulty = world.getDifficulty();
 
@@ -227,7 +234,7 @@ export function pushMob(eventData) {
                 player.setGameMode(GameMode.Spectator);
                 system.runTimeout(() => player.setGameMode(playerGamemode), 1)
             }
-        });
+        })
     }
 }
 
