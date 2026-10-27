@@ -9,9 +9,10 @@ import { allowMobs, neutralMobs } from "../utils/config";
 export const carryData = new Map();
 
 const texts = {
-    mobDropped: "Mob Dropped!",
-    mobCarry_warn: ">> Your hands are full!",
-    powerCanceled: "Canceled!"
+    mobDropped: "mob.dropped",
+    mobCarry_warn: "mob.carry.warn",
+    powerCanceled: "power.canceled",
+    sneakTo_cancel: "sneakTo.cancel"
 };
 
 const sounds = {
@@ -68,7 +69,7 @@ export function mobCarry(eventData = null) {
     if (eventData === null) {
         for (const player of world.getAllPlayers().filter(p => carryData.has(p.id))) {
             let get_carryData = carryData.get(player.id);
-            
+
             const container = player.getComponent("minecraft:inventory").container;
             const selectedSlot = player.selectedSlotIndex;
 
@@ -79,7 +80,7 @@ export function mobCarry(eventData = null) {
             if (player.isSprinting || hand || offHand) {
                 carryData.delete(player.id);
 
-                player.onScreenDisplay.setActionBar(`§c${texts.mobDropped}`);
+                player.onScreenDisplay.setActionBar({ rawtext: [{ text: "§c" }, { translate: texts.mobDropped }] });
                 player.playSound(sounds.mobDropped, { volume: 20 });
                 playerSettings(player)
             }
@@ -132,7 +133,7 @@ export function powerCount() {
         if (power > 0 && player.isSneaking) {
             carryData.set(player.id, { ...get_carryData, power: 0, powerC: null });
 
-            player.onScreenDisplay.setActionBar(`§c${texts.powerCanceled}`);
+            player.onScreenDisplay.setActionBar({ rawtext: [{ text: "§c" }, { translate: texts.powerCanceled }] });
             player.playSound(sounds.powerCanceled);
         }
 
@@ -143,7 +144,7 @@ export function powerCount() {
             const maxBar = 15;
             const greenBars = "§a▌".repeat(power);
             const whiteBars = "§f▌".repeat(Math.abs(maxBar - power));
-            system.run(() => player.onScreenDisplay.setActionBar(`${greenBars}${whiteBars} ${power} Block\n   §r§lSneak to cancel`))
+            system.run(() => player.onScreenDisplay.setActionBar({ rawtext: [{ text: `${greenBars}${whiteBars} ${power} §l` }, { translate: texts.sneakTo_cancel }] }))
         }
     }
 }
@@ -177,7 +178,7 @@ export function takeMob(eventData) {
         }
         else {
             system.run(() => {
-                player.sendMessage(`§c${texts.mobCarry_warn}`);
+                player.sendMessage({ rawtext: [{ text: "§c" }, { translate: texts.mobDropped }] });
                 player.playSound(sounds.mobCarry_warn)
             })
         }

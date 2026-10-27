@@ -15,3 +15,9 @@ tutorial.form.body.console=Console
 tutorial.form.label.console=To carry the mob, use \n\nTo drop the mob, press  towards the entity\n\nTo throw the mob, press  towards the entity and once you reach the desired throw level, press  towards the entity
 
 tutorial.form.button=Don't show again
+
+## carry.js
+power.canceled=Canceled!
+mob.carry.warn=>> Your hands are full!
+mob.dropped=Mob Dropped!
+sneakTo.cancel=Block\nSneak to cancel

@@ -1,4 +1,4 @@
-import { system, InputPermissionCategory } from "@minecraft/server";
+import { world, system, InputPermissionCategory } from "@minecraft/server";
 
 import { carryData } from "../mob/carry";
 
@@ -16,3 +16,7 @@ export function clearData(eventData) {
     const playerId = eventData.player.id;
     carryData.delete(playerId)
 }
+
+/* export function playerCarry_animation() {
+     for (const player of world.getAllPlayers().filter(p => carryData.has(p.id))) player.playAnimation("animation.enderman.carrying", { nextState: "none", blendOutTime: 30 })
+} */

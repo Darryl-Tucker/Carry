@@ -15,3 +15,9 @@ tutorial.form.body.console=Konsol
 tutorial.form.label.console=Mob'u taşımak için  basın\n\nMob'u bırakmak için canlıya doğru  tıklayın\n\nMob'u fırlatmak için canlıya doğru  tıklayın ve fırlatmak istediğiniz seviyeye getirdikten sonra canlıya doğru  tıklayın
 
 tutorial.form.button=Bunu bir daha gösterme
+
+## carry.js
+power.canceled=İptal edildi!
+mob.carry.warn=>> Ellerin dolu!
+mob.dropped=Mob'u düşürdün!
+sneakTo.cancel=Blok\nİptal etmek için eğil
