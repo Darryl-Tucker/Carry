@@ -24,7 +24,7 @@ const sounds = {
     mobCarry_warn: "mob.villager.no"
 };
 
-const mobCarry_height = 0.50;
+const mobCarry_height = 1.05;
 
 function mobWeight(player) {
     for (const mob of allowMobs.filter(m => carryData.get(player.id)?.typeId === m)) {

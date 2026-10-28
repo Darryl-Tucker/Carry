@@ -4,11 +4,15 @@ import { carryData } from "../mob/carry";
 
 export function playerSettings(player) {
     system.run(() => {
-        if (carryData.has(player.id))
-            player.inputPermissions.setPermissionCategory(InputPermissionCategory.Jump, false)
+        if (carryData.has(player.id)) {
+            player.inputPermissions.setPermissionCategory(InputPermissionCategory.Jump, false);
+            player.playAnimation("animation.enderman.carrying", { blendOutTime: 0, stopExpression: "0", controller: "block_hold" })
+        }
 
-        else
-            player.inputPermissions.setPermissionCategory(InputPermissionCategory.Jump, true)
+        else {
+            player.inputPermissions.setPermissionCategory(InputPermissionCategory.Jump, true);
+            player.playAnimation("animation.player.bob.stationary", { blendOutTime: 0, stopExpression: "query.is_moving", controller: "block_hold" })
+        }
     })
 }
 
@@ -17,6 +21,6 @@ export function clearData(eventData) {
     carryData.delete(playerId)
 }
 
-/* export function playerCarry_animation() {
-     for (const player of world.getAllPlayers().filter(p => carryData.has(p.id))) player.playAnimation("animation.enderman.carrying", { nextState: "none", blendOutTime: 30 })
-} */
+export function playerAnimation() {
+    for (const player of world.getAllPlayers().filter(p => carryData.has(p.id))) player.playAnimation("animation.enderman.carrying", { blendOutTime: 0, stopExpression: "0", controller: "block_hold" })
+} 
