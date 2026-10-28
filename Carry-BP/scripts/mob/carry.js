@@ -65,42 +65,66 @@ function mobWeight(player) {
     }
 }
 
-export function mobCarry(eventData = null) {
+export function mobCarry() {
+    for (const player of world.getAllPlayers().filter(p => carryData.has(p.id))) {
+        let get_carryData = carryData.get(player.id);
+
+        const container = player.getComponent("minecraft:inventory").container;
+        const selectedSlot = player.selectedSlotIndex;
+
+        const hand = container.getItem(selectedSlot);
+        const offHand = player.getComponent(EntityComponentTypes.Equippable)?.getEquipment(EquipmentSlot.Offhand);
+
+
+        if (player.isSprinting || hand || offHand) {
+            carryData.delete(player.id);
+
+            player.onScreenDisplay.setActionBar({ rawtext: [{ text: "§c" }, { translate: texts.mobDropped }] });
+            player.playSound(sounds.mobDropped, { volume: 20 });
+            playerSettings(player)
+        }
+
+        else {
+            const entities = player.dimension.getEntities({ location: player.location }).filter(e => get_carryData?.id === e.id);
+
+            mobWeight(player);
+            for (const entity of entities.filter(e => get_carryData?.id === e.id)) {
+                const playerLoc = player.location;
+
+                const viewDirection = player.getViewDirection();
+                const distance = 0.50;
+                const targetLoc = {
+                    x: playerLoc.x + (viewDirection.x * distance),
+                    y: playerLoc.y + mobCarry_height,
+                    z: playerLoc.z + (viewDirection.z * distance)
+                };
+                entity.teleport(targetLoc)
+            }
+        }
+    }
+}
+
+export function powerCount(eventData = null) {
     if (eventData === null) {
         for (const player of world.getAllPlayers().filter(p => carryData.has(p.id))) {
-            let get_carryData = carryData.get(player.id);
+            const get_carryData = carryData.get(player.id);
+            const power = carryData.get(player.id)?.power ?? 0;
 
-            const container = player.getComponent("minecraft:inventory").container;
-            const selectedSlot = player.selectedSlotIndex;
+            if (power > 0 && player.isSneaking) {
+                carryData.set(player.id, { ...get_carryData, power: 0, powerC: null });
 
-            const hand = container.getItem(selectedSlot);
-            const offHand = player.getComponent(EntityComponentTypes.Equippable)?.getEquipment(EquipmentSlot.Offhand);
-
-
-            if (player.isSprinting || hand || offHand) {
-                carryData.delete(player.id);
-
-                player.onScreenDisplay.setActionBar({ rawtext: [{ text: "§c" }, { translate: texts.mobDropped }] });
-                player.playSound(sounds.mobDropped, { volume: 20 });
-                playerSettings(player)
+                player.onScreenDisplay.setActionBar({ rawtext: [{ text: "§c" }, { translate: texts.powerCanceled }] });
+                player.playSound(sounds.powerCanceled);
             }
 
-            else {
-                const entities = player.dimension.getEntities({ location: player.location }).filter(e => get_carryData?.id === e.id);
+            else if (get_carryData?.powerC === true && power < 16) {
+                system.run(() => player.playSound(sounds.powerCount, { pitch: 2 }));
+                carryData.set(player.id, { ...get_carryData, power: power + 1 });
 
-                mobWeight(player);
-                for (const entity of entities.filter(e => get_carryData?.id === e.id)) {
-                    const playerLoc = player.location;
-
-                    const viewDirection = player.getViewDirection();
-                    const distance = 0.50;
-                    const targetLoc = {
-                        x: playerLoc.x + (viewDirection.x * distance),
-                        y: playerLoc.y + mobCarry_height,
-                        z: playerLoc.z + (viewDirection.z * distance)
-                    };
-                    entity.teleport(targetLoc)
-                }
+                const maxBar = 15;
+                const greenBars = "§a▌".repeat(power);
+                const whiteBars = "§f▌".repeat(Math.abs(maxBar - power));
+                system.run(() => player.onScreenDisplay.setActionBar({ rawtext: [{ text: `${greenBars}${whiteBars} ${power} §l` }, { translate: texts.sneakTo_cancel }] }))
             }
         }
     }
@@ -120,31 +144,6 @@ export function mobCarry(eventData = null) {
                 else carryData.set(player.id, { ...get_carryData, powerC: null });
             }
             eventData.cancel = true
-        }
-    }
-}
-
-
-export function powerCount() {
-    for (const player of world.getAllPlayers().filter(p => carryData.has(p.id))) {
-        const get_carryData = carryData.get(player.id);
-        const power = carryData.get(player.id)?.power ?? 0;
-
-        if (power > 0 && player.isSneaking) {
-            carryData.set(player.id, { ...get_carryData, power: 0, powerC: null });
-
-            player.onScreenDisplay.setActionBar({ rawtext: [{ text: "§c" }, { translate: texts.powerCanceled }] });
-            player.playSound(sounds.powerCanceled);
-        }
-
-        else if (get_carryData?.powerC === true && power < 16) {
-            system.run(() => player.playSound(sounds.powerCount, { pitch: 2 }));
-            carryData.set(player.id, { ...get_carryData, power: power + 1 });
-
-            const maxBar = 15;
-            const greenBars = "§a▌".repeat(power);
-            const whiteBars = "§f▌".repeat(Math.abs(maxBar - power));
-            system.run(() => player.onScreenDisplay.setActionBar({ rawtext: [{ text: `${greenBars}${whiteBars} ${power} §l` }, { translate: texts.sneakTo_cancel }] }))
         }
     }
 }

@@ -1,6 +1,6 @@
 import { world } from "@minecraft/server";
 
-import { pushMob, protectMob, carryData, takeMob, mobCarry, clearMob_data } from "../mob/carry";
+import { pushMob, protectMob, carryData, takeMob, mobCarry, clearMob_data, powerCount } from "../mob/carry";
 import { playerSettings, clearData } from "../player/playerData";
 import { addPlayer_ride, clearRide_data, clearCarrier_data } from "./ride";
 import { mobHandcuffs, dropHandcuffs } from "../mob/handcuffs";
@@ -41,7 +41,7 @@ world.beforeEvents.playerInteractWithBlock.subscribe((eventData) => {
 
 world.beforeEvents.playerInteractWithEntity.subscribe((eventData) => {
     mobHandcuffs(eventData);
-    mobCarry(eventData);
+    powerCount(eventData);
     takeMob(eventData);
     addPlayer_ride(eventData)
 });
