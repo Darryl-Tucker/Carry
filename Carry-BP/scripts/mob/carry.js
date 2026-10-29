@@ -27,7 +27,9 @@ const sounds = {
 const mobCarry_height = 1.05;
 
 function mobWeight(player) {
-    for (const mob of allowMobs.filter(m => carryData.get(player.id)?.typeId === m)) {
+    const mob = allowMobs.find(m => carryData.get(player.id)?.typeId === m)
+
+    if (mob) {
         const index = allowMobs.indexOf(mob);
         switch (index) {
             case 0: // Iron golem
@@ -85,10 +87,10 @@ export function mobCarry() {
         }
 
         else {
-            const entities = player.dimension.getEntities({ location: player.location }).filter(e => get_carryData?.id === e.id);
-
             mobWeight(player);
-            for (const entity of entities.filter(e => get_carryData?.id === e.id)) {
+
+            const entity = player.dimension.getEntities({ location: player.location }).find(e => get_carryData?.id === e.id);
+            if (entity) {
                 const playerLoc = player.location;
 
                 const viewDirection = player.getViewDirection();
@@ -131,26 +133,29 @@ export function powerCount(eventData = null) {
 
     else { // Switch mantığı
         const player = eventData.player;
-        if (carryData.has(player.id)) {
-            const target = eventData.target;
-            const get_carryData = carryData.get(player.id);
+        if (!carryData.has(player.id)) return
 
-            const container = player.getComponent("minecraft:inventory").container;
-            const selectedSlot = player.selectedSlotIndex;
-            const hand = container.getItem(selectedSlot);
+        const target = eventData.target;
+        const get_carryData = carryData.get(player.id);
 
-            if (!hand && target.id === get_carryData?.id) {
-                if (get_carryData?.powerC !== true && !player.isSneaking) carryData.set(player.id, { ...get_carryData, powerC: true })
-                else carryData.set(player.id, { ...get_carryData, powerC: null });
-            }
-            eventData.cancel = true
+        const container = player.getComponent("minecraft:inventory").container;
+        const selectedSlot = player.selectedSlotIndex;
+        const hand = container.getItem(selectedSlot);
+
+        if (!hand && target.id === get_carryData?.id) {
+            if (get_carryData?.powerC !== true && !player.isSneaking) carryData.set(player.id, { ...get_carryData, powerC: true })
+            else carryData.set(player.id, { ...get_carryData, powerC: null });
         }
+        eventData.cancel = true
     }
 }
 
 export function takeMob(eventData) {
     const player = eventData.player;
     if (carryData.has(player.id)) return
+
+    const target = eventData.target;
+    if (world.getAllPlayers().find(p => carryData.get(p.id)?.id === target.id)) return // Eğer bir oyuncu zaten o mob'u taşıyorsa aldırma
 
     const container = player.getComponent("minecraft:inventory").container;
     const selectedSlot = player.selectedSlotIndex;
@@ -160,20 +165,15 @@ export function takeMob(eventData) {
 
     if (player.isSneaking && !player.isGliding) {
         if (!mainHand && !offHand) {
-            const target = eventData.target;
+            if (allowMobs.find(m => target.typeId === m)) {
+                carryData.set(player.id, { id: target.id, typeId: target.typeId, carry: true });
 
-            for (const mob of allowMobs.filter(m => target.typeId === m)) {
-                let get_carryData = carryData.get(player.id);
+                clearRide_data(target);
 
-                if (get_carryData?.id === undefined) carryData.set(player.id, { id: target.id, typeId: target.typeId })
-                carryData.set(player.id, { ...carryData.get(player.id), carry: true });
-
-                system.run(() => player.playSound(sounds.mobTake));
-
-                playerSettings(player)
+                playerSettings(player);
+                system.run(() => player.playSound(sounds.mobTake))
             }
 
-            clearRide_data(target);
         }
         else {
             system.run(() => {
@@ -250,17 +250,18 @@ export function protectMob(eventData) {
     }
 
     else
-        for (const player of world.getAllPlayers().filter(p => hurtEntity.id === carryData.get(p.id)?.id))
-            if (damageSource.cause === "suffocation") eventData.cancel = true
+        if (world.getAllPlayers().find(p => hurtEntity.id === carryData.get(p.id)?.id) && damageSource.cause === "suffocation") eventData.cancel = true
 }
 
 export function clearMob_data(eventData) {
     const entity = eventData.deadEntity;
 
-    for (const player of world.getAllPlayers().filter(p => carryData.get(p.id)?.id === entity.id)) {
+    const player = world.getAllPlayers().find(p => carryData.get(p.id)?.id === entity.id)
+    if (player) {
         carryData.delete(player.id);
         playerSettings(player)
     }
+
     handcuffsData.delete(entity.id);
     clearRide_data(entity); clearCarrier_data(entity)
 }

@@ -46,9 +46,6 @@ export function mobHandcuffs(eventData = null) {
                     return
                 }
 
-
-                if (!handcuffsData.has(target.id)) return
-
                 if (hand.typeId === "carry:key" && handcuffsData.get(target.id)?.key === undefined) {
                     handcuffsData.set(target.id, { status: true, key: player.id });
                     target.setDynamicProperty("key", player.id);

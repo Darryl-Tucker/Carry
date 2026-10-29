@@ -7,8 +7,9 @@ export const riderData = new Map();
 export const carrierData = new Map();
 
 export function mobRide() {
-    for (const rider of world.getDimension("overworld").getEntities().filter(r => riderData.has(r.id)))
-        for (const carrier of rider.dimension.getEntities().filter(c => riderData.get(rider.id).id === c.id)) {
+    for (const rider of world.getDimension("overworld").getEntities().filter(r => riderData.has(r.id))) {
+        const carrier = rider.dimension.getEntities().find(c => riderData.get(rider.id).id === c.id)
+        if (carrier) {
             const get_riderData = riderData.get(rider.id);
 
             const carrierLoc = {
@@ -18,14 +19,17 @@ export function mobRide() {
             };
             rider.teleport(carrierLoc)
         }
+    }
 }
 
 export function playerRide() {
     for (const rider of world.getAllPlayers().filter(p => p.getDynamicProperty("ride"))) {
-        for (const carrier of world.getAllPlayers().filter(p => rider.getDynamicProperty("ride") === p.id)) {
+        const carrier = world.getAllPlayers().find(p => rider.getDynamicProperty("ride") === p.id)
+        if (carrier) {
             if (carrier.isSneaking && carrier.isJumping) rider.runCommand("ride @s stop_riding")
             carrier.addEffect("slowness", 10, { amplifier: 0.30, showParticles: false })
         }
+
         const riding = rider.getComponent(EntityComponentTypes.Riding);
         if (riding === undefined) rider.setDynamicProperty("ride", undefined)
     }
@@ -33,6 +37,7 @@ export function playerRide() {
 
 export function addMob_ride(player, target) {
     const get_carryData = carryData.get(player.id);
+
     for (const carrier of player.dimension.getEntities({ excludeTypes: excludeMobs }).filter(c => get_carryData?.id !== c.id && !riderData.has(c.id)))
         for (target of carrier.dimension.getEntities({ type: carrier, location: carrier.location, maxDistance: 1.50 }).filter(t => get_carryData.id === t.id && !riderData.has(t.id) && !carrierData.has(t.id))) {
             let carriedLevel = carrierData.get(carrier.id)?.carriedLevel;
@@ -86,9 +91,8 @@ export function clearRide_data(entity) {
 
 export function clearCarrier_data(entity) {
     if (!carrierData.has(entity.id)) return
+    carrierData.delete(entity.id);
 
-    carrierData.delete(entity.id)
-
-    for (const rider of entity.dimension.getEntities().filter(r => riderData.get(r.id)?.id === entity.id))
-        riderData.delete(rider.id)
+    const rider = entity.dimension.getEntities().find(r => riderData.get(r.id)?.id === entity.id);
+    if (rider) riderData.delete(rider.id)
 }
