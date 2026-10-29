@@ -32,7 +32,7 @@ export function mobHandcuffs(eventData = null) {
             const selectedSlot = player.selectedSlotIndex;
             const hand = container.getItem(selectedSlot);
 
-            if (hand) {
+            if (hand?.typeId === "carry:handcuffs" || hand?.typeId === "carry:key") {
                 eventData.cancel = true
 
                 if (hand.typeId === "carry:handcuffs" && !handcuffsData.has(target.id)) {
@@ -45,6 +45,8 @@ export function mobHandcuffs(eventData = null) {
                     })
                     return
                 }
+
+                if (!handcuffsData.has(target.id)) return
 
                 if (hand.typeId === "carry:key" && handcuffsData.get(target.id)?.key === undefined) {
                     handcuffsData.set(target.id, { status: true, key: player.id });

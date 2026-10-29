@@ -173,11 +173,11 @@ export function takeMob(eventData) {
                 playerSettings(player);
                 system.run(() => player.playSound(sounds.mobTake))
             }
-
         }
+
         else {
             system.run(() => {
-                player.sendMessage({ rawtext: [{ text: "§c" }, { translate: texts.mobDropped }] });
+                player.sendMessage({ rawtext: [{ text: "§c" }, { translate: texts.mobCarry_warn }] });
                 player.playSound(sounds.mobCarry_warn)
             })
         }
@@ -237,6 +237,7 @@ export function pushMob(eventData) {
         })
     }
 }
+
 
 export function protectMob(eventData) {
     const damageSource = eventData.damageSource;
