@@ -93,6 +93,6 @@ export function clearCarrier_data(entity) {
     if (!carrierData.has(entity.id)) return
     carrierData.delete(entity.id);
 
-    const rider = entity.dimension.getEntities().find(r => riderData.get(r.id)?.id === entity.id);
-    if (rider) riderData.delete(rider.id)
+    for (const rider of entity.dimension.getEntities().filter(r => riderData.get(r.id)?.id === entity.id))
+        riderData.delete(rider.id)
 }
