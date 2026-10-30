@@ -83,3 +83,4 @@ Iron Golem, Cow, Sheep, Chicken, Villager, Cod, Cat, Wolf, Copper Golem, Pig, Ho
 - **October 24, 2026**: Handcuffs and keys with crafting recipes, plus the Resource Pack with textures and localization.
 - **October 27, 2026**: Tutorial and TR, EN languages added.
 - **October 28, 2026**: Pack icon and carry animation added.
+- **October 29, 2026**: Bug fixed and optimized.
