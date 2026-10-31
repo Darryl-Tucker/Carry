@@ -24,8 +24,6 @@ const sounds = {
     mobCarry_warn: "mob.villager.no"
 };
 
-const mobCarry_height = 1.05;
-
 function mobWeight(player) {
     const mob = allowMobs.find(m => carryData.get(player.id)?.typeId === m)
 
@@ -70,7 +68,6 @@ function mobWeight(player) {
 export function mobCarry() {
     for (const player of world.getAllPlayers().filter(p => carryData.has(p.id))) {
         let get_carryData = carryData.get(player.id);
-
         const container = player.getComponent("minecraft:inventory").container;
         const selectedSlot = player.selectedSlotIndex;
 
@@ -94,13 +91,13 @@ export function mobCarry() {
                 const playerLoc = player.location;
 
                 const viewDirection = player.getViewDirection();
-                const distance = 0.50;
+                const distance = 0.80;
                 const targetLoc = {
                     x: playerLoc.x + (viewDirection.x * distance),
-                    y: playerLoc.y + mobCarry_height,
+                    y: (playerLoc.y + 1.20) + (viewDirection.y * distance),
                     z: playerLoc.z + (viewDirection.z * distance)
                 };
-                entity.teleport(targetLoc)
+                entity.teleport(targetLoc, { facingLocation: { x: 0, y: 1, z: 0 } })
             }
         }
     }
@@ -119,14 +116,21 @@ export function powerCount(eventData = null) {
                 player.playSound(sounds.powerCanceled);
             }
 
-            else if (get_carryData?.powerC === true && power < 16) {
-                system.run(() => player.playSound(sounds.powerCount, { pitch: 2 }));
-                carryData.set(player.id, { ...get_carryData, power: power + 1 });
+            else if (get_carryData?.powerC === true) {
+                if (power < 15) {
+                    system.run(() => player.playSound(sounds.powerCount, { pitch: 2 }));
+                    carryData.set(player.id, { ...get_carryData, power: power + 1 });
+                }
 
                 const maxBar = 15;
                 const greenBars = "§a▌".repeat(power);
-                const whiteBars = "§f▌".repeat(Math.abs(maxBar - power));
-                system.run(() => player.onScreenDisplay.setActionBar({ rawtext: [{ text: `${greenBars}${whiteBars} ${power} §l` }, { translate: texts.sneakTo_cancel }] }))
+
+                let whiteBars;
+
+                if (power === 16) whiteBars = "§f▌".repeat(Math.abs(maxBar - (power - 1)))
+                else whiteBars = "§f▌".repeat(Math.abs(maxBar - power))
+
+                system.run(() => player.onScreenDisplay.setActionBar({ rawtext: [{ text: `${greenBars}${whiteBars}§f ${power} §l` }, { translate: texts.sneakTo_cancel }] }))
             }
         }
     }
@@ -193,33 +197,38 @@ export function pushMob(eventData) {
     if (target.id === carryData.get(player.id)?.id) {
         if (power > 0) {
             system.run(() => {
-                for (let i = 0; i < power; i++) {
-                    const getBlock = target.dimension.getBlock({ x: target.location.x + 1, y: target.location.y, z: target.location.z + 1 });
-                    if (!getBlock?.isAir || riderData.has(target.id)) break
+                const playerLoc = player.location;
+                const viewDirection = player.getViewDirection();
 
-                    const playerLoc = player.location;
-                    const viewDirection = player.getViewDirection();
-                    const targetLoc = {
+                const targetLoc = {
+                    x: viewDirection.x * power,
+                    z: viewDirection.z * power
+                };
+
+                target.applyKnockback(targetLoc, viewDirection.y);
+
+                const runId = system.runInterval(() => addMob_ride(target, runId));
+                system.runTimeout(() => system.clearRun(runId), power);
+
+                for (let i = 0; i < power; i++) {
+                    const particlePos = {
                         x: playerLoc.x + (viewDirection.x * i),
-                        y: playerLoc.y + mobCarry_height,
+                        y: (playerLoc.y + 1.30) + (viewDirection.y * i),
                         z: playerLoc.z + (viewDirection.z * i)
                     };
+                    if (particlePos.y < -64 || particlePos.y > 319) break
 
-                    target.dimension.spawnParticle("minecraft:shulker_bullet", target.location);
-                    target.teleport(targetLoc);
-                    addMob_ride(player, target)
+                    target.dimension.spawnParticle("minecraft:shulker_bullet", particlePos);
                 }
-            });
 
-            system.run(() => {
-                player.playSound(sounds.mobPush)
-                playerSettings(player)
+                player.playSound(sounds.mobPush);
                 carryData.delete(player.id);
+                playerSettings(player)
             })
         }
 
         else {
-            addMob_ride(player, target);
+            addMob_ride(target);
             playerSettings(player);
             carryData.delete(player.id)
         }

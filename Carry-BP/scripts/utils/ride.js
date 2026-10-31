@@ -1,4 +1,4 @@
-import { world, EntityComponentTypes } from "@minecraft/server";
+import { world, EntityComponentTypes, system } from "@minecraft/server";
 
 import { carryData } from "../mob/carry";
 import { excludeMobs } from "./config";
@@ -35,23 +35,27 @@ export function playerRide() {
     }
 }
 
-export function addMob_ride(player, target) {
-    const get_carryData = carryData.get(player.id);
+export function addMob_ride(target, runId = null) {
+    const carrier = target.dimension.getEntities({
+        location: target.location,
+        maxDistance: 1.30,
+        excludeTypes: excludeMobs
+    }).find(c => c.id !== target.id && !riderData.has(c.id)); // Taşıyıcıyı bul
 
-    for (const carrier of player.dimension.getEntities({ excludeTypes: excludeMobs }).filter(c => get_carryData?.id !== c.id && !riderData.has(c.id)))
-        for (target of carrier.dimension.getEntities({ type: carrier, location: carrier.location, maxDistance: 1.50 }).filter(t => get_carryData?.id === t.id && !riderData.has(t.id) && !carrierData.has(t.id))) {
-            let carriedLevel = carrierData.get(carrier.id)?.carriedLevel;
-            carrierData.set(carrier.id, { carriedLevel: (carriedLevel ?? 0) + 1 })
+    if (carrier && !carrierData.has(target.id)) { // Eğer taşıyıcı varsa
+        let carriedLevel = carrierData.get(carrier.id)?.carriedLevel;
+        carrierData.set(carrier.id, { carriedLevel: (carriedLevel ?? 0) + 1 })
 
-            carriedLevel = carrierData.get(carrier.id).carriedLevel;
+        carriedLevel = carrierData.get(carrier.id).carriedLevel;
 
-            for (const rider of carrier.dimension.getEntities().filter(r => riderData.get(r.id)?.id === carrier.id))
-                riderData.set(rider.id, { id: carrier.id, level: riderData.get(rider.id).level + 1 });
+        for (const rider of carrier.dimension.getEntities().filter(r => riderData.get(r.id)?.id === carrier.id))
+            riderData.set(rider.id, { id: carrier.id, level: riderData.get(rider.id).level + 1 }) // Yeni bir mob bineceği için bütün binen mob'ları bir tık yukarı kaydır
 
-            riderData.set(target.id, { id: carrier.id, level: 1 });
-        }
+        riderData.set(target.id, { id: carrier.id, level: 1 }); // Hedefi taşıyıcıya bindir
+
+        if (runId !== null) system.clearRun(runId) // Eğer zaten bulduğuna göre Run'ı temizleyebiliriz
+    }
 }
-
 
 export function addPlayer_ride(eventData) {
     const player = eventData.player;

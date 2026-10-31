@@ -84,3 +84,4 @@ Iron Golem, Cow, Sheep, Chicken, Villager, Cod, Cat, Wolf, Copper Golem, Pig, Ho
 - **October 27, 2026**: Tutorial and TR, EN languages added.
 - **October 28, 2026**: Pack icon and carry animation added.
 - **October 29, 2026**: Bug fixed and optimized.
+- **October 31, 2026**: Throwing mechanics have been changed.
