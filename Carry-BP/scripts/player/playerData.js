@@ -16,11 +16,16 @@ export function playerSettings(player) {
     })
 }
 
-export function clearData(eventData) {
+export function clearPlayer_data(eventData) {
     const playerId = eventData.player.id;
     carryData.delete(playerId)
 }
 
 export function playerAnimation() {
     for (const player of world.getAllPlayers().filter(p => carryData.has(p.id))) player.playAnimation("animation.enderman.carrying", { blendOutTime: 0, stopExpression: "0", controller: "block_hold" })
-} 
+}
+
+export function clearCarry_data(player) {
+    carryData.delete(player.id); 
+    playerSettings(player)
+}

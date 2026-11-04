@@ -1,52 +1,49 @@
 import { world } from "@minecraft/server";
 
-import { pushMob, protectMob, carryData, takeMob, mobCarry, clearMob_data, powerCount } from "../mob/carry";
-import { playerSettings, clearData } from "../player/playerData";
+import { pushMob, carryData, takeMob, clearMob_data, powerCount } from "../mob/carry";
+import { playerSettings, clearPlayer_data, clearCarry_data } from "../player/playerData";
 import { addPlayer_ride, clearRide_data, clearCarrier_data } from "./ride";
-import { mobHandcuffs, dropHandcuffs } from "../mob/handcuffs";
+import { mobHandcuffs, dropHandcuffs, handcuffsData } from "../mob/handcuffs";
 import { addonTutorial } from "./config";
 
-world.beforeEvents.playerLeave.subscribe((eventData) => clearData(eventData));
-world.afterEvents.playerSpawn.subscribe((eventData) => {
+world.beforeEvents.playerLeave.subscribe(eventData => clearPlayer_data(eventData));
+world.afterEvents.playerSpawn.subscribe(eventData => {
     const player = eventData.player;
 
-    if (eventData.initialSpawn && player.getDynamicProperty("dontShow_again") !== true) addonTutorial(player)
     playerSettings(player);
+
+    if (eventData.initialSpawn && player.getDynamicProperty("ver0") !== true) addonTutorial(player)
 });
 
-world.beforeEvents.entityHurt.subscribe((eventData) => {
+world.beforeEvents.entityHurt.subscribe(eventData => {
     const hEntity = eventData.hurtEntity.typeId !== "minecraft:player";
+    const hurtEntity = eventData.hurtEntity;
+
     const damagingEntity = eventData.damageSource.damagingEntity;
 
-    protectMob(eventData);
+    if (hEntity) {
+        if (carryData.has(damagingEntity?.id)) return pushMob(eventData)
 
-    if (hEntity && damagingEntity) {
-        const entity = eventData.hurtEntity;
-
-        if (carryData.has(damagingEntity.id)) return pushMob(eventData)
-
-        clearCarrier_data(entity);
-        clearRide_data(entity)
+        clearCarrier_data(hurtEntity);
+        clearRide_data(hurtEntity);
     }
 
-    else if (!hEntity && carryData.has(eventData.hurtEntity.id)) {
-        carryData.delete(eventData.hurtEntity.id); // Oyuncu hasar aldığında canlıyı olduğu gibi bırakır
-        playerSettings(eventData.hurtEntity)
-    }
+    if (!hEntity && carryData.has(hurtEntity.id)) return clearCarry_data(hurtEntity)
 });
 
-world.beforeEvents.playerInteractWithBlock.subscribe((eventData) => {
+world.beforeEvents.playerInteractWithBlock.subscribe(eventData => {
     if (carryData.has(eventData.player.id)) eventData.cancel = true
 });
 
-world.beforeEvents.playerInteractWithEntity.subscribe((eventData) => {
+world.beforeEvents.playerInteractWithEntity.subscribe(eventData => {
+    if (carryData.has(eventData.player.id)) powerCount(eventData);
+    else takeMob(eventData);
+
     mobHandcuffs(eventData);
-    powerCount(eventData);
-    takeMob(eventData);
     addPlayer_ride(eventData)
 });
 
-world.beforeEvents.playerBreakBlock.subscribe((eventData) => { if (carryData.has(eventData.player.id)) eventData.cancel = true });
+world.beforeEvents.playerBreakBlock.subscribe(eventData => { if (carryData.has(eventData.player.id)) eventData.cancel = true });
 
 world.beforeEvents.entityItemPickup.subscribe((eventData) => {
     if (carryData.has(eventData.entity.id)) eventData.cancel = true
@@ -54,19 +51,27 @@ world.beforeEvents.entityItemPickup.subscribe((eventData) => {
 
 //--------------------------------------------------
 
-world.afterEvents.entityDie.subscribe((eventData) => {
-    const hPlayer = eventData.deadEntity.typeId === "minecraft:player";
-    const entity = eventData.deadEntity;
+world.afterEvents.entityDie.subscribe(eventData => {
+    const dEntity = eventData.deadEntity.typeId !== "minecraft:player";
+    const deadEntity = eventData.deadEntity;
 
-    if (!hPlayer) {
-        dropHandcuffs(entity);
-        return clearMob_data(eventData)
+    if (dEntity) {
+        dropHandcuffs(deadEntity);
+        clearMob_data(eventData)
     }
 
-    if (hPlayer && carryData.has(entity.id)) {
-        carryData.delete(entity.id);
-        playerSettings(entity)
-    }
+    else if (!dEntity && carryData.has(deadEntity.id)) clearCarry_data(deadEntity)
 });
 
-world.afterEvents.worldLoad.subscribe(() => { for (const player of world.getAllPlayers()) playerSettings(player) })
+const worldLoad = world.afterEvents.worldLoad.subscribe(() => {
+    for (const player of world.getAllPlayers()) {
+        playerSettings(player)
+        const entities = player.dimension.getEntities().filter(e => !handcuffsData.has(e.id) && (e.getDynamicProperty("key") !== undefined || e.getDynamicProperty("handcuffs") === true));
+
+        for (const entity of entities) {
+            const data = entity.getDynamicProperty("key");
+            handcuffsData.set(entity.id, { status: true, key: data })
+        }
+    }
+    world.afterEvents.worldLoad.unsubscribe(worldLoad) // Kullanmaya gerek kalmadı
+})

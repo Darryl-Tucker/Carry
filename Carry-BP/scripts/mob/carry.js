@@ -1,10 +1,10 @@
 import { world, system, GameMode, EquipmentSlot, EntityComponentTypes } from "@minecraft/server";
 
 import { playerSettings } from "../player/playerData";
-import { addMob_ride, riderData } from "../utils/ride";
+import { addMob_ride } from "../utils/ride";
 import { clearRide_data, clearCarrier_data } from "../utils/ride";
 import { handcuffsData } from "./handcuffs";
-import { allowMobs, neutralMobs } from "../utils/config";
+import { allowMobs, neutralMobs, excludeBlocks } from "../utils/config";
 
 export const carryData = new Map();
 
@@ -25,18 +25,17 @@ const sounds = {
 };
 
 function mobWeight(player) {
-    const mob = allowMobs.find(m => carryData.get(player.id)?.typeId === m)
+    const mobIndex = allowMobs.findIndex(m => carryData.get(player.id)?.typeId === m);
 
-    if (mob) {
-        const index = allowMobs.indexOf(mob);
-        switch (index) {
+    if (mobIndex !== -1)
+        switch (mobIndex) {
             case 0: // Iron golem
             case 14: // Camel
             case 17: // Camel husk
             case 24: // Sniffer
             case 25: // Panda
             case 32: // Polar bear
-                player.addEffect("slowness", 10, { amplifier: 5, showParticles: false });
+                player.addEffect("slowness", 7, { amplifier: 5, showParticles: false });
                 break
 
             case 1: // Cow
@@ -44,7 +43,7 @@ function mobWeight(player) {
             case 9: // Pig
             case 23: // Goat
             case 29: // Mooshroom
-                player.addEffect("slowness", 10, { amplifier: 1, showParticles: false });
+                player.addEffect("slowness", 7, { amplifier: 1, showParticles: false });
                 break
 
             case 4: // Villager v2
@@ -55,27 +54,42 @@ function mobWeight(player) {
             case 26: // Snow golem
             case 28: // Donkey
             case 30: // Mule
-                player.addEffect("slowness", 10, { amplifier: 2, showParticles: false });
+                player.addEffect("slowness", 7, { amplifier: 2, showParticles: false });
                 break
 
             case 8: // Copper golem
             case 33: // Turtle
-                player.addEffect("slowness", 10, { amplifier: 4, showParticles: false }); break
+                player.addEffect("slowness", 7, { amplifier: 4, showParticles: false }); break
         }
+}
+
+function suffocationBlock(player, entity) {
+    if (entity) {
+        const distance = 0.50;
+
+        const blockLoc = [
+            { x: entity.location.x + distance, y: entity.location.y, z: entity.location.z },
+            { x: entity.location.x - distance, y: entity.location.y, z: entity.location.z },
+
+            { x: entity.location.x, y: entity.location.y, z: entity.location.z + distance },
+            { x: entity.location.x, y: entity.location.y, z: entity.location.z - distance }
+        ];
+
+        blockLoc.forEach(b => {
+            const block = entity.dimension.getBlock({ x: b.x, y: b.y, z: b.z });
+
+            const excludeBlock = excludeBlocks.find(eb => eb === block.typeId);
+
+            if (excludeBlock) return
+            const direction = player.getViewDirection();
+            system.run(() => player.applyKnockback({ x: -direction.x, z: -direction.z }, -20));
+        })
     }
 }
 
 export function mobCarry() {
     for (const player of world.getAllPlayers().filter(p => carryData.has(p.id))) {
-        let get_carryData = carryData.get(player.id);
-        const container = player.getComponent("minecraft:inventory").container;
-        const selectedSlot = player.selectedSlotIndex;
-
-        const hand = container.getItem(selectedSlot);
-        const offHand = player.getComponent(EntityComponentTypes.Equippable)?.getEquipment(EquipmentSlot.Offhand);
-
-
-        if (player.isSprinting || hand || offHand) {
+        function mobDropped() {
             carryData.delete(player.id);
 
             player.onScreenDisplay.setActionBar({ rawtext: [{ text: "§c" }, { translate: texts.mobDropped }] });
@@ -83,22 +97,38 @@ export function mobCarry() {
             playerSettings(player)
         }
 
+
+        let get_carryData = carryData.get(player.id);
+        const container = player.getComponent("minecraft:inventory").container;
+        const selectedSlot = player.selectedSlotIndex;
+
+        const hand = container.getItem(selectedSlot);
+        const offHand = player.getComponent(EntityComponentTypes.Equippable)?.getEquipment(EquipmentSlot.Offhand);
+
+        const gamemode = player.getGameMode();
+
+        if (player.isSprinting || hand || offHand || gamemode === "Spectator") mobDropped()
+
         else {
             mobWeight(player);
 
             const entity = player.dimension.getEntities({ location: player.location }).find(e => get_carryData?.id === e.id);
             if (entity) {
+                suffocationBlock(player, entity);
+
                 const playerLoc = player.location;
 
                 const viewDirection = player.getViewDirection();
-                const distance = 0.80;
+                const distance = 0.70;
                 const targetLoc = {
                     x: playerLoc.x + (viewDirection.x * distance),
-                    y: (playerLoc.y + 1.20) + (viewDirection.y * distance),
+                    y: (playerLoc.y + 1.30) + (viewDirection.y * distance),
                     z: playerLoc.z + (viewDirection.z * distance)
                 };
-                entity.teleport(targetLoc, { facingLocation: { x: 0, y: 1, z: 0 } })
+                entity.teleport(targetLoc)
             }
+
+            else mobDropped()
         }
     }
 }
@@ -137,7 +167,6 @@ export function powerCount(eventData = null) {
 
     else { // Switch mantığı
         const player = eventData.player;
-        if (!carryData.has(player.id)) return
 
         const target = eventData.target;
         const get_carryData = carryData.get(player.id);
@@ -155,11 +184,13 @@ export function powerCount(eventData = null) {
 }
 
 export function takeMob(eventData) {
-    const player = eventData.player;
-    if (carryData.has(player.id)) return
-
     const target = eventData.target;
-    if (world.getAllPlayers().find(p => carryData.get(p.id)?.id === target.id)) return // Eğer bir oyuncu zaten o mob'u taşıyorsa aldırma
+
+    if (world.getAllPlayers().find(p => carryData.get(p.id)?.id === target.id) || !allowMobs.find(m => target.typeId === m)) return
+    // Eğer bir oyuncu zaten o mob'u taşıyorsa aldırma veya liste dışı bir mob ise
+
+
+    const player = eventData.player;
 
     const container = player.getComponent("minecraft:inventory").container;
     const selectedSlot = player.selectedSlotIndex;
@@ -168,6 +199,8 @@ export function takeMob(eventData) {
     const mainHand = container.getItem(selectedSlot);
 
     if (player.isSneaking && !player.isGliding) {
+        eventData.cancel = true;
+
         if (!mainHand && !offHand) {
             if (allowMobs.find(m => target.typeId === m)) {
                 carryData.set(player.id, { id: target.id, typeId: target.typeId, carry: true });
@@ -185,7 +218,6 @@ export function takeMob(eventData) {
                 player.playSound(sounds.mobCarry_warn)
             })
         }
-        eventData.cancel = true
     }
 }
 
@@ -195,36 +227,39 @@ export function pushMob(eventData) {
     const power = carryData.get(player.id)?.power;
 
     if (target.id === carryData.get(player.id)?.id) {
+        eventData.cancel = true;
+
         if (power > 0) {
-            system.run(() => {
-                const playerLoc = player.location;
-                const viewDirection = player.getViewDirection();
+            const viewDirection = player.getViewDirection();
 
-                const targetLoc = {
-                    x: viewDirection.x * power,
-                    z: viewDirection.z * power
-                };
+            const targetLoc = {
+                x: viewDirection.x * power,
+                z: viewDirection.z * power
+            };
 
-                target.applyKnockback(targetLoc, viewDirection.y);
+            system.run(() => target.applyKnockback(targetLoc, viewDirection.y));
 
-                const runId = system.runInterval(() => addMob_ride(target, runId));
-                system.runTimeout(() => system.clearRun(runId), power);
+            const runId = system.runInterval(() => {
+                addMob_ride(target, runId);
 
-                for (let i = 0; i < power; i++) {
-                    const particlePos = {
-                        x: playerLoc.x + (viewDirection.x * i),
-                        y: (playerLoc.y + 1.30) + (viewDirection.y * i),
-                        z: playerLoc.z + (viewDirection.z * i)
-                    };
-                    if (particlePos.y < -64 || particlePos.y > 319) break
+                const oPlayer = target.dimension.getEntities({
+                    location: target.location,
+                    maxDistance: 1.70,
+                    type: "minecraft:player"
+                }).find(o => o.id !== player.id && o.getGameMode() !== "Spectator");
 
-                    target.dimension.spawnParticle("minecraft:shulker_bullet", particlePos);
+                if (oPlayer) {
+                    system.run(() => oPlayer.applyKnockback({ x: viewDirection.x, z: viewDirection.z + 2 }, power - 10));
+                    system.clearRun(runId)
                 }
+            });
 
-                player.playSound(sounds.mobPush);
-                carryData.delete(player.id);
-                playerSettings(player)
-            })
+            system.runTimeout(() => system.clearRun(runId), power);
+
+            system.run(() => player.playSound(sounds.mobPush));
+            carryData.delete(player.id);
+            playerSettings(player)
+
         }
 
         else {
@@ -239,28 +274,12 @@ export function pushMob(eventData) {
             const playerGamemode = player.getGameMode();
             const difficulty = world.getDifficulty();
 
-            if (playerGamemode !== "Creative" && difficulty !== "Peaceful") {
+            if (difficulty !== "Peaceful") {
                 player.setGameMode(GameMode.Spectator);
                 system.runTimeout(() => player.setGameMode(playerGamemode), 1)
             }
         })
     }
-}
-
-
-export function protectMob(eventData) {
-    const damageSource = eventData.damageSource;
-    const hurtEntity = eventData.hurtEntity;
-
-    const hPlayer = eventData.damageSource.damagingEntity?.typeId === "minecraft:player";
-    const damagingEntity_id = eventData.damageSource.damagingEntity?.id;
-
-    if (hPlayer && carryData.has(damagingEntity_id)) {
-        if (hurtEntity.id === carryData.get(damagingEntity_id)?.id) return eventData.cancel = true
-    }
-
-    else
-        if (world.getAllPlayers().find(p => hurtEntity.id === carryData.get(p.id)?.id) && damageSource.cause === "suffocation") eventData.cancel = true
 }
 
 export function clearMob_data(eventData) {
@@ -275,3 +294,4 @@ export function clearMob_data(eventData) {
     handcuffsData.delete(entity.id);
     clearRide_data(entity); clearCarrier_data(entity)
 }
+

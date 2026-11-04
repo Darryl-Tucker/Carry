@@ -1,25 +1,32 @@
 import { world, EntityComponentTypes, system } from "@minecraft/server";
 
-import { carryData } from "../mob/carry";
 import { excludeMobs } from "./config";
 
 export const riderData = new Map();
 export const carrierData = new Map();
 
 export function mobRide() {
-    for (const rider of world.getDimension("overworld").getEntities().filter(r => riderData.has(r.id))) {
-        const carrier = rider.dimension.getEntities().find(c => riderData.get(rider.id).id === c.id)
-        if (carrier) {
-            const get_riderData = riderData.get(rider.id);
+    const dimensions = [
+        world.getDimension("overworld"),
+        world.getDimension("nether"),
+        world.getDimension("the_end")
+    ];
 
-            const carrierLoc = {
-                x: carrier.location.x,
-                y: carrier.location.y + get_riderData.level,
-                z: carrier.location.z
-            };
-            rider.teleport(carrierLoc)
+    dimensions.forEach(dimension => {
+        for (const rider of dimension.getEntities().filter(r => riderData.has(r.id))) {
+            const carrier = rider.dimension.getEntities().find(c => riderData.get(rider.id).id === c.id)
+            if (carrier) {
+                const get_riderData = riderData.get(rider.id);
+
+                const carrierLoc = {
+                    x: carrier.location.x,
+                    y: carrier.location.y + get_riderData.level,
+                    z: carrier.location.z
+                };
+                rider.teleport(carrierLoc)
+            }
         }
-    }
+    })
 }
 
 export function playerRide() {
@@ -44,11 +51,11 @@ export function addMob_ride(target, runId = null) {
 
     if (carrier && !carrierData.has(target.id)) { // Eğer taşıyıcı varsa
         let carriedLevel = carrierData.get(carrier.id)?.carriedLevel;
-        carrierData.set(carrier.id, { carriedLevel: (carriedLevel ?? 0) + 1 })
+        carrierData.set(carrier.id, { carriedLevel: (carriedLevel ?? 0) + 1 });
 
         carriedLevel = carrierData.get(carrier.id).carriedLevel;
 
-        for (const rider of carrier.dimension.getEntities().filter(r => riderData.get(r.id)?.id === carrier.id))
+        for (const rider of target.dimension.getEntities().filter(r => riderData.get(r.id)?.id === carrier.id))
             riderData.set(rider.id, { id: carrier.id, level: riderData.get(rider.id).level + 1 }) // Yeni bir mob bineceği için bütün binen mob'ları bir tık yukarı kaydır
 
         riderData.set(target.id, { id: carrier.id, level: 1 }); // Hedefi taşıyıcıya bindir

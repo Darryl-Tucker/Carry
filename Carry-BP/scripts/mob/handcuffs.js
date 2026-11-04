@@ -6,18 +6,16 @@ export const handcuffsData = new Map();
 
 export function mobHandcuffs(eventData = null) {
     if (eventData === null) {
-        for (const player of world.getAllPlayers()) {
-            const entities = player.dimension.getEntities();
-            for (const entity of entities) {
-                if (!handcuffsData.has(entity.id) && (entity.getDynamicProperty("key") !== undefined || entity.getDynamicProperty("handcuffs") === true)) {
-                    const data = entity.getDynamicProperty("key");
-                    handcuffsData.set(entity.id, { status: true, key: data })
-                    continue
-                }
+        const dimensions = [
+            world.getDimension("overworld"),
+            world.getDimension("nether"),
+            world.getDimension("the_end")
+        ];
 
-                if (handcuffsData.get(entity.id)?.key) entity.addEffect("slowness", 3, { amplifier: 255, showParticles: false })
-            }
-        }
+        dimensions.forEach(dimension => {
+            const entities = dimension.getEntities().filter(e => handcuffsData.get(e.id)?.key);
+            for (const entity of entities) entity.addEffect("slowness", 3, { amplifier: 255, showParticles: false })
+        })
     }
 
     else {
@@ -35,18 +33,18 @@ export function mobHandcuffs(eventData = null) {
             if (hand?.typeId === "carry:handcuffs" || hand?.typeId === "carry:key") {
                 eventData.cancel = true
 
-                if (hand.typeId === "carry:handcuffs" && !handcuffsData.has(target.id)) {
-                    handcuffsData.set(target.id, { status: true });
-                    target.setDynamicProperty("handcuffs", true);
+                if (!handcuffsData.has(target.id)) {
+                    if (hand.typeId === "carry:handcuffs") {
+                        handcuffsData.set(target.id, { status: true });
+                        target.setDynamicProperty("handcuffs", true);
 
-                    system.run(() => {
-                        container.setItem(selectedSlot, undefined);
-                        player.dimension.playSound("dig.chain", player.location, { volume: 1, pitch: 1.4 })
-                    })
+                        system.run(() => {
+                            container.setItem(selectedSlot, undefined);
+                            player.dimension.playSound("dig.chain", player.location, { volume: 1, pitch: 1.4 })
+                        })
+                    }
                     return
                 }
-
-                if (!handcuffsData.has(target.id)) return
 
                 if (hand.typeId === "carry:key" && handcuffsData.get(target.id)?.key === undefined) {
                     handcuffsData.set(target.id, { status: true, key: player.id });

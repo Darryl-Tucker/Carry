@@ -1,5 +1,5 @@
 import { ActionFormData } from "@minecraft/server-ui";
-import { world, system } from "@minecraft/server";
+import { system } from "@minecraft/server";
 
 export const allowMobs = [
     "minecraft:iron_golem", // 0
@@ -38,11 +38,15 @@ export const allowMobs = [
     "minecraft:turtle", // 33
 ];
 
-export const neutralMobs = []
+export const neutralMobs = [];
 
-for (const mob of allowMobs) {
-    const index = allowMobs.indexOf(mob);
+export const excludeMobs = [
+    "minecraft:player",
+    "minecraft:item",
+    "minecraft:arrow",
+];
 
+allowMobs.forEach((mob, index) => {
     switch (index) {
         case 0:
         case 7:
@@ -52,17 +56,305 @@ for (const mob of allowMobs) {
         case 32:
             neutralMobs.push(mob);
     }
-}
+});
 
-export const excludeMobs = [
-    "minecraft:player",
-    "minecraft:item",
-    "minecraft:arrow",
-]
+export const excludeBlocks = [
+    // --- Air & Technical (Fiziksel Gövdesi Olmayanlar) ---
+    "minecraft:air",
+    "minecraft:structure_void",
+    "minecraft:light_block",
+    "minecraft:moving_block",
+
+    // --- Liquids & Fluids (Sıvılar ve Akışkanlar) ---
+    "minecraft:water",
+    "minecraft:flowing_water",
+    "minecraft:lava",
+    "minecraft:flowing_lava",
+    "minecraft:bubble_column",
+
+    // --- Grasses, Ferns & Vegetation (Otlar ve Çalılar) ---
+    "minecraft:short_grass",
+    "minecraft:tall_grass",
+    "minecraft:fern",
+    "minecraft:large_fern",
+    "minecraft:deadbush",
+    "minecraft:bush",
+    "minecraft:leaf_litter",
+    "minecraft:reeds",
+    "minecraft:clover",
+    "minecraft:short_dry_grass",
+    "minecraft:tall_dry_grass",
+
+    // --- Small Flowers (Küçük Çiçekler) ---
+    "minecraft:dandelion",
+    "minecraft:poppy",
+    "minecraft:blue_orchid",
+    "minecraft:allium",
+    "minecraft:azure_bluet",
+    "minecraft:red_tulip",
+    "minecraft:orange_tulip",
+    "minecraft:white_tulip",
+    "minecraft:pink_tulip",
+    "minecraft:oxeye_daisy",
+    "minecraft:cornflower",
+    "minecraft:lily_of_the_valley",
+    "minecraft:wither_rose",
+
+    // --- Tall Flowers (Büyük Çiçekler) ---
+    "minecraft:sunflower",
+    "minecraft:lilac",
+    "minecraft:rose_bush",
+    "minecraft:peony",
+
+    // --- Crops & Agriculture (Tarım Ürünleri) ---
+    "minecraft:wheat",
+    "minecraft:potatoes",
+    "minecraft:carrots",
+    "minecraft:beetroots",
+    "minecraft:melon_stem",
+    "minecraft:pumpkin_stem",
+    "minecraft:attached_melon_stem",
+    "minecraft:attached_pumpkin_stem",
+    "minecraft:torchflower",
+    "minecraft:torchflower_crop",
+    "minecraft:pitcher_plant",
+    "minecraft:pitcher_crop",
+    "minecraft:sweet_berry_bush",
+    "minecraft:cocoa",
+
+    // --- Saplings & Fungi (Fidanlar ve Mantarlar) ---
+    "minecraft:oak_sapling",
+    "minecraft:spruce_sapling",
+    "minecraft:birch_sapling",
+    "minecraft:jungle_sapling",
+    "minecraft:acacia_sapling",
+    "minecraft:dark_oak_sapling",
+    "minecraft:mangrove_propagule",
+    "minecraft:cherry_sapling",
+    "minecraft:pale_sapling",
+    "minecraft:brown_mushroom",
+    "minecraft:red_mushroom",
+    "minecraft:crimson_fungus",
+    "minecraft:warped_fungus",
+    "minecraft:propelplant",
+
+    // --- Vines, Lichens & Roots (Sarmaşıklar ve Kökler) ---
+    "minecraft:vine",
+    "minecraft:weeping_vines",
+    "minecraft:twisting_vines",
+    "minecraft:cave_vines",
+    "minecraft:cave_vines_body_with_berries",
+    "minecraft:hanging_roots",
+    "minecraft:glow_lichen",
+
+    // --- Nether & Underwater Plants (Nether ve Deniz Bitkileri) ---
+    "minecraft:nether_wart",
+    "minecraft:crimson_roots",
+    "minecraft:warped_roots",
+    "minecraft:nether_sprouts",
+    "minecraft:seagrass",
+    "minecraft:tall_seagrass",
+    "minecraft:kelp",
+
+    // --- Corals & Coral Fans (Mercanlar ve Yelpazeler) ---
+    "minecraft:tube_coral",
+    "minecraft:brain_coral",
+    "minecraft:bubble_coral",
+    "minecraft:fire_coral",
+    "minecraft:horn_coral",
+    "minecraft:dead_tube_coral",
+    "minecraft:dead_brain_coral",
+    "minecraft:dead_bubble_coral",
+    "minecraft:dead_fire_coral",
+    "minecraft:dead_horn_coral",
+    "minecraft:tube_coral_fan",
+    "minecraft:brain_coral_fan",
+    "minecraft:bubble_coral_fan",
+    "minecraft:fire_coral_fan",
+    "minecraft:horn_coral_fan",
+    "minecraft:dead_tube_coral_fan",
+    "minecraft:dead_brain_coral_fan",
+    "minecraft:dead_bubble_coral_fan",
+    "minecraft:dead_fire_coral_fan",
+    "minecraft:dead_horn_coral_fan",
+    "minecraft:firefly_bush",
+
+    // --- Redstone Components (Kablolar, Sensörler ve Tuzaklar) ---
+    "minecraft:redstone_wire",
+    "minecraft:redstone_torch",
+    "minecraft:unlit_redstone_torch",
+    "minecraft:lever",
+    "minecraft:tripwire_hook",
+    "minecraft:trip_wire",
+    "minecraft:sculk_sensor",
+    "minecraft:calibrated_sculk_sensor",
+
+    // --- Buttons (Tüm Ahşap ve Taş Varyasyonları) ---
+    "minecraft:stone_button",
+    "minecraft:wooden_button",
+    "minecraft:oak_button",
+    "minecraft:spruce_button",
+    "minecraft:birch_button",
+    "minecraft:jungle_button",
+    "minecraft:acacia_button",
+    "minecraft:dark_oak_button",
+    "minecraft:mangrove_button",
+    "minecraft:cherry_button",
+    "minecraft:pale_oak_button",
+    "minecraft:bamboo_button",
+    "minecraft:crimson_button",
+    "minecraft:warped_button",
+    "minecraft:polished_blackstone_button",
+
+    // --- Pressure Plates (Basınç Plakaları - Tamamı) ---
+    "minecraft:stone_pressure_plate",
+    "minecraft:wooden_pressure_plate",
+    "minecraft:oak_pressure_plate",
+    "minecraft:spruce_pressure_plate",
+    "minecraft:birch_pressure_plate",
+    "minecraft:jungle_pressure_plate",
+    "minecraft:acacia_pressure_plate",
+    "minecraft:dark_oak_pressure_plate",
+    "minecraft:mangrove_pressure_plate",
+    "minecraft:cherry_pressure_plate",
+    "minecraft:pale_oak_pressure_plate",
+    "minecraft:bamboo_pressure_plate",
+    "minecraft:crimson_pressure_plate",
+    "minecraft:warped_pressure_plate",
+    "minecraft:polished_blackstone_pressure_plate",
+    "minecraft:light_weighted_pressure_plate",
+    "minecraft:heavy_weighted_pressure_plate",
+
+    // --- Lighting & Decorative (Meşaleler, Mumlar ve Süsler) ---
+    "minecraft:torch",
+    "minecraft:soul_torch",
+    "minecraft:fire",
+    "minecraft:soul_fire",
+    "minecraft:frogspawn",
+    "minecraft:sea_pickle",
+    "minecraft:spore_blossom",
+    "minecraft:candles",
+
+    // --- Carpets (Tüm Renkli Halılar ve Yosun Halısı) ---
+    "minecraft:carpet",
+    "minecraft:white_carpet",
+    "minecraft:light_gray_carpet",
+    "minecraft:gray_carpet",
+    "minecraft:black_carpet",
+    "minecraft:brown_carpet",
+    "minecraft:red_carpet",
+    "minecraft:orange_carpet",
+    "minecraft:yellow_carpet",
+    "minecraft:lime_carpet",
+    "minecraft:green_carpet",
+    "minecraft:cyan_carpet",
+    "minecraft:light_blue_carpet",
+    "minecraft:blue_carpet",
+    "minecraft:purple_carpet",
+    "minecraft:magenta_carpet",
+    "minecraft:pink_carpet",
+    "minecraft:moss_carpet",
+    "minecraft:pale_moss_carpet",
+
+    // --- Signs & Hanging Signs (Tabelalar ve Asılı Tabelalar) ---
+    "minecraft:standing_sign",
+    "minecraft:wall_sign",
+    "minecraft:ceiling_hanging_sign",
+    "minecraft:wall_hanging_sign",
+    "minecraft:oak_hanging_sign",
+    "minecraft:spruce_hanging_sign",
+    "minecraft:birch_hanging_sign",
+    "minecraft:jungle_hanging_sign",
+    "minecraft:acacia_hanging_sign",
+    "minecraft:dark_oak_hanging_sign",
+    "minecraft:mangrove_hanging_sign",
+    "minecraft:cherry_hanging_sign",
+    "minecraft:pale_oak_hanging_sign",
+    "minecraft:bamboo_hanging_sign",
+    "minecraft:crimson_hanging_sign",
+    "minecraft:warped_hanging_sign",
+
+    // --- Banners, Heads & Items (Sancaklar ve Kafalar) ---
+    "minecraft:standing_banner",
+    "minecraft:wall_banner",
+    "minecraft:decorated_pot",
+
+    // --- Portals (Boyut Kapıları) ---
+    "minecraft:portal",
+    "minecraft:end_portal",
+
+    // --- Conditional / Movement Impairing (Hareketi Kısıtlayan / Durumsal Geçişler) ---
+    "minecraft:web",
+    "minecraft:snow_layer",
+    "minecraft:powder_snow",
+    "minecraft:scaffolding",
+
+    // --- Doors (Kapılar - Açık Olduklarında İçinden Geçilebilir) ---
+    "minecraft:wooden_door",
+    "minecraft:iron_door",
+    "minecraft:spruce_door",
+    "minecraft:birch_door",
+    "minecraft:jungle_door",
+    "minecraft:acacia_door",
+    "minecraft:dark_oak_door",
+    "minecraft:mangrove_door",
+    "minecraft:cherry_door",
+    "minecraft:pale_oak_door",
+    "minecraft:bamboo_door",
+    "minecraft:crimson_door",
+    "minecraft:warped_door",
+    "minecraft:copper_door",
+    "minecraft:exposed_copper_door",
+    "minecraft:weathered_copper_door",
+    "minecraft:oxidized_copper_door",
+    "minecraft:waxed_copper_door",
+    "minecraft:waxed_exposed_copper_door",
+    "minecraft:waxed_weathered_copper_door",
+    "minecraft:waxed_oxidized_copper_door",
+
+    // --- Trapdoors (Tuzak Kapıları - Açık Olduklarında Duvara Yaslanır, Geçiş Sağlar) ---
+    "minecraft:trapdoor",
+    "minecraft:iron_trapdoor",
+    "minecraft:spruce_trapdoor",
+    "minecraft:birch_trapdoor",
+    "minecraft:jungle_trapdoor",
+    "minecraft:acacia_trapdoor",
+    "minecraft:dark_oak_trapdoor",
+    "minecraft:mangrove_trapdoor",
+    "minecraft:cherry_trapdoor",
+    "minecraft:pale_oak_trapdoor",
+    "minecraft:bamboo_trapdoor",
+    "minecraft:crimson_trapdoor",
+    "minecraft:warped_trapdoor",
+    "minecraft:copper_trapdoor",
+    "minecraft:exposed_copper_trapdoor",
+    "minecraft:weathered_copper_trapdoor",
+    "minecraft:oxidized_copper_trapdoor",
+    "minecraft:waxed_copper_trapdoor",
+    "minecraft:waxed_exposed_copper_trapdoor",
+    "minecraft:waxed_weathered_copper_trapdoor",
+    "minecraft:waxed_oxidized_copper_trapdoor",
+
+    // --- Fence Gates (Çit Kapıları - Açık Olduklarında Çarpışma Kutusu Kapanır) ---
+    "minecraft:fence_gate",
+    "minecraft:spruce_fence_gate",
+    "minecraft:birch_fence_gate",
+    "minecraft:jungle_fence_gate",
+    "minecraft:acacia_fence_gate",
+    "minecraft:dark_oak_fence_gate",
+    "minecraft:mangrove_fence_gate",
+    "minecraft:cherry_fence_gate",
+    "minecraft:pale_oak_fence_gate",
+    "minecraft:bamboo_fence_gate",
+    "minecraft:crimson_fence_gate",
+    "minecraft:warped_fence_gate"
+];
 
 export function addonTutorial(player) {
     system.run(() => {
         system.runTimeout(() => {
+            player.setDynamicProperty("dontShow_again", undefined);
+
             const form = new ActionFormData();
 
             form.title({ rawtext: [{ text: "§l§a" }, { translate: "tutorial.form.title" }] })
@@ -85,10 +377,10 @@ export function addonTutorial(player) {
             }
             form.button({ rawtext: [{ text: "§e" }, { translate: "tutorial.form.button" }] })
 
-            form.show(player).then((reponse) => {
+            form.show(player).then(reponse => {
                 if (reponse.canceled) return
 
-                if (reponse.selection === 0) player.setDynamicProperty("dontShow_again", true)
+                if (reponse.selection === 0) player.setDynamicProperty("ver0", true)
             })
         }, 100)
     })

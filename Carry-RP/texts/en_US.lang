@@ -5,14 +5,14 @@ item.carry:key=Key
 ## config.js
 tutorial.form.title=HOW TO PLAY?
 
-tutorial.form.body.desktop=Desktop
-tutorial.form.label.desktop=To carry the mob, press shift and \n\nTo drop the mob, press  towards the entity\n\nTo throw the mob, press  towards the entity and once you reach the desired throw level, press  towards the entity
+tutorial.form.body.desktop=Desktop (default)
+tutorial.form.label.desktop=To carry the mob, press shift and \n\nTo drop the mob, press  towards the entity\n\nTo throw the mob, press  towards the entity and once you reach the desired throw level, press  towards the entity\n\nWhile a player is riding you, press Shift + Space to buck them off
 
-tutorial.form.body.mobile=Mobile
-tutorial.form.label.mobile=To carry the mob, tap  and \n\nTo drop the mob, tap  towards the entity\n\nTo throw the mob, tap  towards the entity and once you reach the desired throw level, tap  towards the entity
+tutorial.form.body.mobile=Mobile (default)
+tutorial.form.label.mobile=To carry the mob, tap  and \n\nTo drop the mob, tap  towards the entity\n\nTo throw the mob, tap  towards the entity and once you reach the desired throw level, tap  towards the entity\n\nWhile a player is riding you, tap  +  to buck them off
 
-tutorial.form.body.console=Console
-tutorial.form.label.console=To carry the mob, use \n\nTo drop the mob, press  towards the entity\n\nTo throw the mob, press  towards the entity and once you reach the desired throw level, press  towards the entity
+tutorial.form.body.console=Console (default)
+tutorial.form.label.console=To carry the mob, use \n\nTo drop the mob, press  towards the entity\n\nTo throw the mob, press  towards the entity and once you reach the desired throw level, press  towards the entity\n\nWhile a player is riding you, press  +  to buck them off
 
 tutorial.form.button=Don't show again
 
