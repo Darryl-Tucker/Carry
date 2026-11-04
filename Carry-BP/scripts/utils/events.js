@@ -1,15 +1,16 @@
 import { world } from "@minecraft/server";
 
 import { pushMob, carryData, takeMob, clearMob_data, powerCount } from "../mob/carry";
-import { playerSettings, clearPlayer_data, clearCarry_data } from "../player/playerData";
+import { playerSettings, clearPlayer_data } from "../player/playerData";
 import { addPlayer_ride, clearRide_data, clearCarrier_data } from "./ride";
 import { mobHandcuffs, dropHandcuffs, handcuffsData } from "../mob/handcuffs";
 import { addonTutorial } from "./config";
 
 world.beforeEvents.playerLeave.subscribe(e => {
     const player = e.player;
+    const pl = true;
 
-    clearPlayer_data(player)
+    clearPlayer_data(player, pl)
 });
 world.afterEvents.playerSpawn.subscribe(e => {
     const player = e.player;
@@ -31,11 +32,11 @@ world.beforeEvents.entityHurt.subscribe(e => {
         clearRide_data(hurtEntity);
     }
 
-    if (!hEntity && carryData.has(hurtEntity.id)) return clearCarry_data(hurtEntity)
+    if (!hEntity && carryData.has(hurtEntity.id)) clearPlayer_data(hurtEntity)
 });
 
 world.beforeEvents.playerInteractWithBlock.subscribe(e => { if (carryData.has(e.player.id)) e.cancel = true });
-    
+
 world.beforeEvents.playerInteractWithEntity.subscribe(e => {
     const player = e.player;
     const target = e.target;
@@ -62,7 +63,7 @@ world.afterEvents.entityDie.subscribe(e => {
         clearMob_data(deadEntity)
     }
 
-    else if (!dEntity && carryData.has(deadEntity.id)) clearCarry_data(deadEntity)
+    else if (!dEntity && carryData.has(deadEntity.id)) clearPlayer_data(deadEntity)
 });
 
 const worldLoad = world.afterEvents.worldLoad.subscribe(() => {

@@ -132,7 +132,7 @@ export function mobCarry() {
     }
 }
 
-export function powerCount(player, target, e = null) {
+export function powerCount(player = null, target = null, e = null) {
     if (!e) {
         for (const player of world.getAllPlayers().filter(p => carryData.has(p.id))) {
             const get_carryData = carryData.get(player.id);
@@ -229,6 +229,11 @@ export function pushMob(player, target, e) {
             system.run(() => target.applyKnockback(targetLoc, viewDirection.y));
 
             const runId = system.runInterval(() => {
+                if (!target || !target.isValid) {
+                    system.clearRun(runId); // target yok ise döndürmeyi bırak
+                    return // Çökme önlemek için (boyut değiştirirken çökmemesi için)
+                }  
+            
                 addMob_ride(target, runId);
 
                 const oPlayer = target.dimension.getEntities({

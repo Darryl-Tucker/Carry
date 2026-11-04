@@ -4,7 +4,7 @@ import { allowMobs } from "../utils/config";
 
 export const handcuffsData = new Map();
 
-export function mobHandcuffs(player, target = null) {
+export function mobHandcuffs(player = null, target = null) {
     if (!player || !target) {
         const dimensions = [
             world.getDimension("overworld"),

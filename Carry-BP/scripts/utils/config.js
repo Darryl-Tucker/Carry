@@ -59,19 +59,16 @@ allowMobs.forEach((mob, index) => {
 });
 
 export const excludeBlocks = [
-    // --- Air & Technical (Fiziksel Gövdesi Olmayanlar) ---
     "minecraft:air",
     "minecraft:structure_void",
     "minecraft:light_block",
 
-    // --- Liquids & Fluids (Sıvılar ve Akışkanlar) ---
     "minecraft:water",
     "minecraft:flowing_water",
     "minecraft:lava",
     "minecraft:flowing_lava",
     "minecraft:bubble_column",
 
-    // --- Grasses, Ferns & Vegetation (Otlar ve Çালীlar) ---
     "minecraft:short_grass",
     "minecraft:tall_grass",
     "minecraft:fern",
@@ -82,7 +79,6 @@ export const excludeBlocks = [
     "minecraft:short_dry_grass",
     "minecraft:tall_dry_grass",
 
-    // --- Small Flowers (Küçük Çiçekler) ---
     "minecraft:dandelion",
     "minecraft:poppy",
     "minecraft:blue_orchid",
@@ -97,13 +93,11 @@ export const excludeBlocks = [
     "minecraft:lily_of_the_valley",
     "minecraft:wither_rose",
 
-    // --- Tall Flowers (Büyük Çiçekler) ---
     "minecraft:sunflower",
     "minecraft:lilac",
     "minecraft:rose_bush",
     "minecraft:peony",
 
-    // --- Crops & Agriculture (Tarım Ürünleri) ---
     "minecraft:wheat",
     "minecraft:potatoes",
     "minecraft:carrots",
@@ -116,7 +110,6 @@ export const excludeBlocks = [
     "minecraft:sweet_berry_bush",
     "minecraft:cocoa",
 
-    // --- Saplings & Fungi (Fidanlar ve Mantarlar) ---
     "minecraft:oak_sapling",
     "minecraft:spruce_sapling",
     "minecraft:birch_sapling",
@@ -131,7 +124,6 @@ export const excludeBlocks = [
     "minecraft:crimson_fungus",
     "minecraft:warped_fungus",
 
-    // --- Vines, Lichens & Roots (Sarmaşıklar ve Kökler) ---
     "minecraft:vine",
     "minecraft:weeping_vines",
     "minecraft:twisting_vines",
@@ -140,14 +132,12 @@ export const excludeBlocks = [
     "minecraft:hanging_roots",
     "minecraft:glow_lichen",
 
-    // --- Nether & Underwater Plants (Nether ve Deniz Bitkileri) ---
     "minecraft:nether_wart",
     "minecraft:crimson_roots",
     "minecraft:warped_roots",
     "minecraft:nether_sprouts",
     "minecraft:seagrass",
 
-    // --- Corals & Coral Fans (Mercanlar ve Yelpazeler) ---
     "minecraft:tube_coral",
     "minecraft:brain_coral",
     "minecraft:bubble_coral",
@@ -169,7 +159,6 @@ export const excludeBlocks = [
     "minecraft:dead_fire_coral_fan",
     "minecraft:dead_horn_coral_fan",
 
-    // --- Redstone Components (Kablolar, Sensörler ve Tuzaklar) ---
     "minecraft:redstone_wire",
     "minecraft:redstone_torch",
     "minecraft:unlit_redstone_torch",
@@ -178,7 +167,6 @@ export const excludeBlocks = [
     "minecraft:trip_wire",
     "minecraft:sculk_sensor",
 
-    // --- Buttons (Tüm Ahşap ve Taş Varyasyonları) ---
     "minecraft:stone_button",
     "minecraft:wooden_button",
     "minecraft:spruce_button",
@@ -193,7 +181,6 @@ export const excludeBlocks = [
     "minecraft:crimson_button",
     "minecraft:warped_button",
 
-    // --- Pressure Plates (Basınç Plakaları - Tamamı) ---
     "minecraft:stone_pressure_plate",
     "minecraft:wooden_pressure_plate",
     "minecraft:spruce_pressure_plate",
@@ -210,7 +197,6 @@ export const excludeBlocks = [
     "minecraft:polished_blackstone_pressure_plate",
     "minecraft:light_weighted_pressure_plate",
 
-    // --- Lighting & Decorative (Meşaleler, Mumlar ve Süsler) ---
     "minecraft:torch",
     "minecraft:soul_torch",
     "minecraft:fire",
@@ -218,7 +204,6 @@ export const excludeBlocks = [
     "minecraft:sea_pickle",
     "minecraft:spore_blossom",
 
-    // --- Carpets (Tüm Renkli Halılar ve Yosun Halısı) ---
     "minecraft:carpet",
     "minecraft:white_carpet",
     "minecraft:light_gray_carpet",
@@ -238,7 +223,6 @@ export const excludeBlocks = [
     "minecraft:pink_carpet",
     "minecraft:moss_carpet",
 
-    // --- Signs & Hanging Signs (Tabelalar ve Asılı Tabelalar) ---
     "minecraft:standing_sign",
     "minecraft:wall_sign",
     "minecraft:oak_hanging_sign",
@@ -253,12 +237,11 @@ export const excludeBlocks = [
     "minecraft:bamboo_hanging_sign",
     "minecraft:crimson_hanging_sign",
 
-    // --- Banners, Heads & Items ---
     "minecraft:standing_banner",
     "minecraft:wall_banner",
 
-    // --- Portals ---
     "minecraft:portal",
+    "minecraft:end_portal",
 
     // --- Conditional ---
     "minecraft:web",
