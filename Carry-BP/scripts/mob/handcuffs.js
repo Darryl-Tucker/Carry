@@ -4,8 +4,8 @@ import { allowMobs } from "../utils/config";
 
 export const handcuffsData = new Map();
 
-export function mobHandcuffs(eventData = null) {
-    if (eventData === null) {
+export function mobHandcuffs(player, target = null) {
+    if (!player || !target) {
         const dimensions = [
             world.getDimension("overworld"),
             world.getDimension("nether"),
@@ -19,10 +19,7 @@ export function mobHandcuffs(eventData = null) {
     }
 
     else {
-        const target = eventData.target;
-
         if (allowMobs.indexOf(target.typeId) !== -1) {
-            const player = eventData.player;
 
             if (player.isSneaking) return
 

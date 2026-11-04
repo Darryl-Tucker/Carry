@@ -64,12 +64,7 @@ export function addMob_ride(target, runId = null) {
     }
 }
 
-export function addPlayer_ride(eventData) {
-    const player = eventData.player;
-    const target = eventData.target;
-
-    if (target.typeId === "minecraft:player" && !player.isSneaking) player.setDynamicProperty("ride", target.id)
-}
+export function addPlayer_ride(player, target) { if (target.typeId === "minecraft:player" && !player.isSneaking) player.setDynamicProperty("ride", target.id) }
 
 export function clearRide_data(entity) {
     if (!riderData.has(entity.id)) return

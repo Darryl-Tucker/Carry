@@ -1,5 +1,5 @@
 import { ActionFormData } from "@minecraft/server-ui";
-import { system } from "@minecraft/server";
+import { system, world } from "@minecraft/server";
 
 export const allowMobs = [
     "minecraft:iron_golem", // 0
@@ -63,7 +63,6 @@ export const excludeBlocks = [
     "minecraft:air",
     "minecraft:structure_void",
     "minecraft:light_block",
-    "minecraft:moving_block",
 
     // --- Liquids & Fluids (Sıvılar ve Akışkanlar) ---
     "minecraft:water",
@@ -72,16 +71,14 @@ export const excludeBlocks = [
     "minecraft:flowing_lava",
     "minecraft:bubble_column",
 
-    // --- Grasses, Ferns & Vegetation (Otlar ve Çalılar) ---
+    // --- Grasses, Ferns & Vegetation (Otlar ve Çালীlar) ---
     "minecraft:short_grass",
     "minecraft:tall_grass",
     "minecraft:fern",
     "minecraft:large_fern",
     "minecraft:deadbush",
-    "minecraft:bush",
     "minecraft:leaf_litter",
     "minecraft:reeds",
-    "minecraft:clover",
     "minecraft:short_dry_grass",
     "minecraft:tall_dry_grass",
 
@@ -110,11 +107,8 @@ export const excludeBlocks = [
     "minecraft:wheat",
     "minecraft:potatoes",
     "minecraft:carrots",
-    "minecraft:beetroots",
     "minecraft:melon_stem",
     "minecraft:pumpkin_stem",
-    "minecraft:attached_melon_stem",
-    "minecraft:attached_pumpkin_stem",
     "minecraft:torchflower",
     "minecraft:torchflower_crop",
     "minecraft:pitcher_plant",
@@ -131,12 +125,11 @@ export const excludeBlocks = [
     "minecraft:dark_oak_sapling",
     "minecraft:mangrove_propagule",
     "minecraft:cherry_sapling",
-    "minecraft:pale_sapling",
+    "minecraft:pale_oak_sapling",
     "minecraft:brown_mushroom",
     "minecraft:red_mushroom",
     "minecraft:crimson_fungus",
     "minecraft:warped_fungus",
-    "minecraft:propelplant",
 
     // --- Vines, Lichens & Roots (Sarmaşıklar ve Kökler) ---
     "minecraft:vine",
@@ -153,8 +146,6 @@ export const excludeBlocks = [
     "minecraft:warped_roots",
     "minecraft:nether_sprouts",
     "minecraft:seagrass",
-    "minecraft:tall_seagrass",
-    "minecraft:kelp",
 
     // --- Corals & Coral Fans (Mercanlar ve Yelpazeler) ---
     "minecraft:tube_coral",
@@ -177,7 +168,6 @@ export const excludeBlocks = [
     "minecraft:dead_bubble_coral_fan",
     "minecraft:dead_fire_coral_fan",
     "minecraft:dead_horn_coral_fan",
-    "minecraft:firefly_bush",
 
     // --- Redstone Components (Kablolar, Sensörler ve Tuzaklar) ---
     "minecraft:redstone_wire",
@@ -187,12 +177,10 @@ export const excludeBlocks = [
     "minecraft:tripwire_hook",
     "minecraft:trip_wire",
     "minecraft:sculk_sensor",
-    "minecraft:calibrated_sculk_sensor",
 
     // --- Buttons (Tüm Ahşap ve Taş Varyasyonları) ---
     "minecraft:stone_button",
     "minecraft:wooden_button",
-    "minecraft:oak_button",
     "minecraft:spruce_button",
     "minecraft:birch_button",
     "minecraft:jungle_button",
@@ -204,12 +192,10 @@ export const excludeBlocks = [
     "minecraft:bamboo_button",
     "minecraft:crimson_button",
     "minecraft:warped_button",
-    "minecraft:polished_blackstone_button",
 
     // --- Pressure Plates (Basınç Plakaları - Tamamı) ---
     "minecraft:stone_pressure_plate",
     "minecraft:wooden_pressure_plate",
-    "minecraft:oak_pressure_plate",
     "minecraft:spruce_pressure_plate",
     "minecraft:birch_pressure_plate",
     "minecraft:jungle_pressure_plate",
@@ -223,17 +209,14 @@ export const excludeBlocks = [
     "minecraft:warped_pressure_plate",
     "minecraft:polished_blackstone_pressure_plate",
     "minecraft:light_weighted_pressure_plate",
-    "minecraft:heavy_weighted_pressure_plate",
 
     // --- Lighting & Decorative (Meşaleler, Mumlar ve Süsler) ---
     "minecraft:torch",
     "minecraft:soul_torch",
     "minecraft:fire",
     "minecraft:soul_fire",
-    "minecraft:frogspawn",
     "minecraft:sea_pickle",
     "minecraft:spore_blossom",
-    "minecraft:candles",
 
     // --- Carpets (Tüm Renkli Halılar ve Yosun Halısı) ---
     "minecraft:carpet",
@@ -254,13 +237,10 @@ export const excludeBlocks = [
     "minecraft:magenta_carpet",
     "minecraft:pink_carpet",
     "minecraft:moss_carpet",
-    "minecraft:pale_moss_carpet",
 
     // --- Signs & Hanging Signs (Tabelalar ve Asılı Tabelalar) ---
     "minecraft:standing_sign",
     "minecraft:wall_sign",
-    "minecraft:ceiling_hanging_sign",
-    "minecraft:wall_hanging_sign",
     "minecraft:oak_hanging_sign",
     "minecraft:spruce_hanging_sign",
     "minecraft:birch_hanging_sign",
@@ -272,24 +252,20 @@ export const excludeBlocks = [
     "minecraft:pale_oak_hanging_sign",
     "minecraft:bamboo_hanging_sign",
     "minecraft:crimson_hanging_sign",
-    "minecraft:warped_hanging_sign",
 
-    // --- Banners, Heads & Items (Sancaklar ve Kafalar) ---
+    // --- Banners, Heads & Items ---
     "minecraft:standing_banner",
     "minecraft:wall_banner",
-    "minecraft:decorated_pot",
 
-    // --- Portals (Boyut Kapıları) ---
+    // --- Portals ---
     "minecraft:portal",
-    "minecraft:end_portal",
 
-    // --- Conditional / Movement Impairing (Hareketi Kısıtlayan / Durumsal Geçişler) ---
+    // --- Conditional ---
     "minecraft:web",
     "minecraft:snow_layer",
     "minecraft:powder_snow",
-    "minecraft:scaffolding",
 
-    // --- Doors (Kapılar - Açık Olduklarında İçinden Geçilebilir) ---
+    // --- Doors ---
     "minecraft:wooden_door",
     "minecraft:iron_door",
     "minecraft:spruce_door",
@@ -310,9 +286,8 @@ export const excludeBlocks = [
     "minecraft:waxed_copper_door",
     "minecraft:waxed_exposed_copper_door",
     "minecraft:waxed_weathered_copper_door",
-    "minecraft:waxed_oxidized_copper_door",
 
-    // --- Trapdoors (Tuzak Kapıları - Açık Olduklarında Duvara Yaslanır, Geçiş Sağlar) ---
+    // --- Trapdoors ---
     "minecraft:trapdoor",
     "minecraft:iron_trapdoor",
     "minecraft:spruce_trapdoor",
@@ -332,10 +307,8 @@ export const excludeBlocks = [
     "minecraft:oxidized_copper_trapdoor",
     "minecraft:waxed_copper_trapdoor",
     "minecraft:waxed_exposed_copper_trapdoor",
-    "minecraft:waxed_weathered_copper_trapdoor",
-    "minecraft:waxed_oxidized_copper_trapdoor",
 
-    // --- Fence Gates (Çit Kapıları - Açık Olduklarında Çarpışma Kutusu Kapanır) ---
+    // --- Fence Gates ---
     "minecraft:fence_gate",
     "minecraft:spruce_fence_gate",
     "minecraft:birch_fence_gate",
@@ -347,8 +320,19 @@ export const excludeBlocks = [
     "minecraft:pale_oak_fence_gate",
     "minecraft:bamboo_fence_gate",
     "minecraft:crimson_fence_gate",
-    "minecraft:warped_fence_gate"
 ];
+
+// system.run(() => {
+//     for (const p of world.getAllPlayers()) { // hata ayıklama
+//         excludeBlocks.forEach((eb, i) => {
+//             try {
+//                 p.runCommand(`setblock ~~~ ${eb}`);
+//                 p.runCommand(`setblock ~~~ air`)
+//             }
+//             catch { p.sendMessage(i + ": " + eb) }
+//         })
+//     }
+// })
 
 export function addonTutorial(player) {
     system.run(() => {

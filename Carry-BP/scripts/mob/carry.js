@@ -97,7 +97,6 @@ export function mobCarry() {
             playerSettings(player)
         }
 
-
         let get_carryData = carryData.get(player.id);
         const container = player.getComponent("minecraft:inventory").container;
         const selectedSlot = player.selectedSlotIndex;
@@ -133,8 +132,8 @@ export function mobCarry() {
     }
 }
 
-export function powerCount(eventData = null) {
-    if (eventData === null) {
+export function powerCount(player, target, e = null) {
+    if (!e) {
         for (const player of world.getAllPlayers().filter(p => carryData.has(p.id))) {
             const get_carryData = carryData.get(player.id);
             const power = carryData.get(player.id)?.power ?? 0;
@@ -166,9 +165,6 @@ export function powerCount(eventData = null) {
     }
 
     else { // Switch mantığı
-        const player = eventData.player;
-
-        const target = eventData.target;
         const get_carryData = carryData.get(player.id);
 
         const container = player.getComponent("minecraft:inventory").container;
@@ -179,18 +175,13 @@ export function powerCount(eventData = null) {
             if (get_carryData?.powerC !== true && !player.isSneaking) carryData.set(player.id, { ...get_carryData, powerC: true })
             else carryData.set(player.id, { ...get_carryData, powerC: null });
         }
-        eventData.cancel = true
+        e.cancel = true
     }
 }
 
-export function takeMob(eventData) {
-    const target = eventData.target;
-
+export function takeMob(player, target, e) {
     if (world.getAllPlayers().find(p => carryData.get(p.id)?.id === target.id) || !allowMobs.find(m => target.typeId === m)) return
     // Eğer bir oyuncu zaten o mob'u taşıyorsa aldırma veya liste dışı bir mob ise
-
-
-    const player = eventData.player;
 
     const container = player.getComponent("minecraft:inventory").container;
     const selectedSlot = player.selectedSlotIndex;
@@ -199,7 +190,7 @@ export function takeMob(eventData) {
     const mainHand = container.getItem(selectedSlot);
 
     if (player.isSneaking && !player.isGliding) {
-        eventData.cancel = true;
+        e.cancel = true;
 
         if (!mainHand && !offHand) {
             if (allowMobs.find(m => target.typeId === m)) {
@@ -221,13 +212,11 @@ export function takeMob(eventData) {
     }
 }
 
-export function pushMob(eventData) {
-    const player = eventData.damageSource?.damagingEntity;
-    const target = eventData.hurtEntity;
+export function pushMob(player, target, e) {
     const power = carryData.get(player.id)?.power;
 
     if (target.id === carryData.get(player.id)?.id) {
-        eventData.cancel = true;
+        e.cancel = true;
 
         if (power > 0) {
             const viewDirection = player.getViewDirection();
@@ -282,16 +271,13 @@ export function pushMob(eventData) {
     }
 }
 
-export function clearMob_data(eventData) {
-    const entity = eventData.deadEntity;
-
-    const player = world.getAllPlayers().find(p => carryData.get(p.id)?.id === entity.id)
+export function clearMob_data(deadEntity) {
+    const player = world.getAllPlayers().find(p => carryData.get(p.id)?.id === deadEntity.id)
     if (player) {
         carryData.delete(player.id);
         playerSettings(player)
     }
 
-    handcuffsData.delete(entity.id);
-    clearRide_data(entity); clearCarrier_data(entity)
+    handcuffsData.delete(deadEntity.id);
+    clearRide_data(deadEntity); clearCarrier_data(deadEntity)
 }
-
