@@ -5,14 +5,8 @@ item.carry:key=Anahtar
 ## config.js
 tutorial.form.title=NASIL OYNANIR?
 
-tutorial.form.body.desktop=Masaüstü (varsayılan)
-tutorial.form.label.desktop=Mob'u taşımak için shift ve  basın\n\nMob'u bırakmak için canlıya doğru  basın\n\nMob'u fırlatmak için canlıya doğru  basın ve fırlatmak istediğiniz seviyeye getirdikten sonra canlıya doğru  basın\n\nBir oyuncu üzerinizdeyken, onu sırtınızdan atmak için Shift + Boşluk tuşlarına basın
-
-tutorial.form.body.mobile=Mobil (varsayılan)
-tutorial.form.label.mobile=Mob'u taşımak için  ve  tıklayın\n\nMob'u bırakmak için canlıya doğru  tıklayın\n\nMob'u fırlatmak için canlıya doğru  tıklayın ve fırlatmak istediğiniz seviyeye getirdikten sonra canlıya doğru  tıklayın\n\nBir oyuncu üzerinizdeyken, onu sırtınızdan atmak için  +  ögelerine dokunun
-
-tutorial.form.body.console=Konsol (varsayılan)
-tutorial.form.label.console=Mob'u taşımak için  basın\n\nMob'u bırakmak için canlıya doğru  tıklayın\n\nMob'u fırlatmak için canlıya doğru  tıklayın ve fırlatmak istediğiniz seviyeye getirdikten sonra canlıya doğru  tıklayın\n\nBir oyuncu üzerinizdeyken, onu sırtınızdan atmak için  +  tuşlarına basın
+tutorial.form.body=Öğretici
+tutorial.form.label=Mob'u taşımak için eğilin ve etkileşime geçin\n\nMob'u bırakmak/fırlatmak için canlıya doğru vurun\n\nMob'u fırlatma seviyenizi ayarlamak için taşıdığınız mob ile etkileşime geçin\n\nYetenek seçmek istiyorsanız bir mob'u taşırken eğilin ve etkileşime geçin
 
 tutorial.form.button=Bunu bir daha gösterme
 
@@ -21,3 +15,13 @@ power.canceled=İptal edildi!
 mob.carry.warn=>> Ellerin dolu!
 mob.dropped=Mob'u düşürdün!
 sneakTo.cancel=Blok\nİptal etmek için eğil
+
+## ride.js
+action.hint.exit.player=Oyuncudan inmek için eğilin ya da zıplayın
+
+## ability.js
+unlocked.boomerang=Bumerang yeteneğin açıldı!
+unlocked.skySpinner=Uçan Daire yeteneğin açıldı!
+
+howTounlock.boomerang=Bumerang yeteneğini açmak için 15 canlıyı üst üste dizin!
+howTounlock.skySpinner=Uçan Daire yeteneğini açmak için 3 canlıyı havaya fırlatın!

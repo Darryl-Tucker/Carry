@@ -1,10 +1,11 @@
 import { world, system, GameMode, EquipmentSlot, EntityComponentTypes } from "@minecraft/server";
 
-import { playerSettings } from "../player/playerData";
+import { clearPlayer_data, playerSettings } from "../player/playerData";
 import { addMob_ride } from "../utils/ride";
 import { clearRide_data, clearCarrier_data } from "../utils/ride";
 import { handcuffsData } from "./handcuffs";
 import { allowMobs, neutralMobs, excludeBlocks } from "../utils/config";
+import { abilitiesData, abilityManager, useAbility } from "../player/ability";
 
 export const carryData = new Map();
 
@@ -82,7 +83,7 @@ function suffocationBlock(player, entity) {
 
             if (excludeBlock) return
             const direction = player.getViewDirection();
-            system.run(() => player.applyKnockback({ x: -direction.x, z: -direction.z }, -20));
+            system.run(() => player.applyKnockback({ x: -direction.x, z: -direction.z }, -50));
         })
     }
 }
@@ -90,11 +91,9 @@ function suffocationBlock(player, entity) {
 export function mobCarry() {
     for (const player of world.getAllPlayers().filter(p => carryData.has(p.id))) {
         function mobDropped() {
-            carryData.delete(player.id);
-
             player.onScreenDisplay.setActionBar({ rawtext: [{ text: "§c" }, { translate: texts.mobDropped }] });
             player.playSound(sounds.mobDropped, { volume: 20 });
-            playerSettings(player)
+            clearPlayer_data(player)
         }
 
         let get_carryData = carryData.get(player.id);
@@ -215,73 +214,79 @@ export function takeMob(player, target, e) {
 export function pushMob(player, target, e) {
     const power = carryData.get(player.id)?.power;
 
-    if (target.id === carryData.get(player.id)?.id) {
-        e.cancel = true;
+    if (target.id !== carryData.get(player.id)?.id) return
+    e.cancel = true;
+    const abilityH = abilitiesData.get(player.id)?.abilityPage;
 
-        if (power > 0) {
-            const viewDirection = player.getViewDirection();
+    if (power > 0) {
+        const viewDirection = player.getViewDirection();
 
-            const targetLoc = {
-                x: viewDirection.x * power,
-                z: viewDirection.z * power
-            };
+        const manager = new abilityManager(player, abilitiesData);
 
-            system.run(() => target.applyKnockback(targetLoc, viewDirection.y));
+        manager.progressSkySpinner();
 
-            const runId = system.runInterval(() => {
-                if (!target || !target.isValid) {
-                    system.clearRun(runId); // target yok ise döndürmeyi bırak
-                    return // Çökme önlemek için (boyut değiştirirken çökmemesi için)
-                }  
-            
-                addMob_ride(target, runId);
+        const targetLoc = {
+            x: viewDirection.x * power,
+            z: viewDirection.z * power
+        };
 
-                const oPlayer = target.dimension.getEntities({
-                    location: target.location,
-                    maxDistance: 1.70,
-                    type: "minecraft:player"
-                }).find(o => o.id !== player.id && o.getGameMode() !== "Spectator");
+        system.run(() => target.applyKnockback(targetLoc, viewDirection.y));
 
-                if (oPlayer) {
-                    system.run(() => oPlayer.applyKnockback({ x: viewDirection.x, z: viewDirection.z + 2 }, power - 10));
-                    system.clearRun(runId)
-                }
-            });
+        const start_abilityRun = system.runInterval(() => { useAbility({ player: player, target: target }) });
+        system.runTimeout(() => system.clearRun(start_abilityRun), power * 2);
 
-            system.runTimeout(() => system.clearRun(runId), power);
-
-            system.run(() => player.playSound(sounds.mobPush));
-            carryData.delete(player.id);
-            playerSettings(player)
-
-        }
-
-        else {
-            addMob_ride(target);
-            playerSettings(player);
-            carryData.delete(player.id)
-        }
-
-        system.run(() => { // Canlının agresifleşmesini önlemek için oyun motorunu sabote etme
-            if (neutralMobs.indexOf(target.typeId) === -1) return
-
-            const playerGamemode = player.getGameMode();
-            const difficulty = world.getDifficulty();
-
-            if (difficulty !== "Peaceful") {
-                player.setGameMode(GameMode.Spectator);
-                system.runTimeout(() => player.setGameMode(playerGamemode), 1)
+        const startRun = system.runInterval(() => {
+            if (!target || !target.isValid) {
+                system.clearRun(startRun); // Çökme önlemek için (boyut değiştirirken çökmemesi için)
+                system.clearRun(endRun)
             }
-        })
+
+            if (abilityH === undefined) addMob_ride(player, target, startRun, endRun); // Eğer yeteneği kullanıyorsa üst üste bindirme
+            else useAbility({
+                player: player,
+                target: target,
+                viewDirection: viewDirection,
+                power: power
+            })
+        });
+
+        const endRun = system.runTimeout(() => {
+            system.clearRun(startRun);
+            const boomerangBack = true;
+            useAbility({
+                player: player,
+                target: target,
+                targetLoc: targetLoc,
+                back: boomerangBack
+            }) // Mıknatıs özelliği ile geri getiriyoruz
+        }, power)
+
+        system.run(() => player.playSound(sounds.mobPush));
+        addMob_ride(player, target);
     }
+
+    else {
+        addMob_ride(player, target);
+    }
+    const Cdata = true;
+    playerSettings(player, Cdata);
+
+    system.run(() => { // Canlının agresifleşmesini önlemek için oyun motorunu sabote etme
+        if (neutralMobs.indexOf(target.typeId) === -1) return
+
+        const playerGamemode = player.getGameMode();
+        const difficulty = world.getDifficulty();
+
+        if (difficulty !== "Peaceful") {
+            player.setGameMode(GameMode.Spectator);
+            system.runTimeout(() => player.setGameMode(playerGamemode), 1)
+        }
+    })
 }
 
 export function clearMob_data(deadEntity) {
     const player = world.getAllPlayers().find(p => carryData.get(p.id)?.id === deadEntity.id)
-    if (player) {
-        carryData.delete(player.id);
-        playerSettings(player)
-    }
+    if (player) clearPlayer_data(player)
 
     handcuffsData.delete(deadEntity.id);
     clearRide_data(deadEntity); clearCarrier_data(deadEntity)

@@ -1,8 +1,10 @@
 import { world, system, InputPermissionCategory } from "@minecraft/server";
 
 import { carryData } from "../mob/carry";
+import { abilitiesData } from "./ability";
 
-export function playerSettings(player) {
+export function playerSettings(player, Cdata = null) {
+    if (Cdata) carryData.delete(player.id)
     system.run(() => {
         if (carryData.has(player.id)) {
             player.inputPermissions.setPermissionCategory(InputPermissionCategory.Jump, false);
@@ -17,8 +19,15 @@ export function playerSettings(player) {
 }
 
 export function clearPlayer_data(player, pl = null) {
-    carryData.delete(player.id);
-    if (!pl) playerSettings(player)
+    if (pl) {
+        carryData.delete(player.id);
+        abilitiesData.delete(player.id)
+    }
+
+    else {
+        const Cdata = true;
+        playerSettings(player, Cdata)
+    }
 }
 
 export function playerAnimation() {

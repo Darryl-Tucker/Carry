@@ -1,5 +1,8 @@
 import { ActionFormData } from "@minecraft/server-ui";
-import { system, world } from "@minecraft/server";
+import { system } from "@minecraft/server";
+
+import { handcuffsData } from "../mob/handcuffs";
+import { abilitiesData } from "../player/ability";
 
 export const allowMobs = [
     "minecraft:iron_golem", // 0
@@ -305,50 +308,42 @@ export const excludeBlocks = [
     "minecraft:crimson_fence_gate",
 ];
 
-// system.run(() => {
-//     for (const p of world.getAllPlayers()) { // hata ayıklama
-//         excludeBlocks.forEach((eb, i) => {
-//             try {
-//                 p.runCommand(`setblock ~~~ ${eb}`);
-//                 p.runCommand(`setblock ~~~ air`)
-//             }
-//             catch { p.sendMessage(i + ": " + eb) }
-//         })
-//     }
-// })
-
 export function addonTutorial(player) {
-    system.run(() => {
-        system.runTimeout(() => {
-            player.setDynamicProperty("dontShow_again", undefined);
+    system.runTimeout(() => {
+        if (player.getDynamicProperty("ver1") === true) return
 
-            const form = new ActionFormData();
+        const versions = ["dontShow_again", "ver0"];
 
-            form.title({ rawtext: [{ text: "§l§a" }, { translate: "tutorial.form.title" }] })
+        for (const ver of versions) player.setDynamicProperty(ver, undefined)
 
-            const playerPlatform = player.clientSystemInfo.platformType;
+        const form = new ActionFormData();
 
-            switch (playerPlatform) {
-                case "Desktop":
-                    form.body({ rawtext: [{ text: "§l" }, { translate: "tutorial.form.body.desktop" }] });
-                    form.label({ rawtext: [{ translate: "tutorial.form.label.desktop" }] });
-                    break
-                case "Mobile":
-                    form.body({ rawtext: [{ text: "§l" }, { translate: "tutorial.form.body.mobile" }] });
-                    form.label({ rawtext: [{ translate: "tutorial.form.label.mobile" }] });
-                    break
-                case "Console":
-                    form.body({ rawtext: [{ text: "§l" }, { translate: "tutorial.form.body.console" }] });
-                    form.label({ rawtext: [{ translate: "tutorial.form.label.console" }] });
-                    break
-            }
-            form.button({ rawtext: [{ text: "§e" }, { translate: "tutorial.form.button" }] })
+        form.title({ rawtext: [{ text: "§l§a" }, { translate: "tutorial.form.title" }] })
 
-            form.show(player).then(reponse => {
-                if (reponse.canceled) return
+        form.body({ rawtext: [{ text: "§l" }, { translate: "tutorial.form.body" }] });
+        form.label({ rawtext: [{ translate: "tutorial.form.label" }] });
 
-                if (reponse.selection === 0) player.setDynamicProperty("ver0", true)
-            })
-        }, 100)
-    })
+        form.button({ rawtext: [{ text: "§e" }, { translate: "tutorial.form.button" }] })
+
+        form.show(player).then(reponse => {
+            if (reponse.canceled) return
+
+            if (reponse.selection === 0) player.setDynamicProperty("ver1", true)
+        })
+    }, 100)
+}
+
+export function DiskToRAM(player, w = null) {
+    if (w) {
+        // Handcuffs & Key
+        const entities = player.dimension.getEntities().filter(e => !handcuffsData.has(e.id) && (e.getDynamicProperty("key") !== undefined || e.getDynamicProperty("handcuffs") === true));
+
+        for (const entity of entities) {
+            const data = entity.getDynamicProperty("key");
+            handcuffsData.set(entity.id, { status: true, key: data })
+        }
+    }
+
+    if (player.getDynamicProperty("boomerang") === true) abilitiesData.set(player.id, { boomerang: true })
+    if (player.getDynamicProperty("skySpinner") === true) abilitiesData.set(player.id, { ...abilitiesData.get(player.id), skySpinner: true })
 }

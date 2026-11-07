@@ -10,7 +10,7 @@ system.runInterval(() => {
     mobHandcuffs();
     mobCarry();
     mobRide();
-
+    
     playerRide()
 });
 

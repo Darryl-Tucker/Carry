@@ -32,11 +32,11 @@
     },
     {
       "uuid": "fd6b6382-c53c-4ab4-82bc-be11ef3f45dc",
-      "version":[1, 0, 2 ]
+      "version":[1, 0, 3 ]
     }
   ],
   "metadata": {
-    "authors": ["DarrylTucker"],
+    "authors": ["Darryl Tucker"],
     "product_type": "addon",
     "license": "MIT"
   }

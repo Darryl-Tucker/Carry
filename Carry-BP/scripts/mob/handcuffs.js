@@ -4,8 +4,8 @@ import { allowMobs } from "../utils/config";
 
 export const handcuffsData = new Map();
 
-export function mobHandcuffs(player = null, target = null) {
-    if (!player || !target) {
+export function mobHandcuffs(player = null, target = null, e = null) {
+    if (!e || !player || !target) {
         const dimensions = [
             world.getDimension("overworld"),
             world.getDimension("nether"),
@@ -28,7 +28,7 @@ export function mobHandcuffs(player = null, target = null) {
             const hand = container.getItem(selectedSlot);
 
             if (hand?.typeId === "carry:handcuffs" || hand?.typeId === "carry:key") {
-                eventData.cancel = true
+                e.cancel = true
 
                 if (!handcuffsData.has(target.id)) {
                     if (hand.typeId === "carry:handcuffs") {

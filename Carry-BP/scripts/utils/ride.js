@@ -1,6 +1,7 @@
 import { world, EntityComponentTypes, system } from "@minecraft/server";
 
 import { excludeMobs } from "./config";
+import { abilitiesData, abilityManager } from "../player/ability";
 
 export const riderData = new Map();
 export const carrierData = new Map();
@@ -12,7 +13,7 @@ export function mobRide() {
         world.getDimension("the_end")
     ];
 
-    dimensions.forEach(dimension => {
+    for (const dimension of dimensions) {
         for (const rider of dimension.getEntities().filter(r => riderData.has(r.id))) {
             const carrier = rider.dimension.getEntities().find(c => riderData.get(rider.id).id === c.id)
             if (carrier) {
@@ -26,7 +27,7 @@ export function mobRide() {
                 rider.teleport(carrierLoc)
             }
         }
-    })
+    }
 }
 
 export function playerRide() {
@@ -42,7 +43,7 @@ export function playerRide() {
     }
 }
 
-export function addMob_ride(target, runId = null) {
+export function addMob_ride(player, target, startRun = null, endRun = null) {
     const carrier = target.dimension.getEntities({
         location: target.location,
         maxDistance: 1.30,
@@ -60,11 +61,20 @@ export function addMob_ride(target, runId = null) {
 
         riderData.set(target.id, { id: carrier.id, level: 1 }); // Hedefi taşıyıcıya bindir
 
-        if (runId !== null) system.clearRun(runId) // Eğer zaten bulduğuna göre Run'ı temizleyebiliriz
+        const manager = new abilityManager(player, abilitiesData);
+
+        manager.progressBoomerang()
+
+        if (startRun !== null && endRun !== null) {
+            system.clearRun(startRun); // Eğer zaten bulduğuna göre Run'ı temizleyebiliriz
+            system.clearRun(endRun)
+        }
     }
 }
 
-export function addPlayer_ride(player, target) { if (target.typeId === "minecraft:player" && !player.isSneaking) player.setDynamicProperty("ride", target.id) }
+export function addPlayer_ride(player, target) {
+    if (target.typeId === "minecraft:player" && !player.isSneaking) player.setDynamicProperty("ride", target.id)
+}
 
 export function clearRide_data(entity) {
     if (!riderData.has(entity.id)) return
