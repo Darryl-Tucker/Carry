@@ -26,7 +26,7 @@ export class abilityManager {
     progressBoomerang() {
         if (this.data?.boomerang) return;
 
-        this.data.AUS_boomerang = (this.data.AUS_boomerang ?? 0) + 1;
+        this.data.AUS_boomerang = (this.data.AUS_boomerang ?? -1) + 1;
         this.save();
 
         if (this.data.AUS_boomerang === 15) {
