@@ -1,7 +1,8 @@
-import { world, system, InputPermissionCategory } from "@minecraft/server";
+import { world, system, InputPermissionCategory, GameMode } from "@minecraft/server";
 
 import { carryData } from "../mob/carry";
 import { abilitiesData } from "./ability";
+import { riderData } from "../utils/ride";
 
 export function playerSettings(player, Cdata = null) {
     if (Cdata) carryData.delete(player.id)
@@ -21,7 +22,8 @@ export function playerSettings(player, Cdata = null) {
 export function clearPlayer_data(player, pl = null) {
     if (pl) {
         carryData.delete(player.id);
-        abilitiesData.delete(player.id)
+        abilitiesData.delete(player.id);
+        riderData.delete(player.id) 
     }
 
     else {

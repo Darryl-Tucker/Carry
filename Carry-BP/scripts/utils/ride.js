@@ -31,15 +31,21 @@ export function mobRide() {
 }
 
 export function playerRide() {
-    for (const rider of world.getAllPlayers().filter(p => p.getDynamicProperty("ride"))) {
-        const carrier = world.getAllPlayers().find(p => rider.getDynamicProperty("ride") === p.id)
+    for (const rider of world.getAllPlayers().filter(p => riderData.has(p.id))) {
+        const carrier = world.getAllPlayers().find(p => riderData.get(rider.id) === p.id)
         if (carrier) {
-            if (carrier.isSneaking && carrier.isJumping) rider.runCommand("ride @s stop_riding")
+            if (carrier.isSneaking && carrier.isJumping) {
+                const drop = carrier.getComponent(EntityComponentTypes.Rideable);
+                drop.ejectRider(rider);
+            }
             carrier.addEffect("slowness", 10, { amplifier: 0.30, showParticles: false })
         }
 
         const riding = rider.getComponent(EntityComponentTypes.Riding);
-        if (riding === undefined) rider.setDynamicProperty("ride", undefined)
+        if (riding === undefined) {
+            rider.setDynamicProperty("ride", undefined);
+            riderData.delete(rider.id)
+        }
     }
 }
 
@@ -73,7 +79,10 @@ export function addMob_ride(player, target, startRun = null, endRun = null) {
 }
 
 export function addPlayer_ride(player, target) {
-    if (target.typeId === "minecraft:player" && !player.isSneaking) player.setDynamicProperty("ride", target.id)
+    if (target.typeId === "minecraft:player" && !player.isSneaking) {
+        riderData.set(player.id, target.id);
+        player.setDynamicProperty("ride", target.id)
+    }
 }
 
 export function clearRide_data(entity) {

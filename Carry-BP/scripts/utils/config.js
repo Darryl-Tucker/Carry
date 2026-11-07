@@ -1,8 +1,9 @@
 import { ActionFormData } from "@minecraft/server-ui";
-import { system } from "@minecraft/server";
+import { world, system } from "@minecraft/server";
 
 import { handcuffsData } from "../mob/handcuffs";
 import { abilitiesData } from "../player/ability";
+import { riderData } from "./ride";
 
 export const allowMobs = [
     "minecraft:iron_golem", // 0
@@ -343,6 +344,9 @@ export function DiskToRAM(player, w = null) {
             handcuffsData.set(entity.id, { status: true, key: data })
         }
     }
+
+    const findCarrier = world.getAllPlayers().find(p => player.getDynamicProperty("ride") === p.id)
+    if (findCarrier) riderData.set(player.id, findCarrier.id)
 
     if (player.getDynamicProperty("boomerang") === true) abilitiesData.set(player.id, { boomerang: true })
     if (player.getDynamicProperty("skySpinner") === true) abilitiesData.set(player.id, { ...abilitiesData.get(player.id), skySpinner: true })
