@@ -90,48 +90,42 @@ function suffocationBlock(player, entity) {
 
 export function mobCarry() {
     for (const player of world.getAllPlayers().filter(p => carryData.has(p.id))) {
-        function mobDropped() {
-            player.onScreenDisplay.setActionBar({ rawtext: [{ text: "§c" }, { translate: texts.mobDropped }] });
-            player.playSound(sounds.mobDropped, { volume: 20 });
-            clearPlayer_data({ Player: player })
-        }
-
         const selectedSlot = player.selectedSlotIndex;
         const mainHand = player.getComponent("minecraft:inventory").container.getItem(selectedSlot);
         const offHand = player.getComponent(EntityComponentTypes.Equippable)?.getEquipment(EquipmentSlot.Offhand);
         const gamemode = player.getGameMode();
 
-        if (player.isSprinting || mainHand || offHand || gamemode === "Spectator") mobDropped()
+        const carryId = carryData.get(player.id)?.id;
+        const entity = player.dimension.getEntities({ location: player.location }).find(e => carryId === e.id);
 
-        else {
-            mobWeight(player);
-
-            const carryId = carryData.get(player.id)?.id;
-            const entity = player.dimension.getEntities({ location: player.location }).find(e => carryId === e.id);
-            if (entity) {
-                suffocationBlock(player, entity);
-
-                const playerLoc = player.location;
-
-                const viewDirection = player.getViewDirection();
-                const distance = 0.70;
-                const targetLoc = {
-                    x: playerLoc.x + (viewDirection.x * distance),
-                    y: (playerLoc.y + 1.30) + (viewDirection.y * distance),
-                    z: playerLoc.z + (viewDirection.z * distance)
-                };
-                entity.teleport(targetLoc)
-            }
-
-            else mobDropped()
+        if (player.isSprinting || mainHand || offHand || gamemode === "Spectator" || !entity) {
+            player.onScreenDisplay.setActionBar({ rawtext: [{ text: "§c" }, { translate: texts.mobDropped }] });
+            player.playSound(sounds.mobDropped, { volume: 20 });
+            return clearPlayer_data({ Player: player })
         }
+
+        if (entity) {
+            mobWeight(player);
+            suffocationBlock(player, entity);
+
+            const playerLoc = player.location;
+
+            const viewDirection = player.getViewDirection();
+            const distance = 0.70;
+            const targetLoc = {
+                x: playerLoc.x + (viewDirection.x * distance),
+                y: (playerLoc.y + 1.30) + (viewDirection.y * distance),
+                z: playerLoc.z + (viewDirection.z * distance)
+            };
+            entity.teleport(targetLoc)
+        }
+
     }
 }
 
 export function powerCount({ Player, Target, EventCancel } = {}) {
-    if (!EventCancel) {
+    if (!EventCancel)
         for (const player of world.getAllPlayers().filter(p => carryData.has(p.id))) {
-
             const data = carryData.get(player.id);
             const power = carryData.get(player.id)?.power ?? 0;
 
@@ -159,7 +153,7 @@ export function powerCount({ Player, Target, EventCancel } = {}) {
                 system.run(() => player.onScreenDisplay.setActionBar({ rawtext: [{ text: `${greenBars}${whiteBars}§f ${power} §l` }, { translate: texts.sneakTo_cancel }] }))
             }
         }
-    }
+
 
     else { // Switch mantığı
         const data = carryData.get(Player.id);
@@ -228,8 +222,14 @@ export function pushMob(player, target, e) {
 
         system.run(() => target.applyKnockback(targetLoc, viewDirection.y));
 
-        const start_abilityRun = system.runInterval(() => { useAbility({ Player: player, Target: target }) });
-        system.runTimeout(() => system.clearRun(start_abilityRun), power * 2);
+        const start_abilityRun = system.runInterval(() => {
+            if (!target || !target.isValid) {
+                system.clearRun(start_abilityRun);
+                system.clearRun(end_abilityRun)
+            }
+            useAbility({ Player: player, Target: target })
+        });
+        const end_abilityRun = system.runTimeout(() => system.clearRun(start_abilityRun), power * 2);
 
         const startRun = system.runInterval(() => {
             if (!target || !target.isValid) {

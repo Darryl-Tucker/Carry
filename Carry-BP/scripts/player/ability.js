@@ -90,6 +90,7 @@ export function abilityBar(player) {
 }
 
 export function useAbility({ Player, Target, TargetLoc, BomBack, ViewDirection, Power }) {
+    if (!Target || !Target.isValid) return
     const ab = abilitiesData.get(Player.id);
 
     switch (ab?.abilityPage) {
