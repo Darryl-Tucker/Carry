@@ -44,12 +44,6 @@ export const allowMobs = [
 
 export const neutralMobs = [ ];
 
-export const excludeMobs = [
-    "minecraft:player",
-    "minecraft:item",
-    "minecraft:arrow",
-];
-
 allowMobs.forEach((mob, index) => {
     switch (index) {
         case 0:
@@ -345,6 +339,6 @@ export function DiskToRAM({Player, WorldLoadEvent}) {
     const findCarrier = world.getAllPlayers().find(p => Player.getDynamicProperty("ride") === p.id)
     if (findCarrier) riderData.set(Player.id, findCarrier.id)
 
-    if (Player.getDynamicProperty("boomerang") === true) abilitiesData.set(Player.id, { boomerang: true })
-    if (Player.getDynamicProperty("skySpinner") === true) abilitiesData.set(Player.id, { ...abilitiesData.get(Player.id), skySpinner: true })
+    if (Player.getDynamicProperty("boomerang")) abilitiesData.set(Player.id, { boomerang: true })
+    if (Player.getDynamicProperty("skySpinner")) abilitiesData.set(Player.id, { ...abilitiesData.get(Player.id), skySpinner: true })
 }

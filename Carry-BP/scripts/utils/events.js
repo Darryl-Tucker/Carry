@@ -17,10 +17,10 @@ world.afterEvents.playerSpawn.subscribe(e => {
 
     if (e.initialSpawn) {
         DiskToRAM({ Player: player });
-        addonTutorial(player)
+        return addonTutorial(player)
     }
 
-    else playerSettings({ Player: player })
+    playerSettings({ Player: player })
 });
 
 world.beforeEvents.entityHurt.subscribe(e => {
@@ -28,10 +28,14 @@ world.beforeEvents.entityHurt.subscribe(e => {
     const hEntity = e.hurtEntity.typeId !== "minecraft:player";
     const hurtEntity = e.hurtEntity;
 
-    if (!hEntity && carryData.has(hurtEntity.id)) clearPlayer_data({Player: hurtEntity})
+    if (!hEntity && carryData.has(hurtEntity.id)) clearPlayer_data({ Player: hurtEntity })
 
     if (hEntity) {
         if (carryData.has(damagingEntity?.id)) return pushMob(damagingEntity, hurtEntity, e)
+
+        const carryPlayer = world.getAllPlayers().find(c => carryData.get(c.id)?.id === hurtEntity.id)
+
+        if (carryPlayer) return playerSettings({ Player: carryPlayer, DataDelete: true }) // Mob taşınırken hasar alırsa bırak
 
         clearCarrier_data(hurtEntity);
         clearRide_data(hurtEntity);
@@ -69,7 +73,7 @@ world.afterEvents.entityDie.subscribe(e => {
         clearMob_data(deadEntity)
     }
 
-    else if (!dEntity && carryData.has(deadEntity.id)) clearPlayer_data({Player: deadEntity})
+    else if (!dEntity && carryData.has(deadEntity.id)) clearPlayer_data({ Player: deadEntity })
 });
 
 const worldLoad = world.afterEvents.worldLoad.subscribe(() => {

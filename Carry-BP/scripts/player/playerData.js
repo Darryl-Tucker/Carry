@@ -1,10 +1,10 @@
-import { world, system, InputPermissionCategory, GameMode } from "@minecraft/server";
+import { world, system, InputPermissionCategory } from "@minecraft/server";
 
 import { carryData } from "../mob/carry";
 import { abilitiesData } from "./ability";
 import { riderData } from "../utils/ride";
 
-export function playerSettings({Player, DataDelete}) {
+export function playerSettings({ Player, DataDelete }) {
     if (DataDelete) carryData.delete(Player.id)
     system.run(() => {
         if (carryData.has(Player.id)) {
@@ -19,14 +19,14 @@ export function playerSettings({Player, DataDelete}) {
     })
 }
 
-export function clearPlayer_data({Player, PlayerLeave}) {
+export function clearPlayer_data({ Player, PlayerLeave}) {
     if (PlayerLeave) {
         carryData.delete(Player.id);
         abilitiesData.delete(Player.id);
-        riderData.delete(Player.id) 
+        return riderData.delete(Player.id)
     }
 
-    else playerSettings({Player: Player, DataDelete: true}) 
+    playerSettings({ Player: Player, DataDelete: true })
 }
 
 export function playerAnimation() {

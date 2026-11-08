@@ -1,6 +1,5 @@
 import { world, EntityComponentTypes, system } from "@minecraft/server";
 
-import { excludeMobs } from "./config";
 import { abilitiesData, abilityManager } from "../player/ability";
 
 export const riderData = new Map();
@@ -49,11 +48,11 @@ export function playerRide() {
     }
 }
 
-export function addMob_ride({Player, Target, StartRun, EndRun}) {
+export function addMob_ride({ Player, Target, StartRun, EndRun }) {
     const carrier = Target.dimension.getEntities({
         location: Target.location,
         maxDistance: 1.30,
-        excludeTypes: excludeMobs
+        excludeTypes: ["minecraft:player", "minecraft:item", "minecraft:arrow", "minecraft:xp_orb"]
     }).find(c => c.id !== Target.id && !riderData.has(c.id)); // Taşıyıcıyı bul
 
     if (carrier && !carrierData.has(Target.id)) { // Eğer taşıyıcı varsa
@@ -72,7 +71,7 @@ export function addMob_ride({Player, Target, StartRun, EndRun}) {
 
         manager.progressBoomerang()
 
-        if (StartRun !== null && EndRun !== null) {
+        if (StartRun && EndRun) {
             system.clearRun(StartRun); // Eğer zaten bulduğuna göre Run'ı temizleyebiliriz
             system.clearRun(EndRun)
         }

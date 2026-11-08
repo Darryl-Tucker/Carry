@@ -90,7 +90,6 @@ export function abilityBar(player) {
 }
 
 export function useAbility({ Player, Target, TargetLoc, BomBack, ViewDirection, Power }) {
-    if (!Target || !Target.isValid) return
     const ab = abilitiesData.get(Player.id);
 
     switch (ab?.abilityPage) {
@@ -101,7 +100,7 @@ export function useAbility({ Player, Target, TargetLoc, BomBack, ViewDirection, 
                 const mobs = Target.dimension.getEntities({
                     location: Target.location,
                     maxDistance: 1.70,
-
+                    excludeTypes: ["minecraft:item"]
                 }).filter(m => m.id !== Target.id && m.id !== Player.id);
 
                 for (const mob of mobs) {
