@@ -24,7 +24,7 @@ export class abilityManager {
     save() { this.abilitiesData.set(this.player.id, this.data) }
 
     progressBoomerang() {
-        if (this.data?.boomerang) return;
+        if (this.data?.boomerang) return
 
         this.data.AUS_boomerang = (this.data.AUS_boomerang ?? -1) + 1;
         this.save();
@@ -47,21 +47,22 @@ export class abilityManager {
         if (rot.x <= -45) {
             this.data.AUS_skySpinner = (this.data.AUS_skySpinner ?? 0) + 1;
             this.save();
+        }
 
-            if (this.data.AUS_skySpinner === 3) {
-                this.data.skySpinner = true;
-                this.data.AUS_skySpinner = undefined;
-                this.save();
+        if (this.data.AUS_skySpinner === 3) {
+            this.data.skySpinner = true;
+            this.data.AUS_skySpinner = undefined;
+            this.save();
 
-                this.player.setDynamicProperty("skySpinner", true);
-                this.player.sendMessage({ rawtext: [{ text: ">>§a " }, { translate: texts.unlockedSkySpinner }] });
-                system.run(() => this.player.playSound(sounds.unlockedAbility, { volume: 1, pitch: 0.5 }))
-            }
+            this.player.setDynamicProperty("skySpinner", true);
+            this.player.sendMessage({ rawtext: [{ text: ">>§a " }, { translate: texts.unlockedSkySpinner }] });
+            system.run(() => this.player.playSound(sounds.unlockedAbility, { volume: 1, pitch: 0.5 }))
         }
     }
 }
 
 export function abilityBar(player) {
+    if (!player.isSneaking) return
     let ab = abilitiesData.get(player.id);
     const maxAbility = 1;
 
@@ -88,39 +89,39 @@ export function abilityBar(player) {
     if (ab?.abilityPage > maxAbility) abilitiesData.set(player.id, { ...ab, abilityPage: undefined });
 }
 
-export function useAbility({ player, target, targetLoc, back, viewDirection, power }) {
-    const ab = abilitiesData.get(player.id);
+export function useAbility({ Player, Target, TargetLoc, BomBack, ViewDirection, Power }) {
+    const ab = abilitiesData.get(Player.id);
 
     switch (ab?.abilityPage) {
         case 0: // boomerang
             if (ab?.boomerang) {
-                if (back) return target.applyKnockback({ x: -targetLoc.x, z: -targetLoc.z }, 0.50);
+                if (BomBack) return Target.applyKnockback({ x: -TargetLoc.x, z: -TargetLoc.z }, 0.50);
 
-                const mobs = target.dimension.getEntities({
-                    location: target.location,
+                const mobs = Target.dimension.getEntities({
+                    location: Target.location,
                     maxDistance: 1.70,
 
-                }).filter(m => m.id !== target.id && m.id !== player.id);
+                }).filter(m => m.id !== Target.id && m.id !== Player.id);
 
                 for (const mob of mobs) {
                     mob.applyDamage(4, {
                         cause: EntityDamageCause.entityAttack,
-                        damagingEntity: player
+                        damagingEntity: Player
                     })
                 }
-                break 
+                break
             }
         case 1: // Sky Spinner
-            if (!viewDirection) return
+            if (!ViewDirection) return
 
             if (ab?.skySpinner) {
-                const oMobs = target.dimension.getEntities({
-                    location: target.location,
+                const oMobs = Target.dimension.getEntities({
+                    location: Target.location,
                     maxDistance: 1.20,
-                }).find(o => o.id !== player.id && o.id !== target.id);
+                }).find(o => o.id !== Player.id && o.id !== Target.id);
 
                 if (oMobs) {
-                    system.run(() => oMobs.applyImpulse({ x: viewDirection.x, y: power - 7, z: viewDirection.z + 2 })); // Oyuncuyu fırlat
+                    system.run(() => oMobs.applyImpulse({ x: ViewDirection.x, y: Power - 7, z: ViewDirection.z + 2 })); // Oyuncuyu fırlat
                 }
             }
     }

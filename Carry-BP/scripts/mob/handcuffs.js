@@ -4,8 +4,8 @@ import { allowMobs } from "../utils/config";
 
 export const handcuffsData = new Map();
 
-export function mobHandcuffs(player = null, target = null, e = null) {
-    if (!e || !player || !target) {
+export function mobHandcuffs({Player, Target, EventCancel} = {}) {
+    if (!EventCancel || !Player || !Target) {
         const dimensions = [
             world.getDimension("overworld"),
             world.getDimension("nether"),
@@ -19,56 +19,56 @@ export function mobHandcuffs(player = null, target = null, e = null) {
     }
 
     else {
-        if (allowMobs.indexOf(target.typeId) !== -1) {
+        if (allowMobs.indexOf(Target.typeId) !== -1) {
 
-            if (player.isSneaking) return
+            if (Player.isSneaking) return
 
-            const container = player.getComponent("minecraft:inventory").container;
-            const selectedSlot = player.selectedSlotIndex;
+            const container = Player.getComponent("minecraft:inventory").container;
+            const selectedSlot = Player.selectedSlotIndex;
             const hand = container.getItem(selectedSlot);
 
             if (hand?.typeId === "carry:handcuffs" || hand?.typeId === "carry:key") {
-                e.cancel = true
+                EventCancel.cancel = true
 
-                if (!handcuffsData.has(target.id)) {
+                if (!handcuffsData.has(Target.id)) {
                     if (hand.typeId === "carry:handcuffs") {
-                        handcuffsData.set(target.id, { status: true });
-                        target.setDynamicProperty("handcuffs", true);
+                        handcuffsData.set(Target.id, { status: true });
+                        Target.setDynamicProperty("handcuffs", true);
 
                         system.run(() => {
                             container.setItem(selectedSlot, undefined);
-                            player.dimension.playSound("dig.chain", player.location, { volume: 1, pitch: 1.4 })
+                            Player.dimension.playSound("dig.chain", Player.location, { volume: 1, pitch: 1.4 })
                         })
                     }
                     return
                 }
 
-                if (hand.typeId === "carry:key" && handcuffsData.get(target.id)?.key === undefined) {
-                    handcuffsData.set(target.id, { status: true, key: player.id });
-                    target.setDynamicProperty("key", player.id);
+                if (hand.typeId === "carry:key" && handcuffsData.get(Target.id)?.key === undefined) {
+                    handcuffsData.set(Target.id, { status: true, key: Player.id });
+                    Target.setDynamicProperty("key", Player.id);
 
                     const key = new ItemStack("carry:key", 1);
 
                     system.run(() => {
-                        key.setLore([player.id]);
+                        key.setLore([Player.id]);
                         container.setItem(selectedSlot, key);
-                        player.dimension.playSound("vault.insert_item", player.location, { volume: 1, pitch: 0.9 })
+                        Player.dimension.playSound("vault.insert_item", Player.location, { volume: 1, pitch: 0.9 })
                     })
                     return
                 }
 
-                if (hand.typeId === "carry:key" && handcuffsData.get(target.id)?.key === player.id) {
-                    target.setDynamicProperty("key", undefined);
-                    target.setDynamicProperty("handcuffs", undefined);
-                    handcuffsData.delete(target.id);
+                if (hand.typeId === "carry:key" && handcuffsData.get(Target.id)?.key === Player.id) {
+                    Target.setDynamicProperty("key", undefined);
+                    Target.setDynamicProperty("handcuffs", undefined);
+                    handcuffsData.delete(Target.id);
 
                     const key = new ItemStack("carry:key", 1);
                     const handcuffs = new ItemStack("carry:handcuffs", 1);
 
                     system.run(() => {
-                        target.dimension.spawnItem(handcuffs, target.location);
+                        Target.dimension.spawnItem(handcuffs, target.location);
                         container.setItem(selectedSlot, key);
-                        player.dimension.playSound("vault.insert_item", player.location, { volume: 1, pitch: 0.9 })
+                        Player.dimension.playSound("vault.insert_item", player.location, { volume: 1, pitch: 0.9 })
                     })
                 }
             }

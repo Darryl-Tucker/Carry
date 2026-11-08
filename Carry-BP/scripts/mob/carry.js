@@ -93,24 +93,21 @@ export function mobCarry() {
         function mobDropped() {
             player.onScreenDisplay.setActionBar({ rawtext: [{ text: "§c" }, { translate: texts.mobDropped }] });
             player.playSound(sounds.mobDropped, { volume: 20 });
-            clearPlayer_data(player)
+            clearPlayer_data({ Player: player })
         }
 
-        let get_carryData = carryData.get(player.id);
-        const container = player.getComponent("minecraft:inventory").container;
         const selectedSlot = player.selectedSlotIndex;
-
-        const hand = container.getItem(selectedSlot);
+        const mainHand = player.getComponent("minecraft:inventory").container.getItem(selectedSlot);
         const offHand = player.getComponent(EntityComponentTypes.Equippable)?.getEquipment(EquipmentSlot.Offhand);
-
         const gamemode = player.getGameMode();
 
-        if (player.isSprinting || hand || offHand || gamemode === "Spectator") mobDropped()
+        if (player.isSprinting || mainHand || offHand || gamemode === "Spectator") mobDropped()
 
         else {
             mobWeight(player);
 
-            const entity = player.dimension.getEntities({ location: player.location }).find(e => get_carryData?.id === e.id);
+            const carryId = carryData.get(player.id)?.id;
+            const entity = player.dimension.getEntities({ location: player.location }).find(e => carryId === e.id);
             if (entity) {
                 suffocationBlock(player, entity);
 
@@ -131,23 +128,24 @@ export function mobCarry() {
     }
 }
 
-export function powerCount(player = null, target = null, e = null) {
-    if (!e) {
+export function powerCount({ Player, Target, EventCancel } = {}) {
+    if (!EventCancel) {
         for (const player of world.getAllPlayers().filter(p => carryData.has(p.id))) {
-            const get_carryData = carryData.get(player.id);
+
+            const data = carryData.get(player.id);
             const power = carryData.get(player.id)?.power ?? 0;
 
             if (power > 0 && player.isSneaking) {
-                carryData.set(player.id, { ...get_carryData, power: 0, powerC: null });
+                carryData.set(player.id, { ...data, power: 0, powerC: null });
 
                 player.onScreenDisplay.setActionBar({ rawtext: [{ text: "§c" }, { translate: texts.powerCanceled }] });
                 player.playSound(sounds.powerCanceled);
             }
 
-            else if (get_carryData?.powerC === true) {
+            else if (data?.powerC) {
                 if (power < 15) {
                     system.run(() => player.playSound(sounds.powerCount, { pitch: 2 }));
-                    carryData.set(player.id, { ...get_carryData, power: power + 1 });
+                    carryData.set(player.id, { ...data, power: power + 1 });
                 }
 
                 const maxBar = 15;
@@ -164,17 +162,16 @@ export function powerCount(player = null, target = null, e = null) {
     }
 
     else { // Switch mantığı
-        const get_carryData = carryData.get(player.id);
+        const data = carryData.get(Player.id);
 
-        const container = player.getComponent("minecraft:inventory").container;
-        const selectedSlot = player.selectedSlotIndex;
-        const hand = container.getItem(selectedSlot);
+        const selectedSlot = Player.selectedSlotIndex;
+        const hand = Player.getComponent("minecraft:inventory").container.getItem(selectedSlot);
 
-        if (!hand && target.id === get_carryData?.id) {
-            if (get_carryData?.powerC !== true && !player.isSneaking) carryData.set(player.id, { ...get_carryData, powerC: true })
-            else carryData.set(player.id, { ...get_carryData, powerC: null });
+        if (!hand && Target.id === data?.id) {
+            if (data?.powerC !== true && !Player.isSneaking) carryData.set(Player.id, { ...data, powerC: true })
+            else carryData.set(Player.id, { ...data, powerC: null });
         }
-        e.cancel = true
+        EventCancel.cancel = true
     }
 }
 
@@ -182,14 +179,12 @@ export function takeMob(player, target, e) {
     if (world.getAllPlayers().find(p => carryData.get(p.id)?.id === target.id) || !allowMobs.find(m => target.typeId === m)) return
     // Eğer bir oyuncu zaten o mob'u taşıyorsa aldırma veya liste dışı bir mob ise
 
-    const container = player.getComponent("minecraft:inventory").container;
-    const selectedSlot = player.selectedSlotIndex;
-
-    const offHand = player.getComponent(EntityComponentTypes.Equippable)?.getEquipment(EquipmentSlot.Offhand);
-    const mainHand = container.getItem(selectedSlot);
-
     if (player.isSneaking && !player.isGliding) {
         e.cancel = true;
+
+        const selectedSlot = player.selectedSlotIndex;
+        const mainHand = player.getComponent("minecraft:inventory").container.getItem(selectedSlot);
+        const offHand = player.getComponent(EntityComponentTypes.Equippable)?.getEquipment(EquipmentSlot.Offhand);
 
         if (!mainHand && !offHand) {
             if (allowMobs.find(m => target.typeId === m)) {
@@ -197,7 +192,7 @@ export function takeMob(player, target, e) {
 
                 clearRide_data(target);
 
-                playerSettings(player);
+                playerSettings({ Player: player });
                 system.run(() => player.playSound(sounds.mobTake))
             }
         }
@@ -212,11 +207,12 @@ export function takeMob(player, target, e) {
 }
 
 export function pushMob(player, target, e) {
-    const power = carryData.get(player.id)?.power;
-
     if (target.id !== carryData.get(player.id)?.id) return
-    e.cancel = true;
+
+    const power = carryData.get(player.id)?.power;
     const abilityH = abilitiesData.get(player.id)?.abilityPage;
+
+    e.cancel = true;
 
     if (power > 0) {
         const viewDirection = player.getViewDirection();
@@ -232,7 +228,7 @@ export function pushMob(player, target, e) {
 
         system.run(() => target.applyKnockback(targetLoc, viewDirection.y));
 
-        const start_abilityRun = system.runInterval(() => { useAbility({ player: player, target: target }) });
+        const start_abilityRun = system.runInterval(() => { useAbility({ Player: player, Target: target }) });
         system.runTimeout(() => system.clearRun(start_abilityRun), power * 2);
 
         const startRun = system.runInterval(() => {
@@ -241,35 +237,32 @@ export function pushMob(player, target, e) {
                 system.clearRun(endRun)
             }
 
-            if (abilityH === undefined) addMob_ride(player, target, startRun, endRun); // Eğer yeteneği kullanıyorsa üst üste bindirme
+            if (abilityH === undefined) addMob_ride({ Player: player, Target: target, StartRun: startRun, EndRun: endRun }); // Eğer yeteneği kullanıyorsa üst üste bindirme
             else useAbility({
-                player: player,
-                target: target,
-                viewDirection: viewDirection,
-                power: power
+                Player: player,
+                Target: target,
+                ViewDirection: viewDirection,
+                Power: power
             })
         });
 
         const endRun = system.runTimeout(() => {
             system.clearRun(startRun);
-            const boomerangBack = true;
             useAbility({
-                player: player,
-                target: target,
-                targetLoc: targetLoc,
-                back: boomerangBack
+                Player: player,
+                Target: target,
+                TargetLoc: targetLoc,
+                BomBack: true
             }) // Mıknatıs özelliği ile geri getiriyoruz
         }, power)
 
         system.run(() => player.playSound(sounds.mobPush));
-        addMob_ride(player, target);
+        addMob_ride({ Player: player, Target: target });
     }
 
-    else {
-        addMob_ride(player, target);
-    }
-    const Cdata = true;
-    playerSettings(player, Cdata);
+    else addMob_ride({ Player: player, Target: target });
+
+    playerSettings({ Player: player, DataDelete: true });
 
     system.run(() => { // Canlının agresifleşmesini önlemek için oyun motorunu sabote etme
         if (neutralMobs.indexOf(target.typeId) === -1) return
@@ -285,8 +278,8 @@ export function pushMob(player, target, e) {
 }
 
 export function clearMob_data(deadEntity) {
-    const player = world.getAllPlayers().find(p => carryData.get(p.id)?.id === deadEntity.id)
-    if (player) clearPlayer_data(player)
+    const player = world.getAllPlayers().find(p => carryData.get(p.id)?.id === deadEntity.id);
+    if (player) clearPlayer_data({ Player: player })
 
     handcuffsData.delete(deadEntity.id);
     clearRide_data(deadEntity); clearCarrier_data(deadEntity)

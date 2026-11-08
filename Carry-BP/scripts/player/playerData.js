@@ -4,32 +4,29 @@ import { carryData } from "../mob/carry";
 import { abilitiesData } from "./ability";
 import { riderData } from "../utils/ride";
 
-export function playerSettings(player, Cdata = null) {
-    if (Cdata) carryData.delete(player.id)
+export function playerSettings({Player, DataDelete}) {
+    if (DataDelete) carryData.delete(Player.id)
     system.run(() => {
-        if (carryData.has(player.id)) {
-            player.inputPermissions.setPermissionCategory(InputPermissionCategory.Jump, false);
-            player.playAnimation("animation.enderman.carrying", { blendOutTime: 0, stopExpression: "0", controller: "block_hold" })
+        if (carryData.has(Player.id)) {
+            Player.inputPermissions.setPermissionCategory(InputPermissionCategory.Jump, false);
+            Player.playAnimation("animation.enderman.carrying", { blendOutTime: 0, stopExpression: "0", controller: "block_hold" })
         }
 
         else {
-            player.inputPermissions.setPermissionCategory(InputPermissionCategory.Jump, true);
-            player.playAnimation("animation.player.bob.stationary", { blendOutTime: 0, stopExpression: "query.is_moving", controller: "block_hold" })
+            Player.inputPermissions.setPermissionCategory(InputPermissionCategory.Jump, true);
+            Player.playAnimation("animation.player.bob.stationary", { blendOutTime: 0, stopExpression: "query.is_moving", controller: "block_hold" })
         }
     })
 }
 
-export function clearPlayer_data(player, pl = null) {
-    if (pl) {
-        carryData.delete(player.id);
-        abilitiesData.delete(player.id);
-        riderData.delete(player.id) 
+export function clearPlayer_data({Player, PlayerLeave}) {
+    if (PlayerLeave) {
+        carryData.delete(Player.id);
+        abilitiesData.delete(Player.id);
+        riderData.delete(Player.id) 
     }
 
-    else {
-        const Cdata = true;
-        playerSettings(player, Cdata)
-    }
+    else playerSettings({Player: Player, DataDelete: true}) 
 }
 
 export function playerAnimation() {

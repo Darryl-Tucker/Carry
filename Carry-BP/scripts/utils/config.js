@@ -42,7 +42,7 @@ export const allowMobs = [
     "minecraft:turtle", // 33
 ];
 
-export const neutralMobs = [];
+export const neutralMobs = [ ];
 
 export const excludeMobs = [
     "minecraft:player",
@@ -96,6 +96,7 @@ export const excludeBlocks = [
     "minecraft:cornflower",
     "minecraft:lily_of_the_valley",
     "minecraft:wither_rose",
+    "minecraft:wildflowers",
 
     "minecraft:sunflower",
     "minecraft:lilac",
@@ -247,12 +248,10 @@ export const excludeBlocks = [
     "minecraft:portal",
     "minecraft:end_portal",
 
-    // --- Conditional ---
     "minecraft:web",
     "minecraft:snow_layer",
     "minecraft:powder_snow",
 
-    // --- Doors ---
     "minecraft:wooden_door",
     "minecraft:iron_door",
     "minecraft:spruce_door",
@@ -274,7 +273,6 @@ export const excludeBlocks = [
     "minecraft:waxed_exposed_copper_door",
     "minecraft:waxed_weathered_copper_door",
 
-    // --- Trapdoors ---
     "minecraft:trapdoor",
     "minecraft:iron_trapdoor",
     "minecraft:spruce_trapdoor",
@@ -295,7 +293,6 @@ export const excludeBlocks = [
     "minecraft:waxed_copper_trapdoor",
     "minecraft:waxed_exposed_copper_trapdoor",
 
-    // --- Fence Gates ---
     "minecraft:fence_gate",
     "minecraft:spruce_fence_gate",
     "minecraft:birch_fence_gate",
@@ -334,10 +331,10 @@ export function addonTutorial(player) {
     }, 100)
 }
 
-export function DiskToRAM(player, w = null) {
-    if (w) {
+export function DiskToRAM({Player, WorldLoadEvent}) {
+    if (WorldLoadEvent) {
         // Handcuffs & Key
-        const entities = player.dimension.getEntities().filter(e => !handcuffsData.has(e.id) && (e.getDynamicProperty("key") !== undefined || e.getDynamicProperty("handcuffs") === true));
+        const entities = Player.dimension.getEntities().filter(e => !handcuffsData.has(e.id) && (e.getDynamicProperty("key") !== undefined || e.getDynamicProperty("handcuffs") === true));
 
         for (const entity of entities) {
             const data = entity.getDynamicProperty("key");
@@ -345,9 +342,9 @@ export function DiskToRAM(player, w = null) {
         }
     }
 
-    const findCarrier = world.getAllPlayers().find(p => player.getDynamicProperty("ride") === p.id)
-    if (findCarrier) riderData.set(player.id, findCarrier.id)
+    const findCarrier = world.getAllPlayers().find(p => Player.getDynamicProperty("ride") === p.id)
+    if (findCarrier) riderData.set(Player.id, findCarrier.id)
 
-    if (player.getDynamicProperty("boomerang") === true) abilitiesData.set(player.id, { boomerang: true })
-    if (player.getDynamicProperty("skySpinner") === true) abilitiesData.set(player.id, { ...abilitiesData.get(player.id), skySpinner: true })
+    if (Player.getDynamicProperty("boomerang") === true) abilitiesData.set(Player.id, { boomerang: true })
+    if (Player.getDynamicProperty("skySpinner") === true) abilitiesData.set(Player.id, { ...abilitiesData.get(Player.id), skySpinner: true })
 }

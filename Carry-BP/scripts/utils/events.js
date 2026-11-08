@@ -9,19 +9,18 @@ import { abilityBar } from "../player/ability";
 
 world.beforeEvents.playerLeave.subscribe(e => {
     const player = e.player;
-    const pl = true;
 
-    clearPlayer_data(player, pl)
+    clearPlayer_data({ Player: player, PlayerLeave: true })
 });
 world.afterEvents.playerSpawn.subscribe(e => {
     const player = e.player;
 
     if (e.initialSpawn) {
-        DiskToRAM(player);
+        DiskToRAM({ Player: player });
         addonTutorial(player)
     }
 
-    else playerSettings(player)
+    else playerSettings({ Player: player })
 });
 
 world.beforeEvents.entityHurt.subscribe(e => {
@@ -29,7 +28,7 @@ world.beforeEvents.entityHurt.subscribe(e => {
     const hEntity = e.hurtEntity.typeId !== "minecraft:player";
     const hurtEntity = e.hurtEntity;
 
-    if (!hEntity && carryData.has(hurtEntity.id)) clearPlayer_data(hurtEntity)
+    if (!hEntity && carryData.has(hurtEntity.id)) clearPlayer_data({Player: hurtEntity})
 
     if (hEntity) {
         if (carryData.has(damagingEntity?.id)) return pushMob(damagingEntity, hurtEntity, e)
@@ -46,12 +45,12 @@ world.beforeEvents.playerInteractWithEntity.subscribe(e => {
     const target = e.target;
 
     if (carryData.has(player.id)) {
-        if (player.isSneaking) abilityBar(player);
-        powerCount(player, target, e);
+        abilityBar(player);
+        powerCount({ Player: player, Target: target, EventCancel: e });
     }
     else takeMob(player, target, e);
 
-    mobHandcuffs(player, target, e);
+    mobHandcuffs({ Player: player, Target: target, EventCancel: e });
     addPlayer_ride(player, target)
 });
 
@@ -70,14 +69,13 @@ world.afterEvents.entityDie.subscribe(e => {
         clearMob_data(deadEntity)
     }
 
-    else if (!dEntity && carryData.has(deadEntity.id)) clearPlayer_data(deadEntity)
+    else if (!dEntity && carryData.has(deadEntity.id)) clearPlayer_data({Player: deadEntity})
 });
 
 const worldLoad = world.afterEvents.worldLoad.subscribe(() => {
-    const w = true;
     for (const player of world.getAllPlayers()) {
-        playerSettings(player);
-        DiskToRAM(player, w)
+        playerSettings({ Player: player });
+        DiskToRAM({ Player: player, WorldLoadEvent: true })
     }
 
     world.afterEvents.worldLoad.unsubscribe(worldLoad)
