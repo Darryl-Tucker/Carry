@@ -3,11 +3,11 @@ import { system, EntityDamageCause } from "@minecraft/server";
 export const abilitiesData = new Map();
 
 const texts = {
-    unlockedboomerang: "unlocked.boomerang",
+    unlockedBoomerang: "unlocked.boomerang",
     unlockedSkySpinner: "unlocked.skySpinner",
 
-    howTounlock_boomerang: "howTounlock.boomerang",
-    howTounlock_skySpinner: "howTounlock.skySpinner"
+    howToUnlockBoomerang: "howTounlock.boomerang",
+    howToUnlockSkyspinner: "howTounlock.skySpinner"
 };
 
 const sounds = {
@@ -35,7 +35,7 @@ export class abilityManager {
             this.save();
 
             this.player.setDynamicProperty("boomerang", true);
-            this.player.sendMessage({ rawtext: [{ text: ">>§a " }, { translate: texts.unlockedboomerang }] });
+            this.player.sendMessage({ rawtext: [{ text: ">>§a " }, { translate: texts.unlockedBoomerang }] });
             system.run(() => this.player.playSound(sounds.unlockedAbility, { volume: 1, pitch: 0.5 }))
         }
     }
@@ -76,12 +76,12 @@ export function abilityBar(player) {
 
             case 0:
                 player.onScreenDisplay.setActionBar({ rawtext: [{ text: "[ " }, { translate: "boomerang" }, { text: " ]" }] });
-                if (!ab?.boomerang) player.sendMessage({ rawtext: [{ text: ">>§a " }, { translate: texts.howTounlock_boomerang }] });
+                if (!ab?.boomerang) player.sendMessage({ rawtext: [{ text: ">>§a " }, { translate: texts.howToUnlockBoomerang }] });
                 break
 
             case 1:
                 player.onScreenDisplay.setActionBar({ rawtext: [{ text: "[ " }, { translate: "skySpinner" }, { text: " ]" }] });
-                if (!ab?.skySpinner) player.sendMessage({ rawtext: [{ text: ">>§a " }, { translate: texts.howTounlock_skySpinner }] });
+                if (!ab?.skySpinner) player.sendMessage({ rawtext: [{ text: ">>§a " }, { translate: texts.howToUnlockSkyspinner }] });
                 break
         }
     });

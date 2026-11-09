@@ -48,7 +48,7 @@ export function playerRide() {
     }
 }
 
-export function addMob_ride({ Player, Target, StartRun, EndRun }) {
+export function addMobRide({ Player, Target, StartRun, EndRun }) {
     const carrier = Target.dimension.getEntities({
         location: Target.location,
         maxDistance: 1.30,
@@ -78,19 +78,19 @@ export function addMob_ride({ Player, Target, StartRun, EndRun }) {
     }
 }
 
-export function addPlayer_ride(player, target) {
+export function addPlayerRide(player, target) {
     if (target.typeId === "minecraft:player" && !player.isSneaking) {
         riderData.set(player.id, target.id);
         player.setDynamicProperty("ride", target.id)
     }
 }
 
-export function clearRide_data(entity) {
+export function clearRideData(entity) {
     if (!riderData.has(entity.id)) return
 
     for (const carrier of entity.dimension.getEntities().filter(c => carrierData.has(c.id) && riderData.get(entity.id)?.id === c.id)) {
         let carriedLevel = carrierData.get(carrier.id)?.carriedLevel;
-        const current_carriedLevel = carrierData.get(carrier.id)?.carriedLevel - 1;
+        const currentCarriedLevel = carrierData.get(carrier.id)?.carriedLevel - 1;
 
         if (carriedLevel.carriedLevel === riderData.get(entity.id).level) {
             carrierData.set(carrier.id, { carriedLevel: carriedLevel.carriedLevel - 1 });
@@ -109,12 +109,12 @@ export function clearRide_data(entity) {
                 riderData.set(rider.id, { ...riderData.get(rider.id), level: carriedLevel })
             }
         }
-        carrierData.set(carrier.id, { carriedLevel: current_carriedLevel });
+        carrierData.set(carrier.id, { carriedLevel: currentCarriedLevel });
     }
     riderData.delete(entity.id);
 }
 
-export function clearCarrier_data(entity) {
+export function clearCarrierData(entity) {
     if (!carrierData.has(entity.id)) return
     carrierData.delete(entity.id);
 

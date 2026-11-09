@@ -1,8 +1,8 @@
 import { world, system, GameMode, EquipmentSlot, EntityComponentTypes } from "@minecraft/server";
 
-import { clearPlayer_data, playerSettings } from "../player/playerData";
-import { addMob_ride } from "../utils/ride";
-import { clearRide_data, clearCarrier_data } from "../utils/ride";
+import { clearPlayerData, playerSettings } from "../player/playerData";
+import { addMobRide } from "../utils/ride";
+import { clearRideData, clearCarrierData } from "../utils/ride";
 import { handcuffsData } from "./handcuffs";
 import { allowMobs, neutralMobs, excludeBlocks } from "../utils/config";
 import { abilitiesData, abilityManager, useAbility } from "../player/ability";
@@ -11,9 +11,9 @@ export const carryData = new Map();
 
 const texts = {
     mobDropped: "mob.dropped",
-    mobCarry_warn: "mob.carry.warn",
+    mobCarryWarn: "mob.carry.warn",
     powerCanceled: "power.canceled",
-    sneakTo_cancel: "sneakTo.cancel"
+    sneakToCancel: "sneakTo.cancel"
 };
 
 const sounds = {
@@ -22,7 +22,7 @@ const sounds = {
     mobPush: "mob.shulker.shoot",
     mobDropped: "mob.horse.armor",
     powerCanceled: "mob.villager.no",
-    mobCarry_warn: "mob.villager.no"
+    mobCarryWarn: "mob.villager.no"
 };
 
 function mobWeight(player) {
@@ -60,7 +60,8 @@ function mobWeight(player) {
 
             case 8: // Copper golem
             case 33: // Turtle
-                player.addEffect("slowness", 7, { amplifier: 4, showParticles: false }); break
+                player.addEffect("slowness", 7, { amplifier: 4, showParticles: false });
+                break
         }
 }
 
@@ -68,7 +69,7 @@ function suffocationBlock(player, entity) {
     if (entity) {
         const distance = 0.50;
 
-        const blockLoc = [
+        const blockLocs = [
             { x: entity.location.x + distance, y: entity.location.y, z: entity.location.z },
             { x: entity.location.x - distance, y: entity.location.y, z: entity.location.z },
 
@@ -76,7 +77,7 @@ function suffocationBlock(player, entity) {
             { x: entity.location.x, y: entity.location.y, z: entity.location.z - distance }
         ];
 
-        blockLoc.forEach(b => {
+        blockLocs.forEach(b => {
             const block = entity.dimension.getBlock({ x: b.x, y: b.y, z: b.z });
 
             const excludeBlock = excludeBlocks.find(eb => eb === block.typeId);
@@ -101,7 +102,7 @@ export function mobCarry() {
         if (player.isSprinting || mainHand || offHand || gamemode === "Spectator" || !entity) {
             player.onScreenDisplay.setActionBar({ rawtext: [{ text: "§c" }, { translate: texts.mobDropped }] });
             player.playSound(sounds.mobDropped, { volume: 20 });
-            return clearPlayer_data({ Player: player })
+            return clearPlayerData({ Player: player })
         }
 
         if (entity) {
@@ -150,7 +151,7 @@ export function powerCount({ Player, Target, EventCancel } = {}) {
                 if (power === 16) whiteBars = "§f▌".repeat(Math.abs(maxBar - (power - 1)))
                 else whiteBars = "§f▌".repeat(Math.abs(maxBar - power))
 
-                system.run(() => player.onScreenDisplay.setActionBar({ rawtext: [{ text: `${greenBars}${whiteBars}§f ${power} §l` }, { translate: texts.sneakTo_cancel }] }))
+                system.run(() => player.onScreenDisplay.setActionBar({ rawtext: [{ text: `${greenBars}${whiteBars}§f ${power} §l` }, { translate: texts.sneakToCancel }] }))
             }
         }
         return
@@ -171,7 +172,7 @@ export function powerCount({ Player, Target, EventCancel } = {}) {
 
 export function takeMob(player, target, e) {
     if (world.getAllPlayers().find(p => carryData.get(p.id)?.id === target.id) || !allowMobs.find(m => target.typeId === m)) return
-    // Eğer bir oyuncu zaten o mob'u taşıyorsa aldırma veya liste dışı bir mob ise
+    // Eğer bir oyuncu zaten o mob'u taşıyorsa veya liste dışı bir mob ise aldırma
 
     if (player.isSneaking && !player.isGliding) {
         e.cancel = true;
@@ -183,15 +184,15 @@ export function takeMob(player, target, e) {
         if (!mainHand && !offHand && allowMobs.find(m => target.typeId === m)) {
             carryData.set(player.id, { id: target.id, typeId: target.typeId, carry: true });
 
-            clearRide_data(target);
+            clearRideData(target);
 
             playerSettings({ Player: player });
             return system.run(() => player.playSound(sounds.mobTake))
         }
 
         system.run(() => {
-            player.sendMessage({ rawtext: [{ text: "§c" }, { translate: texts.mobCarry_warn }] });
-            player.playSound(sounds.mobCarry_warn)
+            player.sendMessage({ rawtext: [{ text: "§c" }, { translate: texts.mobCarryWarn }] });
+            player.playSound(sounds.mobCarryWarn)
         })
     }
 }
@@ -218,14 +219,14 @@ export function pushMob(player, target, e) {
 
         system.run(() => target.applyKnockback(targetLoc, viewDirection.y));
 
-        const start_abilityRun = system.runInterval(() => {
+        const startAbilityRun = system.runInterval(() => {
             if (!target || !target.isValid) {
-                system.clearRun(start_abilityRun); // Çökme önlemek için (boyut değiştirirken çökmemesi için)
-                system.clearRun(end_abilityRun)
+                system.clearRun(startAbilityRun); // Çökme önlemek için (boyut değiştirirken çökmemesi için)
+                system.clearRun(endAbilityRun)
             }
             useAbility({ Player: player, Target: target })
         });
-        const end_abilityRun = system.runTimeout(() => system.clearRun(start_abilityRun), power * 2);
+        const endAbilityRun = system.runTimeout(() => system.clearRun(startAbilityRun), power * 2);
 
         const startRun = system.runInterval(() => {
             if (!target || !target.isValid) {
@@ -233,7 +234,7 @@ export function pushMob(player, target, e) {
                 return system.clearRun(endRun)
             }
 
-            if (abilityH === undefined) addMob_ride({ Player: player, Target: target, StartRun: startRun, EndRun: endRun }); // Eğer yeteneği kullanıyorsa üst üste bindirme
+            if (abilityH === undefined) addMobRide({ Player: player, Target: target, StartRun: startRun, EndRun: endRun }); // Eğer yeteneği kullanıyorsa üst üste bindirme
             else useAbility({ Player: player, Target: target, ViewDirection: viewDirection, Power: power })
         });
 
@@ -243,19 +244,19 @@ export function pushMob(player, target, e) {
         }, power)
 
         system.run(() => player.playSound(sounds.mobPush));
-        addMob_ride({ Player: player, Target: target });
+        addMobRide({ Player: player, Target: target });
     }
 
-    else addMob_ride({ Player: player, Target: target });
+    else addMobRide({ Player: player, Target: target });
 
     playerSettings({ Player: player, DataDelete: true });
 
     if (neutralMobs.indexOf(target.typeId) === -1) return
 
-    const playerGamemode = player.getGameMode();
     const difficulty = world.getDifficulty();
 
     if (difficulty !== "Peaceful") {
+        const playerGamemode = player.getGameMode();
         system.run(() => { // Canlının agresifleşmesini önlemek için oyun motorunu sabote etme
             player.setGameMode(GameMode.Spectator);
             system.runTimeout(() => player.setGameMode(playerGamemode), 1)
@@ -263,10 +264,10 @@ export function pushMob(player, target, e) {
     }
 }
 
-export function clearMob_data(deadEntity) {
+export function clearMobData(deadEntity) {
     const player = world.getAllPlayers().find(p => carryData.get(p.id)?.id === deadEntity.id);
-    if (player) clearPlayer_data({ Player: player })
+    if (player) clearPlayerData({ Player: player })
 
     handcuffsData.delete(deadEntity.id);
-    clearRide_data(deadEntity); clearCarrier_data(deadEntity)
+    clearRideData(deadEntity); clearCarrierData(deadEntity)
 }

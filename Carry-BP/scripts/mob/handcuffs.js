@@ -12,10 +12,10 @@ export function mobHandcuffs({ Player, Target, EventCancel } = {}) {
             world.getDimension("the_end")
         ];
 
-        dimensions.forEach(dimension => {
+        for (const dimension of dimensions) {
             const entities = dimension.getEntities().filter(e => handcuffsData.get(e.id)?.key);
             for (const entity of entities) entity.addEffect("slowness", 3, { amplifier: 255, showParticles: false })
-        })
+        }
         return
     }
 

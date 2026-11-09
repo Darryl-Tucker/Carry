@@ -1,17 +1,17 @@
 import { world } from "@minecraft/server";
 
-import { pushMob, carryData, takeMob, clearMob_data, powerCount } from "../mob/carry";
-import { playerSettings, clearPlayer_data } from "../player/playerData";
-import { addPlayer_ride, clearRide_data, clearCarrier_data } from "./ride";
+import { pushMob, carryData, takeMob, clearMobData, powerCount } from "../mob/carry";
+import { playerSettings, clearPlayerData } from "../player/playerData";
+import { addPlayerRide, clearRideData, clearCarrierData } from "./ride";
 import { mobHandcuffs, dropHandcuffs } from "../mob/handcuffs";
 import { addonTutorial, DiskToRAM } from "./config";
 import { abilityBar } from "../player/ability";
 
 world.beforeEvents.playerLeave.subscribe(e => {
     const player = e.player;
-
-    clearPlayer_data({ Player: player, PlayerLeave: true })
+    clearPlayerData({ Player: player, PlayerLeave: true })
 });
+
 world.afterEvents.playerSpawn.subscribe(e => {
     const player = e.player;
 
@@ -28,7 +28,7 @@ world.beforeEvents.entityHurt.subscribe(e => {
     const hEntity = e.hurtEntity.typeId !== "minecraft:player";
     const hurtEntity = e.hurtEntity;
 
-    if (!hEntity && carryData.has(hurtEntity.id)) clearPlayer_data({ Player: hurtEntity })
+    if (!hEntity && carryData.has(hurtEntity.id)) clearPlayerData({ Player: hurtEntity })
 
     if (hEntity) {
         if (carryData.has(damagingEntity?.id)) return pushMob(damagingEntity, hurtEntity, e)
@@ -37,8 +37,8 @@ world.beforeEvents.entityHurt.subscribe(e => {
 
         if (carryPlayer) return playerSettings({ Player: carryPlayer, DataDelete: true }) // Mob taşınırken hasar alırsa bırak
 
-        clearCarrier_data(hurtEntity);
-        clearRide_data(hurtEntity);
+        clearCarrierData(hurtEntity);
+        clearRideData(hurtEntity);
     }
 });
 
@@ -50,12 +50,12 @@ world.beforeEvents.playerInteractWithEntity.subscribe(e => {
 
     if (carryData.has(player.id)) {
         abilityBar(player);
-        powerCount({ Player: player, Target: target, EventCancel: e });
+        return powerCount({ Player: player, Target: target, EventCancel: e });
     }
-    else takeMob(player, target, e);
 
+    takeMob(player, target, e);
     mobHandcuffs({ Player: player, Target: target, EventCancel: e });
-    addPlayer_ride(player, target)
+    addPlayerRide(player, target)
 });
 
 world.beforeEvents.playerBreakBlock.subscribe(e => { if (carryData.has(e.player.id)) e.cancel = true });
@@ -70,10 +70,10 @@ world.afterEvents.entityDie.subscribe(e => {
 
     if (dEntity) {
         dropHandcuffs(deadEntity);
-        clearMob_data(deadEntity)
+        return clearMobData(deadEntity)
     }
 
-    else if (!dEntity && carryData.has(deadEntity.id)) clearPlayer_data({ Player: deadEntity })
+    if (!dEntity && carryData.has(deadEntity.id)) clearPlayerData({ Player: deadEntity })
 });
 
 const worldLoad = world.afterEvents.worldLoad.subscribe(() => {

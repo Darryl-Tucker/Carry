@@ -19,7 +19,7 @@ export function playerSettings({ Player, DataDelete }) {
     })
 }
 
-export function clearPlayer_data({ Player, PlayerLeave}) {
+export function clearPlayerData({ Player, PlayerLeave}) {
     if (PlayerLeave) {
         carryData.delete(Player.id);
         abilitiesData.delete(Player.id);
