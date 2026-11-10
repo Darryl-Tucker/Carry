@@ -90,16 +90,13 @@ export function clearRideData(entity) {
 
         const currentCarriedLevel = data?.carriedLevel - 1;
 
-        if (!data.carriedLevel)
-
-            if (carriedLevel.carriedLevel === riderData.get(entity.id).level) {
-                data.carriedLevel--;
-                if (carriedLevel.carriedLevel < 1) carrierData.delete(carrier.id)
-                break
-            }
+        if (!data.carriedLevel && data.carriedLevel === riderData.get(entity.id).level) {
+            data.carriedLevel--;
+            if (carriedLevel.carriedLevel < 1) carrierData.delete(carrier.id)
+            break
+        }
 
         for (const rider of carrier.dimension.getEntities().filter(r => riderData.get(r.id)?.id === carrier.id && entity.id !== r.id)) {
-
             if (data.carriedLevel > 0) {
                 data.carriedLevel--;
 
