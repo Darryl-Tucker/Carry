@@ -42,7 +42,7 @@ export const allowMobs = [
     "minecraft:turtle", // 33
 ];
 
-export const neutralMobs = [ ];
+export const neutralMobs = [];
 
 allowMobs.forEach((mob, index) => {
     switch (index) {
@@ -302,7 +302,7 @@ export const excludeBlocks = [
 
 export function addonTutorial(player) {
     system.runTimeout(() => {
-        if (player.getDynamicProperty("ver1") === true) return
+        if (player.getDynamicProperty("ver1")) return
 
         const versions = ["dontShow_again", "ver0"];
 
@@ -325,9 +325,8 @@ export function addonTutorial(player) {
     }, 100)
 }
 
-export function DiskToRAM({Player, WorldLoadEvent}) {
-    if (WorldLoadEvent) {
-        // Handcuffs & Key
+export function DiskToRAM({ Player, WorldLoadEvent }) {
+    if (WorldLoadEvent) { // Handcuffs & Key
         const entities = Player.dimension.getEntities().filter(e => !handcuffsData.has(e.id) && (e.getDynamicProperty("key") !== undefined || e.getDynamicProperty("handcuffs") === true));
 
         for (const entity of entities) {
@@ -339,6 +338,9 @@ export function DiskToRAM({Player, WorldLoadEvent}) {
     const findCarrier = world.getAllPlayers().find(p => Player.getDynamicProperty("ride") === p.id)
     if (findCarrier) riderData.set(Player.id, findCarrier.id)
 
-    if (Player.getDynamicProperty("boomerang")) abilitiesData.set(Player.id, { boomerang: true })
-    if (Player.getDynamicProperty("skySpinner")) abilitiesData.set(Player.id, { ...abilitiesData.get(Player.id), skySpinner: true })
+    const data = abilitiesData.get(Player.id) ?? {};
+
+    if (Player.getDynamicProperty("boomerang")) data.boomerang = true
+    if (Player.getDynamicProperty("skySpinner")) data.skySpinner = true
+    abilitiesData.set(Player.id, data)
 }

@@ -14,7 +14,7 @@ const sounds = {
     unlockedAbility: "random.levelup",
 };
 
-export class abilityManager {
+export class unlockAbilityManager {
     constructor(player, abilitiesData) {
         this.player = player;
         this.abilitiesData = abilitiesData;

@@ -1,6 +1,6 @@
 import { world, EntityComponentTypes, system } from "@minecraft/server";
 
-import { abilitiesData, abilityManager } from "../player/ability";
+import { abilitiesData, unlockAbilityManager } from "../player/ability";
 
 export const riderData = new Map();
 export const carrierData = new Map();
@@ -56,18 +56,15 @@ export function addMobRide({ Player, Target, StartRun, EndRun }) {
     }).find(c => c.id !== Target.id && !riderData.has(c.id)); // Taşıyıcıyı bul
 
     if (carrier && !carrierData.has(Target.id)) { // Eğer taşıyıcı varsa
-        let carriedLevel = carrierData.get(carrier.id)?.carriedLevel;
-
-        carrierData.set(carrier.id, { carriedLevel: (carriedLevel ?? 0) + 1 });
-
-        carriedLevel = carrierData.get(carrier.id).carriedLevel;
+        const data = carrierData.get(carrier.id) ?? {};
+        data.carriedLevel = (data.carriedLevel ?? 0) + 1;
+        carrierData.set(carrier.id, data);
 
         for (const rider of Target.dimension.getEntities().filter(r => riderData.get(r.id)?.id === carrier.id))
-            riderData.set(rider.id, { id: carrier.id, level: riderData.get(rider.id).level + 1 }) // Yeni bir mob bineceği için bütün binen mob'ları bir tık yukarı kaydır
+            riderData.get(rider.id).level++; // Yeni bir mob bineceği için bütün binen mob'ları bir tık yukarı kaydır
 
         riderData.set(Target.id, { id: carrier.id, level: 1 }); // Hedefi taşıyıcıya bindir
-
-        const manager = new abilityManager(Player, abilitiesData);
+        const manager = new unlockAbilityManager(Player, abilitiesData);
 
         manager.progressBoomerang()
 
@@ -86,30 +83,32 @@ export function addPlayerRide(player, target) {
 }
 
 export function clearRideData(entity) {
-    if (!riderData.has(entity.id)) return
+    if (!riderData.get(entity.id)?.id) return
+
+    console.warn(riderData.get(entity)?.id);
 
     for (const carrier of entity.dimension.getEntities().filter(c => carrierData.has(c.id) && riderData.get(entity.id)?.id === c.id)) {
-        let carriedLevel = carrierData.get(carrier.id)?.carriedLevel;
-        const currentCarriedLevel = carrierData.get(carrier.id)?.carriedLevel - 1;
+        const data = carrierData.get(carrier.id) ?? {};
 
-        if (carriedLevel.carriedLevel === riderData.get(entity.id).level) {
-            carrierData.set(carrier.id, { carriedLevel: carriedLevel.carriedLevel - 1 });
-            carriedLevel = carrierData.get(carrier.id).carriedLevel;
+        const currentCarriedLevel = data?.carriedLevel - 1;
 
-            if (carriedLevel.carriedLevel < 1) carrierData.delete(carrier.id)
+        if (!data.carriedLevel)
 
-            break
-        }
+            if (carriedLevel.carriedLevel === riderData.get(entity.id).level) {
+                data.carriedLevel--;
+                if (carriedLevel.carriedLevel < 1) carrierData.delete(carrier.id)
+                break
+            }
 
         for (const rider of carrier.dimension.getEntities().filter(r => riderData.get(r.id)?.id === carrier.id && entity.id !== r.id)) {
-            if (carriedLevel > 0) {
-                carrierData.set(carrier.id, { carriedLevel: carriedLevel - 1 });
-                carriedLevel = carrierData.get(carrier.id).carriedLevel;
 
-                riderData.set(rider.id, { ...riderData.get(rider.id), level: carriedLevel })
+            if (data.carriedLevel > 0) {
+                data.carriedLevel--;
+
+                riderData.get(rider.id).level = data.carriedLevel
             }
         }
-        carrierData.set(carrier.id, { carriedLevel: currentCarriedLevel });
+        data.carriedLevel = currentCarriedLevel
     }
     riderData.delete(entity.id);
 }

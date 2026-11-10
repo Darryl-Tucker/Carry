@@ -5,7 +5,7 @@ import { addMobRide } from "../utils/ride";
 import { clearRideData, clearCarrierData } from "../utils/ride";
 import { handcuffsData } from "./handcuffs";
 import { allowMobs, neutralMobs, excludeBlocks } from "../utils/config";
-import { abilitiesData, abilityManager, useAbility } from "../player/ability";
+import { abilitiesData, unlockAbilityManager, useAbility } from "../player/ability";
 
 export const carryData = new Map();
 
@@ -127,36 +127,38 @@ export function mobCarry() {
 export function powerCount({ Player, Target, EventCancel } = {}) {
     if (!EventCancel) {
         for (const player of world.getAllPlayers().filter(p => carryData.has(p.id))) {
-            const data = carryData.get(player.id);
-            const power = carryData.get(player.id)?.power ?? 0;
+            const data = carryData.get(player.id) ?? {};
+            data.power = data.power ?? 0;
 
-            if (power > 0 && player.isSneaking) {
-                carryData.set(player.id, { ...data, power: 0, powerC: null });
-
-                player.onScreenDisplay.setActionBar({ rawtext: [{ text: "§c" }, { translate: texts.powerCanceled }] });
-                player.playSound(sounds.powerCanceled);
-            }
-
-            else if (data?.powerC) {
-                if (power < 15) {
+            if (data?.powerCount) {
+                if (data.power < 15) {
                     system.run(() => player.playSound(sounds.powerCount, { pitch: 2 }));
-                    carryData.set(player.id, { ...data, power: power + 1 });
+                    data.power = data.power + 1
                 }
-
                 const maxBar = 15;
-                const greenBars = "§a▌".repeat(power);
+                const greenBars = "§a▌".repeat(data.power);
 
                 let whiteBars;
 
-                if (power === 16) whiteBars = "§f▌".repeat(Math.abs(maxBar - (power - 1)))
-                else whiteBars = "§f▌".repeat(Math.abs(maxBar - power))
+                if (data.power === 16) whiteBars = "§f▌".repeat(Math.abs(maxBar - (data.power - 1)))
+                else whiteBars = "§f▌".repeat(Math.abs(maxBar - data.power))
 
-                system.run(() => player.onScreenDisplay.setActionBar({ rawtext: [{ text: `${greenBars}${whiteBars}§f ${power} §l` }, { translate: texts.sneakToCancel }] }))
+                return system.run(() => player.onScreenDisplay.setActionBar({ rawtext: [{ text: `${greenBars}${whiteBars}§f ${data.power} §l` }, { translate: texts.sneakToCancel }] }))
+            }
+
+            if (data?.power > 0 && player.isSneaking) {
+                data.power = null;
+                data.powerCount = null;
+
+                player.onScreenDisplay.setActionBar({ rawtext: [{ text: "§c" }, { translate: texts.powerCanceled }] });
+                player.playSound(sounds.powerCanceled);
             }
         }
         return
     }
 
+
+    EventCancel.cancel = true
     // Switch mantığı
     const data = carryData.get(Player.id);
 
@@ -164,10 +166,9 @@ export function powerCount({ Player, Target, EventCancel } = {}) {
     const hand = Player.getComponent("minecraft:inventory").container.getItem(selectedSlot);
 
     if (!hand && Target.id === data?.id) {
-        if (data?.powerC !== true && !Player.isSneaking) carryData.set(Player.id, { ...data, powerC: true })
-        else carryData.set(Player.id, { ...data, powerC: null });
+        if (!data?.powerCount && !Player.isSneaking) return data.powerCount = true
+        data.powerCount = null
     }
-    EventCancel.cancel = true
 }
 
 export function takeMob(player, target, e) {
@@ -208,7 +209,7 @@ export function pushMob(player, target, e) {
     if (power > 0) {
         const viewDirection = player.getViewDirection();
 
-        const manager = new abilityManager(player, abilitiesData);
+        const manager = new unlockAbilityManager(player, abilitiesData);
 
         manager.progressSkySpinner();
 
