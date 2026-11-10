@@ -85,8 +85,6 @@ export function addPlayerRide(player, target) {
 export function clearRideData(entity) {
     if (!riderData.get(entity.id)?.id) return
 
-    console.warn(riderData.get(entity)?.id);
-
     for (const carrier of entity.dimension.getEntities().filter(c => carrierData.has(c.id) && riderData.get(entity.id)?.id === c.id)) {
         const data = carrierData.get(carrier.id) ?? {};
 
