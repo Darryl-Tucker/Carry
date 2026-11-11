@@ -70,12 +70,8 @@ export class UseAbilityManager {
         this.target = target;
         this.power = carryData.get(this.player.id)?.power;
         this.ab = abilitiesData.get(this.player.id);
-
-        this.viewDirection = this.player.getViewDirection();
-        this.targetLoc = {
-            x: this.viewDirection.x * this.power,
-            z: this.viewDirection.z * this.power
-        };
+        this.viewDirection = viewDirection;
+        this.targetLoc = targetLoc
     }
 
     loop() {
