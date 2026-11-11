@@ -1,4 +1,4 @@
-# 🐄 Carry
+# 🐄 Carry & Throw!
 
 Pick up, carry, throw, and stack mobs in Minecraft Bedrock Edition, and handcuff them when they misbehave!
 
