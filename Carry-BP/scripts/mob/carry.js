@@ -5,7 +5,7 @@ import { addMobRide } from "../utils/ride";
 import { clearRideData, clearCarrierData } from "../utils/ride";
 import { handcuffsData } from "./handcuffs";
 import { allowMobs, neutralMobs, excludeBlocks } from "../utils/config";
-import { abilitiesData, unlockAbilityManager, useAbility } from "../player/ability";
+import { abilitiesData, UnlockAbilityManager, useAbility } from "../player/ability";
 
 export const carryData = new Map();
 
@@ -209,7 +209,7 @@ export function pushMob(player, target, e) {
     if (power > 0) {
         const viewDirection = player.getViewDirection();
 
-        const manager = new unlockAbilityManager(player, abilitiesData);
+        const manager = new UnlockAbilityManager(player, abilitiesData);
 
         manager.progressSkySpinner();
 

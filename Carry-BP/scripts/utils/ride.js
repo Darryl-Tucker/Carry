@@ -1,6 +1,6 @@
 import { world, EntityComponentTypes, system } from "@minecraft/server";
 
-import { abilitiesData, unlockAbilityManager } from "../player/ability";
+import { abilitiesData, UnlockAbilityManager } from "../player/ability";
 
 export const riderData = new Map();
 export const carrierData = new Map();
@@ -16,11 +16,9 @@ export function mobRide() {
         for (const rider of dimension.getEntities().filter(r => riderData.has(r.id))) {
             const carrier = rider.dimension.getEntities().find(c => riderData.get(rider.id).id === c.id)
             if (carrier) {
-                const data = riderData.get(rider.id);
-
                 const carrierLoc = {
                     x: carrier.location.x,
-                    y: carrier.location.y + data.level,
+                    y: carrier.location.y + riderData.get(rider.id).level,
                     z: carrier.location.z
                 };
                 rider.teleport(carrierLoc)
@@ -64,7 +62,7 @@ export function addMobRide({ Player, Target, StartRun, EndRun }) {
             riderData.get(rider.id).level++; // Yeni bir mob bineceği için bütün binen mob'ları bir tık yukarı kaydır
 
         riderData.set(Target.id, { id: carrier.id, level: 1 }); // Hedefi taşıyıcıya bindir
-        const manager = new unlockAbilityManager(Player, abilitiesData);
+        const manager = new UnlockAbilityManager(Player, abilitiesData);
 
         manager.progressBoomerang()
 

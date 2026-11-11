@@ -14,7 +14,7 @@ const sounds = {
     unlockedAbility: "random.levelup",
 };
 
-export class unlockAbilityManager {
+export class UnlockAbilityManager {
     constructor(player, abilitiesData) {
         this.player = player;
         this.abilitiesData = abilitiesData;
@@ -90,6 +90,7 @@ export function abilityBar(player) {
 }
 
 export function useAbility({ Player, Target, TargetLoc, BomBack, ViewDirection, Power }) {
+    if (!Target || !Target.isValid) return
     const ab = abilitiesData.get(Player.id);
 
     switch (ab?.abilityPage) {
