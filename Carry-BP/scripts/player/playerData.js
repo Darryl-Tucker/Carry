@@ -25,7 +25,6 @@ export function clearPlayerData({ Player, PlayerLeave}) {
         abilitiesData.delete(Player.id);
         return riderData.delete(Player.id)
     }
-
     playerSettings({ Player: Player, DataDelete: true })
 }
 

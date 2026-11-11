@@ -327,8 +327,7 @@ export function addonTutorial(player) {
 
 export function DiskToRAM({ Player, WorldLoadEvent }) {
     if (WorldLoadEvent) { // Handcuffs & Key
-        const entities = Player.dimension.getEntities().filter(e => !handcuffsData.has(e.id) && (e.getDynamicProperty("key") !== undefined || e.getDynamicProperty("handcuffs") === true));
-
+        const entities = Player.dimension.getEntities().filter(e => !handcuffsData.has(e.id) && (e.getDynamicProperty("key") || e.getDynamicProperty("handcuffs")));
         for (const entity of entities) {
             const data = entity.getDynamicProperty("key");
             handcuffsData.set(entity.id, { status: true, key: data })

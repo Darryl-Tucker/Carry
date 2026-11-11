@@ -18,10 +18,11 @@ export function mobHandcuffs({ Player, Target, EventCancel } = {}) {
         }
         return
     }
-
+    
     if (Player.isSneaking || allowMobs.indexOf(Target.typeId) === -1) return
     const selectedSlot = Player.selectedSlotIndex;
-    const mainHand = Player.getComponent("minecraft:inventory").container.getItem(selectedSlot);
+    const container = Player.getComponent("minecraft:inventory").container;
+    const mainHand = container.getItem(selectedSlot);
     if (!mainHand?.typeId) return
 
     const useItems = ["carry:handcuffs", "carry:key"];
@@ -30,7 +31,7 @@ export function mobHandcuffs({ Player, Target, EventCancel } = {}) {
 
     EventCancel.cancel = true
 
-    if (hand.typeId === "carry:handcuffs" && !handcuffsData.has(Target.id)) {
+    if (mainHand.typeId === "carry:handcuffs" && !handcuffsData.has(Target.id)) {
         handcuffsData.set(Target.id, { status: true });
         Target.setDynamicProperty("handcuffs", true);
 
@@ -41,10 +42,8 @@ export function mobHandcuffs({ Player, Target, EventCancel } = {}) {
         return
     }
 
-    if (hand.typeId === "carry:key") {
+    if (mainHand.typeId === "carry:key") {
         if (!handcuffsData.get(Target.id)?.key && handcuffsData.get(Target.id)?.status) {
-            console.warn("2");
-
             handcuffsData.set(Target.id, { status: true, key: Player.id });
             Target.setDynamicProperty("key", Player.id);
 

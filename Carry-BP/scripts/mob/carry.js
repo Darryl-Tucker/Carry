@@ -5,7 +5,7 @@ import { addMobRide } from "../utils/ride";
 import { clearRideData, clearCarrierData } from "../utils/ride";
 import { handcuffsData } from "./handcuffs";
 import { allowMobs, neutralMobs, excludeBlocks } from "../utils/config";
-import { abilitiesData, UnlockAbilityManager, useAbility } from "../player/ability";
+import { abilitiesData, UnlockAbilityManager, UseAbilityManager } from "../player/ability";
 
 export const carryData = new Map();
 
@@ -79,7 +79,6 @@ function suffocationBlock(player, entity) {
 
         blockLocs.forEach(b => {
             const block = entity.dimension.getBlock({ x: b.x, y: b.y, z: b.z });
-
             const excludeBlock = excludeBlocks.find(eb => eb === block.typeId);
 
             if (excludeBlock) return
@@ -130,6 +129,14 @@ export function powerCount({ Player, Target, EventCancel } = {}) {
             const data = carryData.get(player.id) ?? {};
             data.power = data.power ?? 0;
 
+            if (data?.power > 0 && player.isSneaking) {
+                data.power = null;
+                data.powerCount = null;
+
+                player.onScreenDisplay.setActionBar({ rawtext: [{ text: "§c" }, { translate: texts.powerCanceled }] });
+                return player.playSound(sounds.powerCanceled);
+            }
+
             if (data?.powerCount) {
                 if (data.power < 15) {
                     system.run(() => player.playSound(sounds.powerCount, { pitch: 2 }));
@@ -143,15 +150,7 @@ export function powerCount({ Player, Target, EventCancel } = {}) {
                 if (data.power === 16) whiteBars = "§f▌".repeat(Math.abs(maxBar - (data.power - 1)))
                 else whiteBars = "§f▌".repeat(Math.abs(maxBar - data.power))
 
-                return system.run(() => player.onScreenDisplay.setActionBar({ rawtext: [{ text: `${greenBars}${whiteBars}§f ${data.power} §l` }, { translate: texts.sneakToCancel }] }))
-            }
-
-            if (data?.power > 0 && player.isSneaking) {
-                data.power = null;
-                data.powerCount = null;
-
-                player.onScreenDisplay.setActionBar({ rawtext: [{ text: "§c" }, { translate: texts.powerCanceled }] });
-                player.playSound(sounds.powerCanceled);
+                system.run(() => player.onScreenDisplay.setActionBar({ rawtext: [{ text: `${greenBars}${whiteBars}§f ${data.power} §l` }, { translate: texts.sneakToCancel }] }))
             }
         }
         return
@@ -202,53 +201,29 @@ export function pushMob(player, target, e) {
     if (target.id !== carryData.get(player.id)?.id) return
 
     const power = carryData.get(player.id)?.power;
-    const abilityH = abilitiesData.get(player.id)?.abilityPage;
-
     e.cancel = true;
 
     if (power > 0) {
         const viewDirection = player.getViewDirection();
-
-        const manager = new UnlockAbilityManager(player, abilitiesData);
-
-        manager.progressSkySpinner();
 
         const targetLoc = {
             x: viewDirection.x * power,
             z: viewDirection.z * power
         };
 
-        system.run(() => target.applyKnockback(targetLoc, viewDirection.y));
+        const Unlockmanager = new UnlockAbilityManager(player, abilitiesData);
+        const UseManager = new UseAbilityManager(player, viewDirection, target, targetLoc);
 
-        const startAbilityRun = system.runInterval(() => {
-            if (!target || !target.isValid) {
-                system.clearRun(startAbilityRun); // Çökme önlemek için (boyut değiştirirken çökmemesi için)
-                system.clearRun(endAbilityRun)
-            }
-            useAbility({ Player: player, Target: target })
+        Unlockmanager.skySpinner();
+        UseManager.loop();
+
+        system.run(() => {
+            target.applyKnockback(targetLoc, viewDirection.y);
+            player.playSound(sounds.mobPush)
         });
-        const endAbilityRun = system.runTimeout(() => system.clearRun(startAbilityRun), power * 2);
-
-        const startRun = system.runInterval(() => {
-            if (!target || !target.isValid) {
-                system.clearRun(startRun); // Çökme önlemek için (boyut değiştirirken çökmemesi için)
-                return system.clearRun(endRun)
-            }
-
-            if (abilityH === undefined) addMobRide({ Player: player, Target: target, StartRun: startRun, EndRun: endRun }); // Eğer yeteneği kullanıyorsa üst üste bindirme
-            else useAbility({ Player: player, Target: target, ViewDirection: viewDirection, Power: power })
-        });
-
-        const endRun = system.runTimeout(() => {
-            system.clearRun(startRun);
-            useAbility({ Player: player, Target: target, TargetLoc: targetLoc, BomBack: true }) // Mıknatıs özelliği ile geri getiriyoruz
-        }, power)
-
-        system.run(() => player.playSound(sounds.mobPush));
-        addMobRide({ Player: player, Target: target });
     }
 
-    else addMobRide({ Player: player, Target: target });
+    else addMobRide(player, target);
 
     playerSettings({ Player: player, DataDelete: true });
 

@@ -1,5 +1,8 @@
 import { system, EntityDamageCause } from "@minecraft/server";
 
+import { carryData } from "../mob/carry";
+import { addMobRide } from "../utils/ride";
+
 export const abilitiesData = new Map();
 
 const texts = {
@@ -23,7 +26,7 @@ export class UnlockAbilityManager {
 
     save() { this.abilitiesData.set(this.player.id, this.data) }
 
-    progressBoomerang() {
+    boomerang() {
         if (this.data?.boomerang) return
 
         this.data.AUS_boomerang = (this.data.AUS_boomerang ?? -1) + 1;
@@ -40,7 +43,7 @@ export class UnlockAbilityManager {
         }
     }
 
-    progressSkySpinner() {
+    skySpinner() {
         if (this.data?.skySpinner) return;
 
         const rot = this.player.getRotation();
@@ -58,6 +61,74 @@ export class UnlockAbilityManager {
             this.player.sendMessage({ rawtext: [{ text: ">>§a " }, { translate: texts.unlockedSkySpinner }] });
             system.run(() => this.player.playSound(sounds.unlockedAbility, { volume: 1, pitch: 0.5 }))
         }
+    }
+}
+
+export class UseAbilityManager {
+    constructor(player, viewDirection, target, targetLoc) {
+        this.player = player;
+        this.target = target;
+        this.power = carryData.get(this.player.id)?.power;
+        this.ab = abilitiesData.get(this.player.id);
+
+        this.viewDirection = this.player.getViewDirection();
+        this.targetLoc = {
+            x: this.viewDirection.x * this.power,
+            z: this.viewDirection.z * this.power
+        };
+    }
+
+    loop() {
+        const runIntervalId = system.runInterval(() => {
+            if (!this.target || !this.target.isValid) {
+                system.clearRun(runIntervalId);
+                return system.clearRun(runTimeOutId)
+            }
+            switch (this.ab?.abilityPage) {
+                default:
+                    this.normal();
+                    break
+                case 0: // boomerang
+                    if (this.ab?.boomerang) this.boomerang()
+                    break
+                case 1: // Sky Spinner
+                    if (this.ab?.skySpinner) this.skySpinner()
+                    break
+            }
+        });
+
+        const runTimeOutId = system.runTimeout(() => {
+            system.clearRun(runIntervalId);
+            if (this.ab?.abilityPage === 0) this.boomerang({ BomBack: true })
+        }, this.power)
+    }
+
+    normal() { addMobRide(this.player, this.target) }
+
+    boomerang({ BomBack } = {}) {
+        if (BomBack) return this.target.applyKnockback({ x: -this.targetLoc.x, z: -this.targetLoc.z }, 0.50);
+
+        const mobs = this.target.dimension.getEntities({
+            location: this.target.location,
+            maxDistance: 1.70,
+            excludeTypes: ["minecraft:item"]
+        }).filter(m => m.id !== this.target.id && m.id !== this.player.id);
+
+        for (const mob of mobs) {
+            mob.applyDamage(4, {
+                cause: EntityDamageCause.entityAttack,
+                damagingEntity: this.player
+            })
+        }
+    }
+
+    skySpinner() {
+        const oMobs = this.target.dimension.getEntities({
+            location: this.target.location,
+            maxDistance: 1.20,
+        }).find(o => o.id !== this.player.id && o.id !== this.target.id);
+
+        if (oMobs) system.run(() => oMobs.applyImpulse({ x: this.viewDirection.x, y: this.power - 7, z: this.viewDirection.z + 2 }))
     }
 }
 
@@ -87,43 +158,4 @@ export function abilityBar(player) {
     });
 
     if (ab?.abilityPage > maxAbility) abilitiesData.set(player.id, { ...ab, abilityPage: undefined });
-}
-
-export function useAbility({ Player, Target, TargetLoc, BomBack, ViewDirection, Power }) {
-    if (!Target || !Target.isValid) return
-    const ab = abilitiesData.get(Player.id);
-
-    switch (ab?.abilityPage) {
-        case 0: // boomerang
-            if (ab?.boomerang) {
-                if (BomBack) return Target.applyKnockback({ x: -TargetLoc.x, z: -TargetLoc.z }, 0.50);
-
-                const mobs = Target.dimension.getEntities({
-                    location: Target.location,
-                    maxDistance: 1.70,
-                    excludeTypes: ["minecraft:item"]
-                }).filter(m => m.id !== Target.id && m.id !== Player.id);
-
-                for (const mob of mobs) {
-                    mob.applyDamage(4, {
-                        cause: EntityDamageCause.entityAttack,
-                        damagingEntity: Player
-                    })
-                }
-                break
-            }
-        case 1: // Sky Spinner
-            if (!ViewDirection) return
-
-            if (ab?.skySpinner) {
-                const oMobs = Target.dimension.getEntities({
-                    location: Target.location,
-                    maxDistance: 1.20,
-                }).find(o => o.id !== Player.id && o.id !== Target.id);
-
-                if (oMobs) {
-                    system.run(() => oMobs.applyImpulse({ x: ViewDirection.x, y: Power - 7, z: ViewDirection.z + 2 })); // Oyuncuyu fırlat
-                }
-            }
-    }
 }
