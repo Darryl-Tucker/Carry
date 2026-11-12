@@ -40,6 +40,11 @@ export const allowMobs = [
     "minecraft:parrot", // 31
     "minecraft:polar_bear", // 32
     "minecraft:turtle", // 33
+    "minecraft:enderman", // 34
+    "minecraft:squid", // 35
+    "minecraft:glow_squid", // 36
+    "minecraft:tadpole", // 37
+    "minecraft:allay", // 38
 ];
 
 export const neutralMobs = [];
@@ -305,7 +310,6 @@ export function addonTutorial(player) {
         if (player.getDynamicProperty("ver1")) return
 
         const versions = ["dontShow_again", "ver0"];
-
         for (const ver of versions) player.setDynamicProperty(ver, undefined)
 
         const form = new ActionFormData();

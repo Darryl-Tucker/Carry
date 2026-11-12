@@ -80,9 +80,10 @@ export class UseAbilityManager {
                 system.clearRun(runIntervalId);
                 return system.clearRun(runTimeOutId)
             }
+
             switch (this.ab?.abilityPage) {
-                default:
-                    this.normal();
+                default: // normal
+                    this.normal(runIntervalId, runTimeOutId)
                     break
                 case 0: // boomerang
                     if (this.ab?.boomerang) this.boomerang()
@@ -93,13 +94,16 @@ export class UseAbilityManager {
             }
         });
 
-        const runTimeOutId = system.runTimeout(() => {
+        const runTimeOutId = system.runTimeout(async () => {
+            if (this.ab?.abilityPage === 0 && this.ab?.boomerang) {
+                this.boomerang({ BomBack: true });
+                await system.waitTicks(this.power)
+            }
             system.clearRun(runIntervalId);
-            if (this.ab?.abilityPage === 0) this.boomerang({ BomBack: true })
         }, this.power)
     }
 
-    normal() { addMobRide(this.player, this.target) }
+    normal(startRun, endRun) { addMobRide({ Player: this.player, Target: this.target, StartRun: startRun, EndRun: endRun }) }
 
     boomerang({ BomBack } = {}) {
         if (BomBack) return this.target.applyKnockback({ x: -this.targetLoc.x, z: -this.targetLoc.z }, 0.50);

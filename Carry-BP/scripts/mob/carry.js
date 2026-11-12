@@ -223,7 +223,7 @@ export function pushMob(player, target, e) {
         });
     }
 
-    else addMobRide(player, target);
+    else addMobRide({ Player: player, Target: target });
 
     playerSettings({ Player: player, DataDelete: true });
 

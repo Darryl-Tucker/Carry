@@ -46,33 +46,36 @@ export function playerRide() {
     }
 }
 
-export function addMobRide(player, target) {
-    const carrier = target.dimension.getEntities({
-        location: target.location,
+export function addMobRide({ Player, Target, StartRun, EndRun }) {
+    const carrier = Target.dimension.getEntities({
+        location: Target.location,
         maxDistance: 1.75,
         excludeTypes: ["minecraft:player", "minecraft:item", "minecraft:arrow", "minecraft:xp_orb"]
-    }).find(c => c.id !== target.id && !riderData.has(c.id)); // Taşıyıcıyı bul
+    }).find(c => c.id !== Target.id && !riderData.has(c.id)); // Taşıyıcıyı bul
 
-    if (carrier && !carrierData.has(target.id)) { // Eğer taşıyıcı varsa
+    if (carrier && !carrierData.has(Target.id)) { // Eğer taşıyıcı varsa
         const data = carrierData.get(carrier.id) ?? {};
         data.carriedLevel = (data.carriedLevel ?? 0) + 1;
         carrierData.set(carrier.id, data);
 
-        for (const rider of target.dimension.getEntities().filter(r => riderData.get(r.id)?.id === carrier.id))
+        for (const rider of Target.dimension.getEntities().filter(r => riderData.get(r.id)?.id === carrier.id))
             riderData.get(rider.id).level++; // Yeni bir mob bineceği için bütün binen mob'ları bir tık yukarı kaydır
 
-        riderData.set(target.id, { id: carrier.id, level: 1 }); // Hedefi taşıyıcıya bindir
-        const manager = new UnlockAbilityManager(player, abilitiesData);
+        riderData.set(Target.id, { id: carrier.id, level: 1 }); // Hedefi taşıyıcıya bindir
+        const manager = new UnlockAbilityManager(Player, abilitiesData);
 
-        manager.boomerang()
+        manager.boomerang();
+
+        if (!StartRun && !EndRun) return
+        system.clearRun(StartRun); // Run'ları temizleyebiliriz gerek kalmadı
+        system.clearRun(EndRun)
     }
 }
 
 export function addPlayerRide(player, target) {
-    if (target.typeId === "minecraft:player" && !player.isSneaking) {
-        riderData.set(player.id, target.id);
-        player.setDynamicProperty("ride", target.id)
-    }
+    if (target.typeId !== "minecraft:player" && player.isSneaking) return
+    riderData.set(player.id, target.id);
+    player.setDynamicProperty("ride", target.id)
 }
 
 export function clearRideData(entity) {
@@ -90,11 +93,10 @@ export function clearRideData(entity) {
         }
 
         for (const rider of carrier.dimension.getEntities().filter(r => riderData.get(r.id)?.id === carrier.id && entity.id !== r.id)) {
-            if (data.carriedLevel > 0) {
-                data.carriedLevel--;
+            if (data.carriedLevel < 0) return
+            data.carriedLevel--;
 
-                riderData.get(rider.id).level = data.carriedLevel
-            }
+            riderData.get(rider.id).level = data.carriedLevel
         }
         data.carriedLevel = currentCarriedLevel
     }

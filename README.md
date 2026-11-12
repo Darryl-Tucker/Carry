@@ -87,3 +87,4 @@ Iron Golem, Cow, Sheep, Chicken, Villager, Cod, Cat, Wolf, Copper Golem, Pig, Ho
 - **October 31, 2026**: Throwing mechanics have been changed.
 - **November 01, 2026**: Throwing a mob directly at another player will apply a knockback effect to that player upon impact.
 - **November 07, 2026**: Added 2 new abilities, fixed bugs, and optimized.
+- **November 12, 2026**: Added mobs, bug fixed.
