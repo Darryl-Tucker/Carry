@@ -15,8 +15,9 @@ mob.carry.warn=Your hands are full!
 mob.dropped=Mob Dropped!
 sneakTo.cancel=Block\nSneak to cancel
 
-## ride.js
-action.hint.exit.player=Crouch or jump to dismount from the player
+## ../player/ride.js
+rode.player=Crouch or jump to dismount from the player
+carried.player=Sneak, then jump to drop the player off
 
 ## ability.js
 name.boomerang=Boomerang

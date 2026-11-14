@@ -15,8 +15,9 @@ mob.carry.warn=Ellerin dolu!
 mob.dropped=Mob'u düşürdün!
 sneakTo.cancel=Blok\nİptal etmek için eğil
 
-## ride.js
-action.hint.exit.player=Oyuncudan inmek için eğilin ya da zıplayın
+## ../player/ride.js
+rode.player=Oyuncudan inmek için eğilin ya da zıplayın
+carried.player=Oyuncuyu sırtınızdan atmak için ilk önce eğilin ardından zıplayın
 
 ## ability.js
 name.boomerang=Bumerang

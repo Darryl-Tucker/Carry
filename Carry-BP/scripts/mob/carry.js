@@ -1,10 +1,12 @@
 import { world, system, GameMode, EquipmentSlot, EntityComponentTypes } from "@minecraft/server";
 
-import { clearPlayerData, playerSettings } from "../player/data";
-import { addMobRide } from "../utils/ride";
-import { clearRideData, clearCarrierData } from "../utils/ride";
-import { allowMobs, neutralMobs, excludeBlocks } from "../utils/config";
+import { addMobRide, riderData } from "./ride";
+import { clearRideData, clearCarrierData } from "./ride";
+
 import { abilitiesData, UnlockAbilityManager, UseAbilityManager } from "../player/ability";
+import { clearPlayerData, playerSettings } from "../player/data";
+
+import { allowMobs, neutralMobs, excludeBlocks } from "../utils/config";
 
 export const carryData = new Map();
 
@@ -80,6 +82,8 @@ function suffocationBlock(player, entity) {
         ];
 
         blockLocs.forEach(b => {
+            if (b.y > 319 || b.y < -63) return
+
             const block = entity.dimension.getBlock({ x: b.x, y: b.y, z: b.z });
             const excludeBlock = excludeBlocks.find(eb => eb === block.typeId);
 
@@ -90,7 +94,7 @@ function suffocationBlock(player, entity) {
     }
 }
 
-export function mobCarry() {
+export function mobCarrying() {
     for (const player of world.getAllPlayers().filter(p => carryData.has(p.id))) {
         const selectedSlot = player.selectedSlotIndex;
         const mainHand = player.getComponent("minecraft:inventory").container.getItem(selectedSlot);
@@ -169,8 +173,13 @@ export function powerCount({ Player, Target, EventCancel } = {}) {
 }
 
 export function takeMob(player, target, e) {
-    if (world.getAllPlayers().find(p => carryData.get(p.id)?.id === target.id) || !allowMobs.find(m => target.typeId === m) || player.isGliding || !player.isSneaking) return
-    // Eğer bir oyuncu zaten o mob'u taşıyorsa veya liste dışı bir mob ise aldırma
+    if (
+        world.getAllPlayers().find(p => carryData.get(p.id)?.id === target.id) ||
+        !allowMobs.find(m => target.typeId === m) ||
+        player.isGliding || !player.isSneaking ||
+        riderData.has(target.id) && target.typeId === "minecraft:player"
+    ) return // Bunlardan biri sağlanıyorsa geri dön
+
     e.cancel = true;
 
     const selectedSlot = player.selectedSlotIndex;

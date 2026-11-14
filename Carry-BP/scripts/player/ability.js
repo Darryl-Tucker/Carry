@@ -1,7 +1,7 @@
 import { system, EntityDamageCause } from "@minecraft/server";
 
 import { carryData } from "../mob/carry";
-import { addMobRide } from "../utils/ride";
+import { addMobRide } from "../mob/ride";
 
 export const abilitiesData = new Map();
 

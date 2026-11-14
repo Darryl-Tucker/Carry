@@ -1,13 +1,17 @@
 import { world } from "@minecraft/server";
 
 import { pushMob, carryData, takeMob, clearMobData, powerCount } from "../mob/carry";
+import { clearRideData, clearCarrierData } from "../mob/ride";
+
 import { playerSettings, clearPlayerData } from "../player/data";
-import { addPlayerRide, clearRideData, clearCarrierData } from "./ride";
-import { addonTutorial, DiskToRAM } from "./config";
+import { addPlayerRide } from "../player/ride";
 import { abilityBar } from "../player/ability";
+
+import { addonTutorial, DiskToRAM } from "./config";
 
 world.beforeEvents.playerLeave.subscribe(e => {
     const player = e.player;
+
     clearPlayerData({ Player: player, PlayerLeave: true })
 });
 
@@ -47,9 +51,8 @@ world.beforeEvents.playerInteractWithEntity.subscribe(e => {
         abilityBar(player);
         return powerCount({ Player: player, Target: target, EventCancel: e });
     }
-
-    takeMob(player, target, e);
-    addPlayerRide(player, target, e)
+    addPlayerRide(player, target);
+    takeMob(player, target, e)
 });
 
 world.beforeEvents.playerBreakBlock.subscribe(e => { if (carryData.has(e.player.id)) e.cancel = true });
@@ -64,13 +67,14 @@ world.afterEvents.entityDie.subscribe(e => {
 
     if (dEntity) return clearMobData(deadEntity)
 
-    if (carryData.has(deadEntity.id)) clearPlayerData({ Player: deadEntity })
+
+    clearPlayerData({ Player: deadEntity })
 });
 
 const worldLoad = world.afterEvents.worldLoad.subscribe(() => {
     for (const player of world.getAllPlayers()) {
-        playerSettings({ Player: player });
-        DiskToRAM({ Player: player })
+        DiskToRAM({ Player: player });
+        playerSettings({ Player: player })
     }
 
     world.afterEvents.worldLoad.unsubscribe(worldLoad)

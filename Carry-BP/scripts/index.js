@@ -1,15 +1,18 @@
 import { system } from "@minecraft/server";
 
-import { mobCarry, powerCount } from "./mob/carry";
-import { mobRide, playerRide } from "./utils/ride";
+import { mobCarrying, powerCount } from "./mob/carry";
+import { mobRiding } from "./mob/ride";
+
+import { playerRiding } from "./player/ride";
 import { playerAnimation } from "./player/data";
+
 import "./utils/events";
 
 system.runInterval(() => {
-    mobCarry();
-    mobRide();
-    
-    playerRide()
+    mobCarrying();
+    mobRiding();
+
+    playerRiding()
 });
 
 system.runInterval(() => powerCount(), 3);

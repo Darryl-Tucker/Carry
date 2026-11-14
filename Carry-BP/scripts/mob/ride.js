@@ -1,11 +1,11 @@
-import { world, EntityComponentTypes, system } from "@minecraft/server";
+import { world, system } from "@minecraft/server";
 
 import { abilitiesData, UnlockAbilityManager } from "../player/ability";
 
 export const riderData = new Map();
 export const carrierData = new Map();
 
-export function mobRide() {
+export function mobRiding() {
     const dimensions = [
         world.getDimension("overworld"),
         world.getDimension("nether"),
@@ -23,25 +23,6 @@ export function mobRide() {
                 };
                 rider.teleport(carrierLoc)
             }
-        }
-    }
-}
-
-export function playerRide() {
-    for (const rider of world.getAllPlayers().filter(p => riderData.has(p.id))) {
-        const carrier = world.getAllPlayers().find(p => riderData.get(rider.id) === p.id)
-        if (carrier) {
-            if (carrier.isSneaking && carrier.isJumping) {
-                const drop = carrier.getComponent(EntityComponentTypes.Rideable);
-                drop.ejectRider(rider);
-            }
-            carrier.addEffect("slowness", 10, { amplifier: 0.30, showParticles: false })
-        }
-
-        const riding = rider.getComponent(EntityComponentTypes.Riding);
-        if (riding === undefined) {
-            rider.setDynamicProperty("ride", undefined);
-            riderData.delete(rider.id)
         }
     }
 }
@@ -72,13 +53,6 @@ export function addMobRide({ Player, Target, StartRun, EndRun }) {
         system.clearRun(StartRun); // Run'ları temizleyebiliriz gerek kalmadı
         system.clearRun(EndRun)
     }
-}
-
-export function addPlayerRide(player, target, e) {
-    if (target.typeId !== "minecraft:player" && player.isSneaking) return
-
-    riderData.set(player.id, target.id);
-    player.setDynamicProperty("ride", target.id)
 }
 
 export function clearRideData(entity) {

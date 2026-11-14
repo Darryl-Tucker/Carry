@@ -1,7 +1,7 @@
 import { ActionFormData } from "@minecraft/server-ui";
 import { world, system } from "@minecraft/server";
 
-import { riderData } from "./ride";
+import { riderData } from "../mob/ride";
 import { abilitiesData } from "../player/ability";
 
 export const neutralMobs = [];
@@ -347,5 +347,5 @@ export function DiskToRAM({ Player }) {
     ];
 
     for (const ability of abilities.filter(a => Player.getDynamicProperty(a))) ab[ability] = true
-    abilitiesData.set(Player.id, ab);
+    abilitiesData.set(Player.id, ab)
 }
