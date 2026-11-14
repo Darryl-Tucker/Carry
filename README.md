@@ -7,7 +7,7 @@ Pick up, carry, throw, and stack mobs in Minecraft Bedrock Edition, and handcuff
 Carry is a Bedrock add-on built with the `@minecraft/server` Script API. It consists of two packs:
 
 - **Carry-BP (Behavior Pack)**: scripts for carrying, throwing, stacking, riding, and handcuffs, plus the handcuffs and key items, their recipes, and a player entity override for riding.
-- **Carry-RP (Resource Pack)**: item textures for the handcuffs and key, with English (US) and Turkish language files.
+- **Carry-RP (Resource Pack)**:  English (US), Turkish language files and animations.
 
 ```text
 Carry/
