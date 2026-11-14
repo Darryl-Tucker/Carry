@@ -170,19 +170,19 @@ export function abilityBar(player) {
 
     system.run(() => {
         switch (ab?.abilityPage) {
-            default: player.onScreenDisplay.setActionBar("[ Normal ]"); break
+            default: player.sendMessage(">> Normal"); break
 
             case 0:
-                player.onScreenDisplay.setActionBar({ rawtext: [{ text: "[ " }, { translate: "name.boomerang" }, { text: " ]" }] });
+                player.sendMessage({ rawtext: [{ text: ">> " }, { translate: "name.boomerang" }] });
                 if (!ab?.boomerang) player.sendMessage({ rawtext: [{ text: ">>§a " }, { translate: texts.howToUnlockBoomerang }] });
                 break
 
             case 1:
-                player.onScreenDisplay.setActionBar({ rawtext: [{ text: "[ " }, { translate: "name.skySpinner" }, { text: " ]" }] });
+                player.sendMessage({ rawtext: [{ text: ">> " }, { translate: "name.skySpinner" }] });
                 if (!ab?.skySpinner) player.sendMessage({ rawtext: [{ text: ">>§a " }, { translate: texts.howToUnlockSkyspinner }] });
                 break
             case 2:
-                player.onScreenDisplay.setActionBar("[ Enderman ]");
+                player.sendMessage(">> Enderman");
                 if (!ab?.enderman) player.sendMessage({ rawtext: [{ text: ">>§a " }, { translate: texts.howToUnlockEnderman }] });
                 break
         }

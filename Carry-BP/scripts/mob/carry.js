@@ -11,7 +11,6 @@ export const carryData = new Map();
 const texts = {
     mobDropped: "mob.dropped",
     mobCarryWarn: "mob.carry.warn",
-    powerCanceled: "power.canceled",
     sneakToCancel: "sneakTo.cancel"
 };
 
@@ -24,8 +23,9 @@ const sounds = {
     mobCarryWarn: "mob.villager.no"
 };
 
-function mobWeight(player) {
+function mobComponents(player) {
     const mobIndex = allowMobs.findIndex(m => carryData.get(player.id)?.typeId === m);
+    const cd = carryData.get(player.id);
 
     if (mobIndex !== -1)
         switch (mobIndex) {
@@ -63,6 +63,8 @@ function mobWeight(player) {
                 player.addEffect("slowness", 7, { amplifier: 4, showParticles: false });
                 break
         }
+
+    if (!cd?.powerCount) player.onScreenDisplay.setActionBar("[ " + carryData.get(player.id)?.health + " ]")
 }
 
 function suffocationBlock(player, entity) {
@@ -95,31 +97,29 @@ export function mobCarry() {
         const offHand = player.getComponent(EntityComponentTypes.Equippable)?.getEquipment(EquipmentSlot.Offhand);
         const gamemode = player.getGameMode();
 
-        const carryId = carryData.get(player.id)?.id;
-        const entity = player.dimension.getEntities({ location: player.location }).find(e => carryId === e.id);
+        const cd = carryData.get(player.id);
+        const entity = player.dimension.getEntities({ location: player.location }).find(e => cd?.id === e.id);
 
         if (player.isSprinting || mainHand || offHand || gamemode === "Spectator" || !entity) {
             player.onScreenDisplay.setActionBar({ rawtext: [{ text: "§c" }, { translate: texts.mobDropped }] });
             player.playSound(sounds.mobDropped, { volume: 20 });
-            return clearPlayerData({ Player: player })
+            return clearPlayerData({ Player: player, Target: entity })
         }
 
-        if (entity) {
-            mobWeight(player);
-            suffocationBlock(player, entity);
+        if (!entity) return
+        mobComponents(player);
+        suffocationBlock(player, entity);
 
-            const playerLoc = player.location;
+        const playerLoc = player.location;
 
-            const viewDirection = player.getViewDirection();
-            const distance = 0.70;
-            const targetLoc = {
-                x: playerLoc.x + (viewDirection.x * distance),
-                y: (playerLoc.y + 1.30) + (viewDirection.y * distance),
-                z: playerLoc.z + (viewDirection.z * distance)
-            };
-            entity.teleport(targetLoc)
-        }
-
+        const viewDirection = player.getViewDirection();
+        const distance = 0.70;
+        const targetLoc = {
+            x: playerLoc.x + (viewDirection.x * distance),
+            y: (playerLoc.y + 1.27) + (viewDirection.y * distance),
+            z: playerLoc.z + (viewDirection.z * distance)
+        };
+        entity.teleport(targetLoc)
     }
 }
 
@@ -133,7 +133,6 @@ export function powerCount({ Player, Target, EventCancel } = {}) {
                 data.power = null;
                 data.powerCount = null;
 
-                player.onScreenDisplay.setActionBar({ rawtext: [{ text: "§c" }, { translate: texts.powerCanceled }] });
                 return player.playSound(sounds.powerCanceled);
             }
 
@@ -178,8 +177,10 @@ export function takeMob(player, target, e) {
     const mainHand = player.getComponent("minecraft:inventory").container.getItem(selectedSlot);
     const offHand = player.getComponent(EntityComponentTypes.Equippable)?.getEquipment(EquipmentSlot.Offhand);
 
+    const targetHealth = target.getComponent("minecraft:health").currentValue;
+
     if (!mainHand && !offHand && allowMobs.find(m => target.typeId === m)) {
-        carryData.set(player.id, { id: target.id, typeId: target.typeId, carry: true });
+        carryData.set(player.id, { id: target.id, typeId: target.typeId, carry: true, health: targetHealth });
         clearRideData(target);
 
         const manager = new UnlockAbilityManager(player, abilitiesData.get(player.id) ?? {});

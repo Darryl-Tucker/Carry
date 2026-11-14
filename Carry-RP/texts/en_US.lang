@@ -11,7 +11,6 @@ tutorial.form.label=Sneak & Interact to carry a mob\n\nAttack the mob to release
 tutorial.form.button=Don't show again
 
 ## carry.js
-power.canceled=Canceled!
 mob.carry.warn=Your hands are full!
 mob.dropped=Mob Dropped!
 sneakTo.cancel=Block\nSneak to cancel

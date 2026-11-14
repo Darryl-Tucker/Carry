@@ -1,0 +1,41 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.player.carry": {
+      "loop": true,
+      "animation_length": 0.05,
+      "override_previous_animation": true,
+      "timeline": {
+        "0.0": [
+          "variable.is_carrying = 1.0;"
+        ]
+      },
+      "bones": {
+        "rightArm": {
+          "rotation": [
+            "variable.is_first_person ? 83.0 : -85.0",
+            "variable.is_first_person ? -27.0 : -10.0",
+            "variable.is_first_person ? 100.0 : 0.0"
+          ],
+          "position": [
+            "variable.is_first_person ? 10.4 : 0.0",
+            "variable.is_first_person ? -5.3 : 0.0",
+            "variable.is_first_person ? 12.2 : 0.0"
+          ]
+        },
+        "leftArm": {
+          "rotation": [
+            "variable.is_first_person ? 83.0 : -85.0",
+            "variable.is_first_person ? 27.0 : 10.0",
+            "variable.is_first_person ? -100.0 : 0.0"
+          ],
+          "position": [
+            "variable.is_first_person ? -10.4 : 0.0",
+            "variable.is_first_person ? -5.3 : 0.0",
+            "variable.is_first_person ? 12.2 : 0.0"
+          ]
+        }
+      }
+    }
+  }
+}

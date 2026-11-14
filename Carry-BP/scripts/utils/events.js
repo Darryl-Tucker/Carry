@@ -26,16 +26,15 @@ world.beforeEvents.entityHurt.subscribe(e => {
     const hEntity = e.hurtEntity.typeId !== "minecraft:player";
     const hurtEntity = e.hurtEntity;
 
-    if (!hEntity && carryData.has(hurtEntity.id)) clearPlayerData({ Player: hurtEntity })
+    if (!hEntity && carryData.has(hurtEntity.id)) return clearPlayerData({ Player: hurtEntity })
 
     if (carryData.has(damagingEntity?.id)) return pushMob(damagingEntity, hurtEntity, e)
 
     const carryPlayer = world.getAllPlayers().find(c => carryData.get(c.id)?.id === hurtEntity.id)
-
-    if (carryPlayer) return playerSettings({ Player: carryPlayer, DataDelete: true }) // Mob taşınırken hasar alırsa bırak
+    if (carryPlayer) return playerSettings({ Player: carryPlayer, Target: hurtEntity, DataDelete: true }) // Mob taşınırken hasar alırsa bırak
 
     clearCarrierData(hurtEntity);
-    clearRideData(hurtEntity);
+    clearRideData(hurtEntity)
 });
 
 world.beforeEvents.playerInteractWithBlock.subscribe(e => { if (carryData.has(e.player.id)) e.cancel = true });

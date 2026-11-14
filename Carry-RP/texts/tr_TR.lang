@@ -11,7 +11,6 @@ tutorial.form.label=Mob'u taşımak için eğilin ve etkileşime geçin\n\nMob'u
 tutorial.form.button=Bunu bir daha gösterme
 
 ## carry.js
-power.canceled=İptal edildi!
 mob.carry.warn=Ellerin dolu!
 mob.dropped=Mob'u düşürdün!
 sneakTo.cancel=Blok\nİptal etmek için eğil

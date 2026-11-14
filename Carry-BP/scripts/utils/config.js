@@ -46,7 +46,9 @@ export const allowMobs = [
     "minecraft:glow_squid", // 36
     "minecraft:tadpole", // 37
     "minecraft:allay", // 38
-    "minecraft:player" // 39
+    "minecraft:player", // 39
+    "minecraft:piglin", // 40
+    "minecraft:strider" // 41
 ];
 
 allowMobs.forEach((mob, index) => {
@@ -57,6 +59,8 @@ allowMobs.forEach((mob, index) => {
         case 15:
         case 25:
         case 32:
+        case 34:
+        case 40:
             neutralMobs.push(mob);
     }
 });
