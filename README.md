@@ -18,6 +18,7 @@ Carry/
 │   └── scripts/       # Carrying, throwing, stacking, handcuffs
 └── Carry-RP/
     ├── texts/         # en_US, tr_TR
+    ├── animations/    # animations
 ```
 
 ## 🎮 Gameplay
