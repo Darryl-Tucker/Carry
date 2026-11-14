@@ -12,7 +12,7 @@ tutorial.form.button=Bunu bir daha gösterme
 
 ## carry.js
 power.canceled=İptal edildi!
-mob.carry.warn=>> Ellerin dolu!
+mob.carry.warn=Ellerin dolu!
 mob.dropped=Mob'u düşürdün!
 sneakTo.cancel=Blok\nİptal etmek için eğil
 
@@ -20,8 +20,13 @@ sneakTo.cancel=Blok\nİptal etmek için eğil
 action.hint.exit.player=Oyuncudan inmek için eğilin ya da zıplayın
 
 ## ability.js
-unlocked.boomerang=Bumerang yeteneğin açıldı!
-unlocked.skySpinner=Uçan Daire yeteneğin açıldı!
+name.boomerang=Bumerang
+name.skySpinner=Uçan Pervane
 
-howTounlock.boomerang=Bumerang yeteneğini açmak için 15 canlıyı üst üste dizin!
-howTounlock.skySpinner=Uçan Daire yeteneğini açmak için 3 canlıyı havaya fırlatın!
+unlocked.boomerang=Bumerang yeteneğin açıldı!
+unlocked.skySpinner=Uçan Pervane yeteneğin açıldı!
+unlocked.enderman=Enderman yeteneğin açıldı!
+
+howTounlock.boomerang=Bumerang yeteneğini açmak için 15 canlıyı üst üste dizin
+howTounlock.skySpinner=Uçan Pervane yeteneğini açmak için 3 canlıyı havaya fırlatın
+howTounlock.enderman=Enderman yeteneğini açmak için bir Enderman taşıyınız

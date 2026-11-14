@@ -8,9 +8,11 @@ export const abilitiesData = new Map();
 const texts = {
     unlockedBoomerang: "unlocked.boomerang",
     unlockedSkySpinner: "unlocked.skySpinner",
+    unlockedEnderman: "unlocked.enderman",
 
     howToUnlockBoomerang: "howTounlock.boomerang",
-    howToUnlockSkyspinner: "howTounlock.skySpinner"
+    howToUnlockSkyspinner: "howTounlock.skySpinner",
+    howToUnlockEnderman: "howTounlock.enderman"
 };
 
 const sounds = {
@@ -18,23 +20,23 @@ const sounds = {
 };
 
 export class UnlockAbilityManager {
-    constructor(player, abilitiesData) {
+    constructor(player, playerAbilitiesData) {
         this.player = player;
-        this.abilitiesData = abilitiesData;
-        this.data = this.abilitiesData.get(this.player.id) ?? {}
+        this.carryData = carryData.get(this.player.id);
+        this.abilitiesData = playerAbilitiesData
     }
 
-    save() { this.abilitiesData.set(this.player.id, this.data) }
+    save() { abilitiesData.set(this.player, abilitiesData) }
 
     boomerang() {
-        if (this.data?.boomerang) return
+        if (this.abilitiesData?.boomerang) return
 
-        this.data.AUS_boomerang = (this.data.AUS_boomerang ?? -1) + 1;
+        this.abilitiesData.AUS_boomerang = (this.abilitiesData.AUS_boomerang ?? -1) + 1;
         this.save();
 
-        if (this.data.AUS_boomerang === 15) {
-            this.data.boomerang = true;
-            this.data.AUS_boomerang = undefined;
+        if (this.abilitiesData.AUS_boomerang === 15) {
+            this.abilitiesData.boomerang = true;
+            this.abilitiesData.AUS_boomerang = undefined;
             this.save();
 
             this.player.setDynamicProperty("boomerang", true);
@@ -44,17 +46,17 @@ export class UnlockAbilityManager {
     }
 
     skySpinner() {
-        if (this.data?.skySpinner) return;
+        if (this.abilitiesData?.skySpinner) return
 
         const rot = this.player.getRotation();
         if (rot.x <= -45) {
-            this.data.AUS_skySpinner = (this.data.AUS_skySpinner ?? 0) + 1;
+            this.abilitiesData.AUS_skySpinner = (this.abilitiesData.AUS_skySpinner ?? 0) + 1;
             this.save();
         }
 
-        if (this.data.AUS_skySpinner === 3) {
-            this.data.skySpinner = true;
-            this.data.AUS_skySpinner = undefined;
+        if (this.abilitiesData.AUS_skySpinner === 3) {
+            this.abilitiesData.skySpinner = true;
+            this.abilitiesData.AUS_skySpinner = undefined;
             this.save();
 
             this.player.setDynamicProperty("skySpinner", true);
@@ -62,7 +64,21 @@ export class UnlockAbilityManager {
             system.run(() => this.player.playSound(sounds.unlockedAbility, { volume: 1, pitch: 0.5 }))
         }
     }
+
+    enderman() {
+        if (this.abilitiesData?.enderman) return
+
+        if (this.carryData.typeId === "minecraft:enderman") {
+            this.abilitiesData.enderman = true;
+            this.save();
+            this.player.setDynamicProperty("enderman", true);
+
+            this.player.sendMessage({ rawtext: [{ text: ">>§a " }, { translate: texts.unlockedEnderman }] });
+            system.run(() => this.player.playSound(sounds.unlockedAbility, { volume: 1, pitch: 0.5 }))
+        }
+    }
 }
+
 
 export class UseAbilityManager {
     constructor(player, viewDirection, target, targetLoc) {
@@ -91,22 +107,28 @@ export class UseAbilityManager {
                 case 1: // Sky Spinner
                     if (this.ab?.skySpinner) this.skySpinner()
                     break
+                case 2: // Enderman
+                    if (this.ab?.enderman) system.clearRun(runIntervalId)
+                    break
             }
         });
 
         const runTimeOutId = system.runTimeout(async () => {
             if (this.ab?.abilityPage === 0 && this.ab?.boomerang) {
-                this.boomerang({ BomBack: true });
+                this.boomerang({ returnBom: true });
                 await system.waitTicks(this.power)
             }
+
+            else if (this.ab?.abilityPage === 2 && this.ab?.enderman) { this.enderman() }
+
             system.clearRun(runIntervalId);
         }, this.power)
     }
 
     normal(startRun, endRun) { addMobRide({ Player: this.player, Target: this.target, StartRun: startRun, EndRun: endRun }) }
 
-    boomerang({ BomBack } = {}) {
-        if (BomBack) return this.target.applyKnockback({ x: -this.targetLoc.x, z: -this.targetLoc.z }, 0.50);
+    boomerang({ returnBom } = {}) {
+        if (returnBom) return this.target.applyKnockback({ x: -this.targetLoc.x, z: -this.targetLoc.z }, 0.50)
 
         const mobs = this.target.dimension.getEntities({
             location: this.target.location,
@@ -130,29 +152,38 @@ export class UseAbilityManager {
 
         if (oMobs) system.run(() => oMobs.applyImpulse({ x: this.viewDirection.x, y: this.power - 7, z: this.viewDirection.z + 2 }))
     }
+
+    async enderman() {
+        this.player.teleport(this.target.location);
+        await system.waitTicks(3);
+        this.player.playSound("mob.endermen.portal", { pitch: 1.2 })
+    }
 }
 
 export function abilityBar(player) {
     if (!player.isSneaking) return
-    let ab = abilitiesData.get(player.id);
-    const maxAbility = 1;
+    let ab = abilitiesData.get(player.id) ?? {};
+    const maxAbility = 2;
 
-    abilitiesData.set(player.id, { ...ab, abilityPage: (ab?.abilityPage ?? -1) + 1 });
-
-    ab = abilitiesData.get(player.id);
+    ab.abilityPage = (ab?.abilityPage ?? -1) + 1;
+    abilitiesData.set(player.id, ab);
 
     system.run(() => {
         switch (ab?.abilityPage) {
             default: player.onScreenDisplay.setActionBar("[ Normal ]"); break
 
             case 0:
-                player.onScreenDisplay.setActionBar({ rawtext: [{ text: "[ " }, { translate: "boomerang" }, { text: " ]" }] });
+                player.onScreenDisplay.setActionBar({ rawtext: [{ text: "[ " }, { translate: "name.boomerang" }, { text: " ]" }] });
                 if (!ab?.boomerang) player.sendMessage({ rawtext: [{ text: ">>§a " }, { translate: texts.howToUnlockBoomerang }] });
                 break
 
             case 1:
-                player.onScreenDisplay.setActionBar({ rawtext: [{ text: "[ " }, { translate: "skySpinner" }, { text: " ]" }] });
+                player.onScreenDisplay.setActionBar({ rawtext: [{ text: "[ " }, { translate: "name.skySpinner" }, { text: " ]" }] });
                 if (!ab?.skySpinner) player.sendMessage({ rawtext: [{ text: ">>§a " }, { translate: texts.howToUnlockSkyspinner }] });
+                break
+            case 2:
+                player.onScreenDisplay.setActionBar("[ Enderman ]");
+                if (!ab?.enderman) player.sendMessage({ rawtext: [{ text: ">>§a " }, { translate: texts.howToUnlockEnderman }] });
                 break
         }
     });

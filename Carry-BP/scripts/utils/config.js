@@ -1,9 +1,10 @@
 import { ActionFormData } from "@minecraft/server-ui";
 import { world, system } from "@minecraft/server";
 
-import { handcuffsData } from "../mob/handcuffs";
-import { abilitiesData } from "../player/ability";
 import { riderData } from "./ride";
+import { abilitiesData } from "../player/ability";
+
+export const neutralMobs = [];
 
 export const allowMobs = [
     "minecraft:iron_golem", // 0
@@ -45,9 +46,8 @@ export const allowMobs = [
     "minecraft:glow_squid", // 36
     "minecraft:tadpole", // 37
     "minecraft:allay", // 38
+    "minecraft:player" // 39
 ];
-
-export const neutralMobs = [];
 
 allowMobs.forEach((mob, index) => {
     switch (index) {
@@ -329,21 +329,19 @@ export function addonTutorial(player) {
     }, 100)
 }
 
-export function DiskToRAM({ Player, WorldLoadEvent }) {
-    if (WorldLoadEvent) { // Handcuffs & Key
-        const entities = Player.dimension.getEntities().filter(e => !handcuffsData.has(e.id) && (e.getDynamicProperty("key") || e.getDynamicProperty("handcuffs")));
-        for (const entity of entities) {
-            const data = entity.getDynamicProperty("key");
-            handcuffsData.set(entity.id, { status: true, key: data })
-        }
-    }
 
+export function DiskToRAM({ Player }) {
     const findCarrier = world.getAllPlayers().find(p => Player.getDynamicProperty("ride") === p.id)
     if (findCarrier) riderData.set(Player.id, findCarrier.id)
 
-    const data = abilitiesData.get(Player.id) ?? {};
+    const ab = abilitiesData.get(Player.id) ?? {};
 
-    if (Player.getDynamicProperty("boomerang")) data.boomerang = true
-    if (Player.getDynamicProperty("skySpinner")) data.skySpinner = true
-    abilitiesData.set(Player.id, data)
+    const abilities = [
+        "boomerang",
+        "skySpinner",
+        "enderman"
+    ];
+
+    for (const ability of abilities.filter(a => Player.getDynamicProperty(a))) ab[ability] = true
+    abilitiesData.set(Player.id, ab);
 }

@@ -2,12 +2,10 @@ import { system } from "@minecraft/server";
 
 import { mobCarry, powerCount } from "./mob/carry";
 import { mobRide, playerRide } from "./utils/ride";
-import { mobHandcuffs } from "./mob/handcuffs";
-import { playerAnimation } from "./player/playerData";
+import { playerAnimation } from "./player/data";
 import "./utils/events";
 
 system.runInterval(() => {
-    mobHandcuffs();
     mobCarry();
     mobRide();
     

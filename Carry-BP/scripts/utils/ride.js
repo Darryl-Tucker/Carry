@@ -47,6 +47,8 @@ export function playerRide() {
 }
 
 export function addMobRide({ Player, Target, StartRun, EndRun }) {
+    if (Target.typeId === "minecraft:player") return // Oyuncu ise dön
+
     const carrier = Target.dimension.getEntities({
         location: Target.location,
         maxDistance: 1.75,
@@ -62,8 +64,8 @@ export function addMobRide({ Player, Target, StartRun, EndRun }) {
             riderData.get(rider.id).level++; // Yeni bir mob bineceği için bütün binen mob'ları bir tık yukarı kaydır
 
         riderData.set(Target.id, { id: carrier.id, level: 1 }); // Hedefi taşıyıcıya bindir
-        const manager = new UnlockAbilityManager(Player, abilitiesData);
 
+        const manager = new UnlockAbilityManager(Player, abilitiesData.get(Player.id) ?? {});
         manager.boomerang();
 
         if (!StartRun && !EndRun) return
@@ -72,8 +74,9 @@ export function addMobRide({ Player, Target, StartRun, EndRun }) {
     }
 }
 
-export function addPlayerRide(player, target) {
+export function addPlayerRide(player, target, e) {
     if (target.typeId !== "minecraft:player" && player.isSneaking) return
+
     riderData.set(player.id, target.id);
     player.setDynamicProperty("ride", target.id)
 }

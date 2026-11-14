@@ -18,7 +18,6 @@ Carry/
 │   └── scripts/       # Carrying, throwing, stacking, handcuffs
 └── Carry-RP/
     ├── texts/         # en_US, tr_TR
-    └── textures/      # Item textures
 ```
 
 ## 🎮 Gameplay
@@ -44,26 +43,9 @@ Throw or place a carried mob within about 1.5 blocks of another mob to stack it 
 
 Interact with another player without sneaking to ride them. The carrier gets Slowness and can dismount the rider with Sneak + Jump.
 
-### Handcuffs and Keys
-
-- **Cuff**: interact with a mob while holding Handcuffs (consumed).
-- **Lock**: interact with a cuffed mob while holding a Key. The mob is immobilized and the key is bound to you.
-- **Unlock**: interact with the locked mob using the matching Key. The Handcuffs drop and the mob is free.
-
-### Crafting
-
-```text
-Handcuffs          Key
-I I I                N
-I N I                N
-I I I                G
-
-I = Iron Ingot, N = Iron Nugget (Handcuffs) / Gold Nugget (Key), G = Gold Ingot
-```
-
 ### Supported Mobs
 
-Iron Golem, Cow, Sheep, Chicken, Villager, Cod, Cat, Wolf, Copper Golem, Pig, Horse, Axolotl, Llama, Armadillo, Camel, Trader Llama, Wandering Trader, Camel Husk, Bee, Sulfur Cube, Rabbit, Fox, Frog, Goat, Sniffer, Panda, Snow Golem, Ocelot, Donkey, Mooshroom, Mule, Parrot, Polar bear, Turtle.
+Iron Golem, Cow, Sheep, Chicken, Villager, Cod, Cat, Wolf, Copper Golem, Pig, Horse, Axolotl, Llama, Armadillo, Camel, Trader Llama, Wandering Trader, Camel Husk, Bee, Sulfur Cube, Rabbit, Fox, Frog, Goat, Sniffer, Panda, Snow Golem, Ocelot, Donkey, Mooshroom, Mule, Parrot, Polar bear, Turtle, Enderman, Squid, Glow Squid, Tadpole, Allay, Player.
 
 ## ⚙️ Requirements & Compatibility
 

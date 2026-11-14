@@ -12,7 +12,7 @@ tutorial.form.button=Don't show again
 
 ## carry.js
 power.canceled=Canceled!
-mob.carry.warn=>> Your hands are full!
+mob.carry.warn=Your hands are full!
 mob.dropped=Mob Dropped!
 sneakTo.cancel=Block\nSneak to cancel
 
@@ -20,11 +20,13 @@ sneakTo.cancel=Block\nSneak to cancel
 action.hint.exit.player=Crouch or jump to dismount from the player
 
 ## ability.js
-boomerang=Boomerang
-skySpinner=Sky Spinner
+name.boomerang=Boomerang
+name.skySpinner=Sky Spinner
 
 unlocked.boomerang=Boomerang ability unlocked!
 unlocked.skySpinner=Sky Spinner ability unlocked!
+unlocked.enderman=Enderman ability unlocked!
 
-howTounlock.boomerang=Stack 15 mobs to unlock Boomerang!
-howTounlock.skySpinner=Launch 3 mobs to unlock Sky Spinner!
+howTounlock.boomerang=Stack 15 mobs to unlock Boomerang
+howTounlock.skySpinner=Launch 3 mobs to unlock Sky Spinner
+howTounlock.enderman=Carry an Enderman to unlock the Enderman ability

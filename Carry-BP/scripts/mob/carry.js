@@ -1,9 +1,8 @@
 import { world, system, GameMode, EquipmentSlot, EntityComponentTypes } from "@minecraft/server";
 
-import { clearPlayerData, playerSettings } from "../player/playerData";
+import { clearPlayerData, playerSettings } from "../player/data";
 import { addMobRide } from "../utils/ride";
 import { clearRideData, clearCarrierData } from "../utils/ride";
-import { handcuffsData } from "./handcuffs";
 import { allowMobs, neutralMobs, excludeBlocks } from "../utils/config";
 import { abilitiesData, UnlockAbilityManager, UseAbilityManager } from "../player/ability";
 
@@ -55,6 +54,7 @@ function mobWeight(player) {
             case 26: // Snow golem
             case 28: // Donkey
             case 30: // Mule
+            case 39: // Player
                 player.addEffect("slowness", 7, { amplifier: 2, showParticles: false });
                 break
 
@@ -156,7 +156,6 @@ export function powerCount({ Player, Target, EventCancel } = {}) {
         return
     }
 
-
     EventCancel.cancel = true
     // Switch mantığı
     const data = carryData.get(Player.id);
@@ -171,30 +170,29 @@ export function powerCount({ Player, Target, EventCancel } = {}) {
 }
 
 export function takeMob(player, target, e) {
-    if (world.getAllPlayers().find(p => carryData.get(p.id)?.id === target.id) || !allowMobs.find(m => target.typeId === m)) return
+    if (world.getAllPlayers().find(p => carryData.get(p.id)?.id === target.id) || !allowMobs.find(m => target.typeId === m) || player.isGliding || !player.isSneaking) return
     // Eğer bir oyuncu zaten o mob'u taşıyorsa veya liste dışı bir mob ise aldırma
+    e.cancel = true;
 
-    if (player.isSneaking && !player.isGliding) {
-        e.cancel = true;
+    const selectedSlot = player.selectedSlotIndex;
+    const mainHand = player.getComponent("minecraft:inventory").container.getItem(selectedSlot);
+    const offHand = player.getComponent(EntityComponentTypes.Equippable)?.getEquipment(EquipmentSlot.Offhand);
 
-        const selectedSlot = player.selectedSlotIndex;
-        const mainHand = player.getComponent("minecraft:inventory").container.getItem(selectedSlot);
-        const offHand = player.getComponent(EntityComponentTypes.Equippable)?.getEquipment(EquipmentSlot.Offhand);
+    if (!mainHand && !offHand && allowMobs.find(m => target.typeId === m)) {
+        carryData.set(player.id, { id: target.id, typeId: target.typeId, carry: true });
+        clearRideData(target);
 
-        if (!mainHand && !offHand && allowMobs.find(m => target.typeId === m)) {
-            carryData.set(player.id, { id: target.id, typeId: target.typeId, carry: true });
+        const manager = new UnlockAbilityManager(player, abilitiesData.get(player.id) ?? {});
+        manager.enderman();
 
-            clearRideData(target);
-
-            playerSettings({ Player: player });
-            return system.run(() => player.playSound(sounds.mobTake))
-        }
-
-        system.run(() => {
-            player.sendMessage({ rawtext: [{ text: "§c" }, { translate: texts.mobCarryWarn }] });
-            player.playSound(sounds.mobCarryWarn)
-        })
+        playerSettings({ Player: player });
+        return system.run(() => player.playSound(sounds.mobTake))
     }
+
+    system.run(() => {
+        player.sendMessage({ rawtext: [{ text: "§c>> " }, { translate: texts.mobCarryWarn }] });
+        player.playSound(sounds.mobCarryWarn)
+    })
 }
 
 export function pushMob(player, target, e) {
@@ -211,7 +209,7 @@ export function pushMob(player, target, e) {
             z: viewDirection.z * power
         };
 
-        const Unlockmanager = new UnlockAbilityManager(player, abilitiesData);
+        const Unlockmanager = new UnlockAbilityManager(player, abilitiesData.get(player.id) ?? {});
         const UseManager = new UseAbilityManager(player, viewDirection, target, targetLoc);
 
         Unlockmanager.skySpinner();
@@ -225,7 +223,7 @@ export function pushMob(player, target, e) {
 
     else addMobRide({ Player: player, Target: target });
 
-    playerSettings({ Player: player, DataDelete: true });
+    playerSettings({ Player: player, Target: target, DataDelete: true });
 
     if (neutralMobs.indexOf(target.typeId) === -1) return
 
@@ -244,6 +242,5 @@ export function clearMobData(deadEntity) {
     const player = world.getAllPlayers().find(p => carryData.get(p.id)?.id === deadEntity.id);
     if (player) clearPlayerData({ Player: player })
 
-    handcuffsData.delete(deadEntity.id);
     clearRideData(deadEntity); clearCarrierData(deadEntity)
 }
