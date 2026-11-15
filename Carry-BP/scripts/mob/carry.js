@@ -54,16 +54,15 @@ function mobComponents(player, entity) {
             { x: player.location.x, y: player.location.y, z: player.location.z - distance }
         ];
 
-        blockLocs.forEach(b => {
-            if (b.y > 319 || b.y < -63) return
+        for (const b of blockLocs) {
+            if (b.y > 319 || b.y < -63) continue
 
             const block = player.dimension.getBlock({ x: b.x, y: b.y, z: b.z });
-            const excludeBlock = excludeBlocks.find(eb => eb === block.typeId);
-            if (excludeBlock) return
+            if (excludeBlocks.includes(block.typeId)) continue
 
             const rot = player.getRotation();
             if (rot.x <= -45) player.addEffect("levitation", 7, { amplifier: mobData.amplifier, showParticles: false });
-        })
+        }
     }
     // ---------------------------------------------
     const distance = 0.50;
@@ -76,16 +75,15 @@ function mobComponents(player, entity) {
         { x: entity.location.x, y: entity.location.y, z: entity.location.z - distance }
     ];
 
-    blockLocs.forEach(b => {
-        if (b.y > 319 || b.y < -63) return
+    for (const b of blockLocs) {
+        if (b.y > 319 || b.y < -63) continue
 
         const block = entity.dimension.getBlock({ x: b.x, y: b.y, z: b.z });
-        const excludeBlock = excludeBlocks.find(eb => eb === block.typeId);
+        if (excludeBlocks.includes(block.typeId)) continue
 
-        if (excludeBlock) return
         const direction = player.getViewDirection();
         player.applyKnockback({ x: -direction.x, z: -direction.z }, -50)
-    })
+    }
 }
 
 export function mobCarrying() {
