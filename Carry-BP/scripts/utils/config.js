@@ -1,8 +1,7 @@
 import { ActionFormData } from "@minecraft/server-ui";
 import { world, system } from "@minecraft/server";
-
-import { riderData } from "../mob/ride";
 import { abilitiesData } from "../player/ability";
+import { riderData } from "./ride";
 
 export const allowMobs = [
     // -------------------------------------------------------------- No property
@@ -42,7 +41,7 @@ export const allowMobs = [
     { typeId: "minecraft:copper_golem", effect: "slowness", amplifier: 4 },
     { typeId: "minecraft:pig", effect: "slowness", amplifier: 1 },
     { typeId: "minecraft:horse", effect: "slowness", amplifier: 2 },
-    { typeId: "minecraft:axolotl" },
+    { typeId: "minecraft:axolotl", effect: "regeneration", amplifier: 1 },
     { typeId: "minecraft:armadillo" },
     { typeId: "minecraft:camel", effect: "slowness", amplifier: 5 },
     { typeId: "minecraft:wandering_trader", effect: "slowness", amplifier: 2 },
@@ -346,7 +345,7 @@ export function addonTutorial(player) {
 export function DiskToRAM({ Player, WorldLoadEvent }) {
     if (WorldLoadEvent) {
         const findCarrier = world.getAllPlayers().find(p => Player.getDynamicProperty("ride") === p.id);
-        if (findCarrier) riderData.set(Player.id, findCarrier.id)
+        if (findCarrier) riderData.set(Player.id, { id: findCarrier.id, level: 1 })
     }
 
     const ab = abilitiesData.get(Player.id) ?? {};

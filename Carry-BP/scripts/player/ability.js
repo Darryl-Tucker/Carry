@@ -1,7 +1,6 @@
 import { system, EntityDamageCause } from "@minecraft/server";
-
 import { carryData } from "../mob/carry";
-import { addMobRide } from "../mob/ride";
+import { addEntityRide } from "../utils/ride";
 
 export const abilitiesData = new Map();
 
@@ -126,7 +125,10 @@ export class UseAbilityManager {
         }, this.power)
     }
 
-    normal(startRun, endRun) { addMobRide({ Player: this.player, Target: this.target, StartRun: startRun, EndRun: endRun }) }
+    normal(startRun, endRun) {
+        if (this.target.typeId !== "minecraft:player")
+            addEntityRide({ Player: this.player, Target: this.target, StartRun: startRun, EndRun: endRun })
+    }
 
     boomerang({ returnBom } = {}) {
         if (returnBom) {
@@ -166,7 +168,7 @@ export class UseAbilityManager {
 
 export function abilityBar(player) {
     if (!player.isSneaking) return
-    let ab = abilitiesData.get(player.id) ?? {};
+    const ab = abilitiesData.get(player.id) ?? {};
     const maxAbility = 2;
 
     ab.abilityPage = (ab?.abilityPage ?? -1) + 1;

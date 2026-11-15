@@ -1,12 +1,8 @@
 import { world, system, GameMode, EquipmentSlot, EntityComponentTypes } from "@minecraft/server";
-
-import { addMobRide, riderData } from "./ride";
-import { clearRideData, clearCarrierData } from "./ride";
-
 import { abilitiesData, UnlockAbilityManager, UseAbilityManager } from "../player/ability";
-import { clearPlayerData, playerSettings } from "../player/data";
-
+import { clearPlayerData } from "../player/data";
 import { allowMobs, excludeBlocks } from "../utils/config";
+import { addEntityRide, clearEntityRide, riderData } from "../utils/ride";
 
 export const carryData = new Map();
 
@@ -35,16 +31,15 @@ function mobComponents(player, entity) {
         if (mobData.effect === "levitation") {
             const rot = player.getRotation();
             if (rot.x <= -45) {
-                player.addEffect("levitation", 7, { amplifier: mobData.amplifier, showParticles: false });
+                player.addEffect(mobData.effect, 7, { amplifier: mobData.amplifier, showParticles: false });
                 player.addEffect("slow_falling", 40, { amplifier: 1, showParticles: false })
             }
         }
-
         else player.addEffect(mobData.effect, 7, { amplifier: mobData.amplifier, showParticles: false })
     }
-    // ---------------------------------------------
+
     if (mobData.climbing) {
-        const distance = 0.70;
+        const distance = 1.50;
 
         const blockLocs = [
             { x: player.location.x + distance, y: player.location.y, z: player.location.z },
@@ -64,6 +59,7 @@ function mobComponents(player, entity) {
             if (rot.x <= -45) player.addEffect("levitation", 7, { amplifier: mobData.amplifier, showParticles: false });
         }
     }
+
     // ---------------------------------------------
     const distance = 0.50;
 
@@ -97,11 +93,10 @@ export function mobCarrying() {
         const cd = carryData.get(player.id);
         const entity = player.dimension.getEntities({ location: player.location }).find(e => cd?.id === e.id);
 
-        if (player.isSprinting || mainHand || offHand || gamemode === "Spectator" || !entity) {
+        if (player.isSprinting || player.isJumping || player.isEmoting || mainHand || offHand || gamemode === "Spectator" || !entity) {
             player.onScreenDisplay.setActionBar({ rawtext: [{ text: "§c" }, { translate: texts.mobDropped }] });
             player.playSound(sounds.mobDropped, { volume: 20 });
-            clearPlayerData({ Player: player });
-            playerSettings({ Player: player, Target: entity });
+            clearPlayerData({ Player: player, carryDelete: true });
             return
         }
 
@@ -184,12 +179,12 @@ export function takeMob(player, target, e) {
         const targetHealth = target.getComponent("minecraft:health").currentValue;
 
         carryData.set(player.id, { id: target.id, typeId: target.typeId, carry: true, health: targetHealth });
-        clearRideData(target);
 
         const manager = new UnlockAbilityManager(player, abilitiesData.get(player.id) ?? {});
         manager.enderman();
 
-        playerSettings({ Player: player });
+        clearEntityRide({ Entity: target });
+        clearPlayerData({ Player: player, Target: target });
         system.run(() => player.playSound(sounds.mobTake));
         return
     }
@@ -223,13 +218,12 @@ export function pushMob(player, target, e) {
         system.run(() => {
             target.applyKnockback(targetLoc, viewDirection.y);
             player.playSound(sounds.mobPush)
-        });
+        })
     }
 
-    else addMobRide({ Player: player, Target: target })
+    else if (target.typeId !== "minecraft:player") addEntityRide({ Player: player, Target: target })
 
-    clearPlayerData({ Player: player });
-    playerSettings({ Player: player, Target: target });
+    clearPlayerData({ Player: player, Target: target, carryDelete: true });
 
     if (allowMobs.find(a => !a.neutralMob && a.typeId === target.typeId)) return
 
@@ -242,12 +236,4 @@ export function pushMob(player, target, e) {
             system.runTimeout(() => player.setGameMode(playerGamemode), 1)
         })
     }
-}
-
-export function clearMobData(deadEntity) {
-    const player = world.getAllPlayers().find(p => carryData.get(p.id)?.id === deadEntity.id);
-    if (player) clearPlayerData({ Player: player })
-
-    clearRideData(deadEntity);
-    clearCarrierData(deadEntity)
 }
