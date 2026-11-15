@@ -15,14 +15,22 @@ export function mobRiding() {
     for (const dimension of dimensions) {
         for (const rider of dimension.getEntities().filter(r => riderData.has(r.id))) {
             const carrier = rider.dimension.getEntities().find(c => riderData.get(rider.id).id === c.id)
-            if (carrier) {
-                const carrierLoc = {
-                    x: carrier.location.x,
-                    y: carrier.location.y + riderData.get(rider.id).level,
-                    z: carrier.location.z
-                };
-                rider.teleport(carrierLoc)
-            }
+            if (!carrier) return
+            const headPos = carrier.getHeadLocation();
+            const viewDir = carrier.getViewDirection();
+
+            const targetFacingLocation = {
+                x: headPos.x + viewDir.x * 5,
+                y: headPos.y + viewDir.y * 5,
+                z: headPos.z + viewDir.z * 5
+            };
+
+            const carrierLoc = {
+                x: carrier.location.x,
+                y: carrier.location.y + riderData.get(rider.id).level,
+                z: carrier.location.z
+            };
+            rider.teleport(carrierLoc, { facingLocation: targetFacingLocation })
         }
     }
 }
@@ -58,14 +66,13 @@ export function addMobRide({ Player, Target, StartRun, EndRun }) {
 export function clearRideData(entity) {
     if (!riderData.get(entity.id)?.id) return
 
-    for (const carrier of entity.dimension.getEntities().filter(c => carrierData.has(c.id) && riderData.get(entity.id)?.id === c.id)) {
+    for (const carrier of entity.dimension.getEntities().filter(c => carrierData.has(c.id) && riderData.get(entity.id).id === c.id)) {
         const data = carrierData.get(carrier.id) ?? {};
-
         const currentCarriedLevel = data?.carriedLevel - 1;
 
-        if (!data.carriedLevel && data.carriedLevel === riderData.get(entity.id).level) {
+        if (data.carriedLevel === riderData.get(entity.id).level) {
             data.carriedLevel--;
-            if (carriedLevel.carriedLevel < 1) carrierData.delete(carrier.id)
+            if (data.carriedLevel < 1) carrierData.delete(carrier.id)
             break
         }
 

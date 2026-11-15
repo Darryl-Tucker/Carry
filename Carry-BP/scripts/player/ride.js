@@ -12,18 +12,17 @@ export function playerRiding() {
         if (!checkDimension || (carrier.isSneaking && carrier.isJumping) || (rider.isSneaking || rider.isJumping))
             clearPlayerRide({ Player: rider })
 
-
         const headPos = carrier.getHeadLocation();
         const viewDir = carrier.getViewDirection();
 
-        const targetLocation = {
+        const targetFacingLocation = {
             x: headPos.x + viewDir.x * 5,
             y: headPos.y + viewDir.y * 5,
             z: headPos.z + viewDir.z * 5
         };
 
-        rider.teleport({ x: carrier.location.x, y: carrier.location.y + 0.80, z: carrier.location.z }, { facingLocation: targetLocation });
-        carrier.addEffect("slowness", 10, { amplifier: 0.30, showParticles: false })
+        rider.teleport({ x: carrier.location.x, y: carrier.location.y + 0.80, z: carrier.location.z }, { facingLocation: targetFacingLocation });
+        carrier.addEffect("slowness", 10, { amplifier: 2, showParticles: false })
     }
 }
 
@@ -45,7 +44,8 @@ export function clearPlayerRide({ Player, PlayerLeave }) {
     if (rodePlayer) {
         system.run(() => rodePlayer.playAnimation("animation.player.bob.stationary", { blendOutTime: 0.1, controller: "player_sit" }));
         riderData.delete(rodePlayer.id);
-        return rodePlayer.setDynamicProperty("ride", undefined)
+        rodePlayer.setDynamicProperty("ride", undefined);
+        return
     }
 
     if (!PlayerLeave) system.run(() => Player.playAnimation("animation.player.bob.stationary", { blendOutTime: 0.1, controller: "player_sit" }))

@@ -20,7 +20,8 @@ world.afterEvents.playerSpawn.subscribe(e => {
 
     if (e.initialSpawn) {
         DiskToRAM({ Player: player });
-        return addonTutorial(player)
+        addonTutorial(player);
+        return
     }
     playerSettings({ Player: player })
 });
@@ -30,12 +31,23 @@ world.beforeEvents.entityHurt.subscribe(e => {
     const hEntity = e.hurtEntity.typeId !== "minecraft:player";
     const hurtEntity = e.hurtEntity;
 
-    if (!hEntity && carryData.has(hurtEntity.id)) return clearPlayerData({ Player: hurtEntity })
+    if (!hEntity && carryData.has(hurtEntity.id)) {
+        clearPlayerData({ Player: hurtEntity });
+        playerSettings({ Player: hurtEntity });
+        return
+    }
 
-    if (carryData.has(damagingEntity?.id)) return pushMob(damagingEntity, hurtEntity, e)
+    if (carryData.has(damagingEntity?.id)) {
+        pushMob(damagingEntity, hurtEntity, e);
+        return
+    }
 
     const carryPlayer = world.getAllPlayers().find(c => carryData.get(c.id)?.id === hurtEntity.id)
-    if (carryPlayer) return playerSettings({ Player: carryPlayer, Target: hurtEntity, DataDelete: true }) // Mob taşınırken hasar alırsa bırak
+    if (carryPlayer) {
+        clearPlayerData({ Player: carryPlayer});
+        playerSettings({ Player: carryPlayer, Target: hurtEntity });
+        return
+    }  // Mob taşınırken hasar alırsa bırak
 
     clearCarrierData(hurtEntity);
     clearRideData(hurtEntity)
@@ -49,7 +61,8 @@ world.beforeEvents.playerInteractWithEntity.subscribe(e => {
 
     if (carryData.has(player.id)) {
         abilityBar(player);
-        return powerCount({ Player: player, Target: target, EventCancel: e });
+        powerCount({ Player: player, EventCancel: e });
+        return
     }
     addPlayerRide(player, target);
     takeMob(player, target, e)
@@ -65,15 +78,17 @@ world.afterEvents.entityDie.subscribe(e => {
     const dEntity = e.deadEntity.typeId !== "minecraft:player";
     const deadEntity = e.deadEntity;
 
-    if (dEntity) return clearMobData(deadEntity)
-
+    if (dEntity) {
+        clearMobData(deadEntity);
+        return
+    }
 
     clearPlayerData({ Player: deadEntity })
 });
 
 const worldLoad = world.afterEvents.worldLoad.subscribe(() => {
     for (const player of world.getAllPlayers()) {
-        DiskToRAM({ Player: player });
+        DiskToRAM({ Player: player, WorldLoadEvent: true });
         playerSettings({ Player: player })
     }
 

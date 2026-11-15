@@ -4,66 +4,76 @@ import { world, system } from "@minecraft/server";
 import { riderData } from "../mob/ride";
 import { abilitiesData } from "../player/ability";
 
-export const neutralMobs = [];
-
 export const allowMobs = [
-    "minecraft:iron_golem", // 0
-    "minecraft:cow", // 1
-    "minecraft:sheep", // 2
-    "minecraft:chicken", // 3
-    "minecraft:villager_v2", // 4
-    "minecraft:cod", // 5
-    "minecraft:cat", // 6
-    "minecraft:wolf", // 7
-    "minecraft:copper_golem", // 8
-    "minecraft:pig", // 9
-    "minecraft:horse", // 10
-    "minecraft:axolotl", // 11
-    "minecraft:llama", // 12
-    "minecraft:armadillo", // 13
-    "minecraft:camel", // 14
-    "minecraft:trader_llama", // 15
-    "minecraft:wandering_trader", // 16
-    "minecraft:camel_husk", // 17
-    "minecraft:bee", // 18
-    "minecraft:sulfur_cube", // 19
-    "minecraft:rabbit", // 20
-    "minecraft:fox", // 21
-    "minecraft:frog", // 22
-    "minecraft:goat", // 23
-    "minecraft:sniffer", // 24
-    "minecraft:panda", // 25
-    "minecraft:snow_golem", // 26
-    "minecraft:ocelot", // 27
-    "minecraft:donkey", // 28
-    "minecraft:mooshroom", // 29
-    "minecraft:mule", // 30
-    "minecraft:parrot", // 31
-    "minecraft:polar_bear", // 32
-    "minecraft:turtle", // 33
-    "minecraft:enderman", // 34
-    "minecraft:squid", // 35
-    "minecraft:glow_squid", // 36
-    "minecraft:tadpole", // 37
-    "minecraft:allay", // 38
-    "minecraft:player", // 39
-    "minecraft:piglin", // 40
-    "minecraft:strider" // 41
-];
+    // -------------------------------------------------------------- No property
+    { typeId: "minecraft:cod" },
+    { typeId: "minecraft:cat" },
+    { typeId: "minecraft:strider" },
+    { typeId: "minecraft:squid" },
+    { typeId: "minecraft:glow_squid" },
+    { typeId: "minecraft:tadpole" },
+    { typeId: "minecraft:ocelot" },
+    { typeId: "minecraft:sulfur_cube" },
+    { typeId: "minecraft:rabbit" },
+    { typeId: "minecraft:fox" },
+    { typeId: "minecraft:frog" },
+    // -------------------------------------------------------------- No property
 
-allowMobs.forEach((mob, index) => {
-    switch (index) {
-        case 0:
-        case 7:
-        case 12:
-        case 15:
-        case 25:
-        case 32:
-        case 34:
-        case 40:
-            neutralMobs.push(mob);
-    }
-});
+    // -------------------------------------------------------------- Slow falling
+    { typeId: "minecraft:chicken", effect: "slow_falling", amplifier: 2 },
+    // -------------------------------------------------------------- Slow falling
+
+    // -------------------------------------------------------------- Levitation
+    { typeId: "minecraft:bat", effect: "levitation", amplifier: 1 },
+    { typeId: "minecraft:allay", effect: "levitation", amplifier: 1 },
+    { typeId: "minecraft:parrot", effect: "levitation", amplifier: 1 },
+
+    // -------------------------------------------------------------- Neutral Mob
+    { typeId: "minecraft:bee", effect: "levitation", amplifier: 1, neutralMob: true },
+    // -------------------------------------------------------------- Neutral Mob
+
+    // -------------------------------------------------------------- Levitation
+
+    // -------------------------------------------------------------- Slowness
+    { typeId: "minecraft:iron_golem", effect: "slowness", amplifier: 5 },
+    { typeId: "minecraft:cow", effect: "slowness", amplifier: 1 },
+    { typeId: "minecraft:sheep", effect: "slowness", amplifier: 1 },
+    { typeId: "minecraft:villager_v2", effect: "slowness", amplifier: 2 },
+    { typeId: "minecraft:copper_golem", effect: "slowness", amplifier: 4 },
+    { typeId: "minecraft:pig", effect: "slowness", amplifier: 1 },
+    { typeId: "minecraft:horse", effect: "slowness", amplifier: 2 },
+    { typeId: "minecraft:axolotl" },
+    { typeId: "minecraft:armadillo" },
+    { typeId: "minecraft:camel", effect: "slowness", amplifier: 5 },
+    { typeId: "minecraft:wandering_trader", effect: "slowness", amplifier: 2 },
+    { typeId: "minecraft:camel_husk", effect: "slowness", amplifier: 5 },
+    { typeId: "minecraft:goat", effect: "slowness", amplifier: 1 },
+    { typeId: "minecraft:sniffer", effect: "slowness", amplifier: 5 },
+    { typeId: "minecraft:snow_golem", effect: "slowness", amplifier: 2 },
+    { typeId: "minecraft:donkey", effect: "slowness", amplifier: 2 },
+    { typeId: "minecraft:mooshroom", effect: "slowness", amplifier: 1 },
+    { typeId: "minecraft:mule", effect: "slowness", amplifier: 2 },
+    { typeId: "minecraft:turtle", effect: "slowness", amplifier: 4 },
+    { typeId: "minecraft:player", effect: "slowness", amplifier: 2 },
+    { typeId: "minecraft:nautilus", effect: "slowness", amplifier: 3 },
+
+    // -------------------------------------------------------------- Neutral Mobs
+    { typeId: "minecraft:trader_llama", effect: "slowness", amplifier: 2, neutralMob: true },
+    { typeId: "minecraft:spider", effect: "slowness", amplifier: 3, climbing: true, neutralMob: true },
+    { typeId: "minecraft:llama", effect: "slowness", amplifier: 2, neutralMob: true },
+    { typeId: "minecraft:polar_bear", effect: "slowness", amplifier: 5, neutralMob: true },
+    { typeId: "minecraft:panda", effect: "slowness", amplifier: 5, neutralMob: true },
+    { typeId: "minecraft:enderman", effect: "slowness", amplifier: 3, neutralMob: true },
+    // -------------------------------------------------------------- Neutral Mobs
+
+    // -------------------------------------------------------------- Slowness
+
+    // -------------------------------------------------------------- Neutral Mobs
+    { typeId: "minecraft:wolf", neutralMob: true },
+    { typeId: "minecraft:dolphin", neutralMob: true },
+    { typeId: "minecraft:piglin", neutralMob: true }
+    // -------------------------------------------------------------- Neutral Mobs
+];
 
 export const excludeBlocks = [
     "minecraft:air",
@@ -333,10 +343,11 @@ export function addonTutorial(player) {
     }, 100)
 }
 
-
-export function DiskToRAM({ Player }) {
-    const findCarrier = world.getAllPlayers().find(p => Player.getDynamicProperty("ride") === p.id)
-    if (findCarrier) riderData.set(Player.id, findCarrier.id)
+export function DiskToRAM({ Player, WorldLoadEvent }) {
+    if (WorldLoadEvent) {
+        const findCarrier = world.getAllPlayers().find(p => Player.getDynamicProperty("ride") === p.id);
+        if (findCarrier) riderData.set(Player.id, findCarrier.id)
+    }
 
     const ab = abilitiesData.get(Player.id) ?? {};
 

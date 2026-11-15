@@ -6,7 +6,7 @@ import { clearRideData, clearCarrierData } from "./ride";
 import { abilitiesData, UnlockAbilityManager, UseAbilityManager } from "../player/ability";
 import { clearPlayerData, playerSettings } from "../player/data";
 
-import { allowMobs, neutralMobs, excludeBlocks } from "../utils/config";
+import { allowMobs, excludeBlocks } from "../utils/config";
 
 export const carryData = new Map();
 
@@ -25,73 +25,67 @@ const sounds = {
     mobCarryWarn: "mob.villager.no"
 };
 
-function mobComponents(player) {
-    const mobIndex = allowMobs.findIndex(m => carryData.get(player.id)?.typeId === m);
-    const cd = carryData.get(player.id);
+function mobComponents(player, entity) {
+    if (!carryData.get(player.id)?.power) player.onScreenDisplay.setActionBar("[ " + carryData.get(player.id)?.health + " ]")
 
-    if (mobIndex !== -1)
-        switch (mobIndex) {
-            case 0: // Iron golem
-            case 14: // Camel
-            case 17: // Camel husk
-            case 24: // Sniffer
-            case 25: // Panda
-            case 32: // Polar bear
-                player.addEffect("slowness", 7, { amplifier: 5, showParticles: false });
-                break
+    // ---------------------------------------------
+    const mobData = allowMobs.find(mob => mob.typeId === entity.typeId);
 
-            case 1: // Cow
-            case 2: // Sheep
-            case 9: // Pig
-            case 23: // Goat
-            case 29: // Mooshroom
-                player.addEffect("slowness", 7, { amplifier: 1, showParticles: false });
-                break
-
-            case 4: // Villager v2
-            case 16: // Wandering trader
-            case 10: // Horse
-            case 12: // Llama
-            case 15: // Trader llama
-            case 26: // Snow golem
-            case 28: // Donkey
-            case 30: // Mule
-            case 39: // Player
-                player.addEffect("slowness", 7, { amplifier: 2, showParticles: false });
-                break
-
-            case 8: // Copper golem
-            case 33: // Turtle
-                player.addEffect("slowness", 7, { amplifier: 4, showParticles: false });
-                break
+    if (mobData.effect) {
+        if (mobData.effect === "levitation") {
+            const rot = player.getRotation();
+            if (rot.x <= -45) {
+                player.addEffect("levitation", 7, { amplifier: mobData.amplifier, showParticles: false });
+                player.addEffect("slow_falling", 40, { amplifier: 1, showParticles: false })
+            }
         }
 
-    if (!cd?.powerCount) player.onScreenDisplay.setActionBar("[ " + carryData.get(player.id)?.health + " ]")
-}
-
-function suffocationBlock(player, entity) {
-    if (entity) {
-        const distance = 0.50;
+        else player.addEffect(mobData.effect, 7, { amplifier: mobData.amplifier, showParticles: false })
+    }
+    // ---------------------------------------------
+    if (mobData.climbing) {
+        const distance = 0.70;
 
         const blockLocs = [
-            { x: entity.location.x + distance, y: entity.location.y, z: entity.location.z },
-            { x: entity.location.x - distance, y: entity.location.y, z: entity.location.z },
+            { x: player.location.x + distance, y: player.location.y, z: player.location.z },
+            { x: player.location.x - distance, y: player.location.y, z: player.location.z },
 
-            { x: entity.location.x, y: entity.location.y, z: entity.location.z + distance },
-            { x: entity.location.x, y: entity.location.y, z: entity.location.z - distance }
+            { x: player.location.x, y: player.location.y, z: player.location.z + distance },
+            { x: player.location.x, y: player.location.y, z: player.location.z - distance }
         ];
 
         blockLocs.forEach(b => {
             if (b.y > 319 || b.y < -63) return
 
-            const block = entity.dimension.getBlock({ x: b.x, y: b.y, z: b.z });
+            const block = player.dimension.getBlock({ x: b.x, y: b.y, z: b.z });
             const excludeBlock = excludeBlocks.find(eb => eb === block.typeId);
-
             if (excludeBlock) return
-            const direction = player.getViewDirection();
-            system.run(() => player.applyKnockback({ x: -direction.x, z: -direction.z }, -50));
+
+            const rot = player.getRotation();
+            if (rot.x <= -45) player.addEffect("levitation", 7, { amplifier: mobData.amplifier, showParticles: false });
         })
     }
+    // ---------------------------------------------
+    const distance = 0.50;
+
+    const blockLocs = [
+        { x: entity.location.x + distance, y: entity.location.y, z: entity.location.z },
+        { x: entity.location.x - distance, y: entity.location.y, z: entity.location.z },
+
+        { x: entity.location.x, y: entity.location.y, z: entity.location.z + distance },
+        { x: entity.location.x, y: entity.location.y, z: entity.location.z - distance }
+    ];
+
+    blockLocs.forEach(b => {
+        if (b.y > 319 || b.y < -63) return
+
+        const block = entity.dimension.getBlock({ x: b.x, y: b.y, z: b.z });
+        const excludeBlock = excludeBlocks.find(eb => eb === block.typeId);
+
+        if (excludeBlock) return
+        const direction = player.getViewDirection();
+        player.applyKnockback({ x: -direction.x, z: -direction.z }, -50)
+    })
 }
 
 export function mobCarrying() {
@@ -99,6 +93,7 @@ export function mobCarrying() {
         const selectedSlot = player.selectedSlotIndex;
         const mainHand = player.getComponent("minecraft:inventory").container.getItem(selectedSlot);
         const offHand = player.getComponent(EntityComponentTypes.Equippable)?.getEquipment(EquipmentSlot.Offhand);
+
         const gamemode = player.getGameMode();
 
         const cd = carryData.get(player.id);
@@ -107,75 +102,76 @@ export function mobCarrying() {
         if (player.isSprinting || mainHand || offHand || gamemode === "Spectator" || !entity) {
             player.onScreenDisplay.setActionBar({ rawtext: [{ text: "§c" }, { translate: texts.mobDropped }] });
             player.playSound(sounds.mobDropped, { volume: 20 });
-            return clearPlayerData({ Player: player, Target: entity })
+            clearPlayerData({ Player: player });
+            playerSettings({ Player: player, Target: entity });
+            return
         }
 
-        if (!entity) return
-        mobComponents(player);
-        suffocationBlock(player, entity);
+        mobComponents(player, entity);
 
         const playerLoc = player.location;
-
-        const viewDirection = player.getViewDirection();
         const distance = 0.70;
-        const targetLoc = {
-            x: playerLoc.x + (viewDirection.x * distance),
-            y: (playerLoc.y + 1.27) + (viewDirection.y * distance),
-            z: playerLoc.z + (viewDirection.z * distance)
+
+        const headPos = player.getHeadLocation();
+        const viewDir = player.getViewDirection();
+
+        const targetFacingLocation = {
+            x: headPos.x + viewDir.x * 5,
+            y: headPos.y + viewDir.y * 5,
+            z: headPos.z + viewDir.z * 5
         };
-        entity.teleport(targetLoc)
+
+        const targetLoc = {
+            x: playerLoc.x + (viewDir.x * distance),
+            y: (playerLoc.y + 1.27) + (viewDir.y * distance),
+            z: playerLoc.z + (viewDir.z * distance)
+        };
+
+        entity.teleport(targetLoc, { facingLocation: targetFacingLocation })
     }
 }
 
-export function powerCount({ Player, Target, EventCancel } = {}) {
-    if (!EventCancel) {
-        for (const player of world.getAllPlayers().filter(p => carryData.has(p.id))) {
-            const data = carryData.get(player.id) ?? {};
-            data.power = data.power ?? 0;
+export function powerCount({ Player, EventCancel } = {}) {
+    if (EventCancel) { // Switch mantığı
+        EventCancel.cancel = true
+        const data = carryData.get(Player.id);
 
-            if (data?.power > 0 && player.isSneaking) {
-                data.power = null;
-                data.powerCount = null;
+        if (Player.isSneaking) return
 
-                return player.playSound(sounds.powerCanceled);
-            }
-
-            if (data?.powerCount) {
-                if (data.power < 15) {
-                    system.run(() => player.playSound(sounds.powerCount, { pitch: 2 }));
-                    data.power = data.power + 1
-                }
-                const maxBar = 15;
-                const greenBars = "§a▌".repeat(data.power);
-
-                let whiteBars;
-
-                if (data.power === 16) whiteBars = "§f▌".repeat(Math.abs(maxBar - (data.power - 1)))
-                else whiteBars = "§f▌".repeat(Math.abs(maxBar - data.power))
-
-                system.run(() => player.onScreenDisplay.setActionBar({ rawtext: [{ text: `${greenBars}${whiteBars}§f ${data.power} §l` }, { translate: texts.sneakToCancel }] }))
-            }
-        }
+        if (data?.powerCount) data.powerCount = null
+        else data.powerCount = true
         return
     }
 
-    EventCancel.cancel = true
-    // Switch mantığı
-    const data = carryData.get(Player.id);
+    for (const player of world.getAllPlayers().filter(p => carryData.has(p.id))) {
+        const data = carryData.get(player.id) ?? {};
+        data.power = data.power ?? 0;
 
-    const selectedSlot = Player.selectedSlotIndex;
-    const hand = Player.getComponent("minecraft:inventory").container.getItem(selectedSlot);
+        if (data.powerCount && data.power < 15) {
+            system.run(() => player.playSound(sounds.powerCount, { pitch: 2 }));
+            data.power = data.power + 1
+        }
 
-    if (!hand && Target.id === data?.id) {
-        if (!data?.powerCount && !Player.isSneaking) return data.powerCount = true
-        data.powerCount = null
+        if (data.power > 0) {
+            const maxBar = 15;
+            const greenBars = "§a▌".repeat(data.power);
+            const whiteBars = "§f▌".repeat(Math.abs(maxBar - data.power));
+            system.run(() => player.onScreenDisplay.setActionBar({ rawtext: [{ text: `${greenBars}${whiteBars}§f ${data.power} §l` }, { translate: texts.sneakToCancel }] }))
+
+            if (player.isSneaking) {
+                data.power = null;
+                data.powerCount = null;
+
+                player.playSound(sounds.powerCanceled)
+            }
+        }
     }
 }
 
 export function takeMob(player, target, e) {
     if (
         world.getAllPlayers().find(p => carryData.get(p.id)?.id === target.id) ||
-        !allowMobs.find(m => target.typeId === m) ||
+        !allowMobs.find(m => target.typeId === m.typeId) ||
         player.isGliding || !player.isSneaking ||
         riderData.has(target.id) && target.typeId === "minecraft:player"
     ) return // Bunlardan biri sağlanıyorsa geri dön
@@ -186,9 +182,9 @@ export function takeMob(player, target, e) {
     const mainHand = player.getComponent("minecraft:inventory").container.getItem(selectedSlot);
     const offHand = player.getComponent(EntityComponentTypes.Equippable)?.getEquipment(EquipmentSlot.Offhand);
 
-    const targetHealth = target.getComponent("minecraft:health").currentValue;
+    if (!mainHand && !offHand) {
+        const targetHealth = target.getComponent("minecraft:health").currentValue;
 
-    if (!mainHand && !offHand && allowMobs.find(m => target.typeId === m)) {
         carryData.set(player.id, { id: target.id, typeId: target.typeId, carry: true, health: targetHealth });
         clearRideData(target);
 
@@ -196,7 +192,8 @@ export function takeMob(player, target, e) {
         manager.enderman();
 
         playerSettings({ Player: player });
-        return system.run(() => player.playSound(sounds.mobTake))
+        system.run(() => player.playSound(sounds.mobTake));
+        return
     }
 
     system.run(() => {
@@ -231,11 +228,12 @@ export function pushMob(player, target, e) {
         });
     }
 
-    else addMobRide({ Player: player, Target: target });
+    else addMobRide({ Player: player, Target: target })
 
-    playerSettings({ Player: player, Target: target, DataDelete: true });
+    clearPlayerData({ Player: player });
+    playerSettings({ Player: player, Target: target });
 
-    if (neutralMobs.indexOf(target.typeId) === -1) return
+    if (allowMobs.find(a => !a.neutralMob && a.typeId === target.typeId)) return
 
     const difficulty = world.getDifficulty();
 
@@ -252,5 +250,6 @@ export function clearMobData(deadEntity) {
     const player = world.getAllPlayers().find(p => carryData.get(p.id)?.id === deadEntity.id);
     if (player) clearPlayerData({ Player: player })
 
-    clearRideData(deadEntity); clearCarrierData(deadEntity)
+    clearRideData(deadEntity);
+    clearCarrierData(deadEntity)
 }

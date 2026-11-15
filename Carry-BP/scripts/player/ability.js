@@ -94,7 +94,8 @@ export class UseAbilityManager {
         const runIntervalId = system.runInterval(() => {
             if (!this.target || !this.target.isValid) {
                 system.clearRun(runIntervalId);
-                return system.clearRun(runTimeOutId)
+                system.clearRun(runTimeOutId);
+                return
             }
 
             switch (this.ab?.abilityPage) {
@@ -128,7 +129,10 @@ export class UseAbilityManager {
     normal(startRun, endRun) { addMobRide({ Player: this.player, Target: this.target, StartRun: startRun, EndRun: endRun }) }
 
     boomerang({ returnBom } = {}) {
-        if (returnBom) return this.target.applyKnockback({ x: -this.targetLoc.x, z: -this.targetLoc.z }, 0.50)
+        if (returnBom) {
+            this.target.applyKnockback({ x: -this.targetLoc.x, z: -this.targetLoc.z }, 0.50);
+            return
+        }
 
         const mobs = this.target.dimension.getEntities({
             location: this.target.location,
