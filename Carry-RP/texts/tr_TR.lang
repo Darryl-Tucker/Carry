@@ -12,7 +12,6 @@ tutorial.form.button=Bunu bir daha gösterme
 
 ## carry.js
 mob.carry.warn=Ellerin dolu!
-mob.dropped=Mob'u düşürdün!
 sneakTo.cancel=Blok\nİptal etmek için eğil
 
 ## ../player/ride.js
@@ -23,10 +22,12 @@ carried.player=Oyuncuyu sırtınızdan atmak için ilk önce eğilin ardından z
 name.boomerang=Bumerang
 name.skySpinner=Uçan Pervane
 
-unlocked.boomerang=Bumerang yeteneğin açıldı!
-unlocked.skySpinner=Uçan Pervane yeteneğin açıldı!
-unlocked.enderman=Enderman yeteneğin açıldı!
+unlocked.boomerang=Gönderene iade! [AÇILDI]
+unlocked.skySpinner=Gökyüzüne gidelim! [AÇILDI]
+unlocked.enderman=Enderman taşımak ha! [AÇILDI]
+unlocked.creeper=Küçük bir şaka! [AÇILDI]
 
-howTounlock.boomerang=Bumerang yeteneğini açmak için 15 canlıyı üst üste dizin
+howTounlock.boomerang=Bumerang yeteneğini açmak için kendinize 1 ok fırlatın
 howTounlock.skySpinner=Uçan Pervane yeteneğini açmak için 3 canlıyı havaya fırlatın
 howTounlock.enderman=Enderman yeteneğini açmak için bir Enderman taşıyınız
+howTounlock.creeper=Creeper yeteneğini açabilmek için Creeper'ı taşıyın ve patlatın

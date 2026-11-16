@@ -6,13 +6,12 @@ item.carry:key=Key
 tutorial.form.title=HOW TO PLAY?
 
 tutorial.form.body=Tutorial
-tutorial.form.label=Sneak & Interact to carry a mob\n\nAttack the mob to release or throw it\n\nInteract with the carried mob to adjust throw level\n\nPress Sneak & Jump to dismount a player on your back\n\nSneak & Interact while carrying a mob to select an ability Sneak & Interact to carry a mob\n\nAttack the mob to release or throw it\n\nInteract with the carried mob to adjust throw level\n\nSneak & Interact while carrying a mob to select an ability
+tutorial.form.label=Sneak & Interact to carry a mob\n\nAttack the mob to release or throw it\n\nInteract with the carried mob to adjust throw level\n\nSneak & Interact while carrying a mob to select an ability Sneak & Interact to carry a mob\n\nAttack the mob to release or throw it\n\nInteract with the carried mob to adjust throw level\n\nSneak & Interact while carrying a mob to select an ability
 
 tutorial.form.button=Don't show again
 
 ## carry.js
 mob.carry.warn=Your hands are full!
-mob.dropped=Mob Dropped!
 sneakTo.cancel=Block\nSneak to cancel
 
 ## ../player/ride.js
@@ -23,10 +22,12 @@ carried.player=Sneak, then jump to drop the player off
 name.boomerang=Boomerang
 name.skySpinner=Sky Spinner
 
-unlocked.boomerang=Boomerang ability unlocked!
-unlocked.skySpinner=Sky Spinner ability unlocked!
-unlocked.enderman=Enderman ability unlocked!
+unlocked.boomerang=Return to sender! [UNLOCKED]
+unlocked.skySpinner=Let's take to the skies! [UNLOCKED]
+unlocked.enderman=Carrying an Enderman huh! [UNLOCKED]
+unlocked.creeper=A little prank! [UNLOCKED]
 
-howTounlock.boomerang=Stack 15 mobs to unlock Boomerang
+howTounlock.boomerang=Shoot yourself with 1 arrow to unlock the Boomerang ability
 howTounlock.skySpinner=Launch 3 mobs to unlock Sky Spinner
 howTounlock.enderman=Carry an Enderman to unlock the Enderman ability
+howTounlock.creeper=To unlock the Creeper ability, carry the Creeper and make it explode

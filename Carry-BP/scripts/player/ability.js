@@ -1,5 +1,5 @@
 import { system, EntityDamageCause } from "@minecraft/server";
-import { carryData } from "../mob/carry";
+import { carryEntityData } from "../entity/carry";
 import { addEntityRide } from "../utils/ride";
 
 export const abilitiesData = new Map();
@@ -8,10 +8,12 @@ const texts = {
     unlockedBoomerang: "unlocked.boomerang",
     unlockedSkySpinner: "unlocked.skySpinner",
     unlockedEnderman: "unlocked.enderman",
+    unlockedCreeper: "unlocked.creeper",
 
     howToUnlockBoomerang: "howTounlock.boomerang",
     howToUnlockSkyspinner: "howTounlock.skySpinner",
-    howToUnlockEnderman: "howTounlock.enderman"
+    howToUnlockEnderman: "howTounlock.enderman",
+    howToUnlockCreeper: "howTounlock.creeper"
 };
 
 const sounds = {
@@ -19,62 +21,79 @@ const sounds = {
 };
 
 export class UnlockAbilityManager {
-    constructor(player, playerAbilitiesData) {
+    constructor(player) {
         this.player = player;
-        this.carryData = carryData.get(this.player.id);
-        this.abilitiesData = playerAbilitiesData
+        this.carryEntityData = carryEntityData.get(this.player.id);
+        this.data = abilitiesData.get(this.player.id) ?? {};
+
+        this.unlockedParticleLoc = {
+            x: this.player.location.x,
+            y: this.player.location.y + 1,
+            z: this.player.location.z,
+        }
     }
 
-    save() { abilitiesData.set(this.player, abilitiesData) }
+    unlockedAbilityMessage(unlockedAbilityText) {
+        this.player.sendMessage({ rawtext: [{ text: ">>§a " }, { translate: unlockedAbilityText }] });
+        this.player.dimension.spawnParticle("minecraft:totem_particle", this.unlockedParticleLoc);
+        this.player.playSound(sounds.unlockedAbility, { volume: 1, pitch: 0.5 })
+    }
 
-    boomerang() {
-        if (this.abilitiesData?.boomerang) return
+    boomerang(damageSource, hurtEntity) {
+        if (this.data?.boomerang || hurtEntity.typeId !== "minecraft:player") return
 
-        this.abilitiesData.AUS_boomerang = (this.abilitiesData.AUS_boomerang ?? -1) + 1;
-        this.save();
+        if (
+            damageSource.cause !== "projectile" && // Projectile değil ise
+            damageSource.damagingProjectile?.typeId !== "minecraft:arrow" && // Ok değil ise
+            damageSource.damagingEntity?.id !== hurtEntity.id // Hasar veren ile hasar yiyen id'leri eşit değil ise
+        ) return
 
-        if (this.abilitiesData.AUS_boomerang === 15) {
-            this.abilitiesData.boomerang = true;
-            this.abilitiesData.AUS_boomerang = undefined;
-            this.save();
+        this.data.boomerang = true;
+        abilitiesData.set(this.player.id, this.data);
 
-            this.player.setDynamicProperty("boomerang", true);
-            this.player.sendMessage({ rawtext: [{ text: ">>§a " }, { translate: texts.unlockedBoomerang }] });
-            system.run(() => this.player.playSound(sounds.unlockedAbility, { volume: 1, pitch: 0.5 }))
-        }
+        this.player.setDynamicProperty("boomerang", true);
+        system.run(() => this.unlockedAbilityMessage(texts.unlockedBoomerang))
     }
 
     skySpinner() {
-        if (this.abilitiesData?.skySpinner) return
+        if (this.data?.skySpinner) return
 
         const rot = this.player.getRotation();
         if (rot.x <= -45) {
-            this.abilitiesData.AUS_skySpinner = (this.abilitiesData.AUS_skySpinner ?? 0) + 1;
-            this.save();
+            this.data.AUS_skySpinner = (this.data.AUS_skySpinner ?? 0) + 1;
+            abilitiesData.set(this.player.id, this.data);
         }
 
-        if (this.abilitiesData.AUS_skySpinner === 3) {
-            this.abilitiesData.skySpinner = true;
-            this.abilitiesData.AUS_skySpinner = undefined;
-            this.save();
+        if (this.data.AUS_skySpinner !== 3) return
 
-            this.player.setDynamicProperty("skySpinner", true);
-            this.player.sendMessage({ rawtext: [{ text: ">>§a " }, { translate: texts.unlockedSkySpinner }] });
-            system.run(() => this.player.playSound(sounds.unlockedAbility, { volume: 1, pitch: 0.5 }))
-        }
+        this.data.skySpinner = true;
+        this.data.AUS_skySpinner = undefined;
+
+        system.run(() => this.unlockedAbilityMessage(texts.unlockedSkySpinner))
     }
 
     enderman() {
-        if (this.abilitiesData?.enderman) return
+        if (this.data?.enderman) return
 
-        if (this.carryData.typeId === "minecraft:enderman") {
-            this.abilitiesData.enderman = true;
-            this.save();
-            this.player.setDynamicProperty("enderman", true);
+        if (this.carryEntityData.typeId !== "minecraft:enderman") return
+        this.data.enderman = true;
+        abilitiesData.set(this.player.id, this.data);
 
-            this.player.sendMessage({ rawtext: [{ text: ">>§a " }, { translate: texts.unlockedEnderman }] });
-            system.run(() => this.player.playSound(sounds.unlockedAbility, { volume: 1, pitch: 0.5 }))
-        }
+        this.player.setDynamicProperty("enderman", true);
+
+        system.run(() => this.unlockedAbilityMessage(texts.unlockedEnderman))
+    }
+
+    creeper(e) {
+        if (this.data?.creeper) return
+        e.cancel = true;
+
+        this.data.creeper = true;
+        abilitiesData.set(this.player.id, this.data);
+
+        this.player.setDynamicProperty("creeper", true);
+
+        system.run(() => this.unlockedAbilityMessage(texts.unlockedCreeper))
     }
 }
 
@@ -83,7 +102,7 @@ export class UseAbilityManager {
     constructor(player, viewDirection, target, targetLoc) {
         this.player = player;
         this.target = target;
-        this.power = carryData.get(this.player.id)?.power;
+        this.power = carryEntityData.get(this.player.id)?.power;
         this.ab = abilitiesData.get(this.player.id);
         this.viewDirection = viewDirection;
         this.targetLoc = targetLoc
@@ -101,7 +120,7 @@ export class UseAbilityManager {
                 default: // normal
                     this.normal(runIntervalId, runTimeOutId)
                     break
-                case 0: // boomerang
+                case 0: // Boomerang
                     if (this.ab?.boomerang) this.boomerang()
                     break
                 case 1: // Sky Spinner
@@ -110,17 +129,28 @@ export class UseAbilityManager {
                 case 2: // Enderman
                     if (this.ab?.enderman) system.clearRun(runIntervalId)
                     break
+                case 3: // Boom
+                    if (this.ab?.creeper) system.clearRun(runIntervalId)
+                    break
             }
         });
 
         const runTimeOutId = system.runTimeout(async () => {
-            if (this.ab?.abilityPage === 0 && this.ab?.boomerang) {
-                this.boomerang({ returnBom: true });
-                await system.waitTicks(this.power)
+            switch (this.ab?.abilityPage) {
+                case 0:
+                    if (this.ab?.boomerang) {
+                        this.boomerang({ returnBom: true });
+                        await system.waitTicks(this.power)
+                    } // Boomerang 
+                    break
+
+                case 2:
+                    if (this.ab?.enderman) this.enderman()
+                    break // Enderman
+                case 3:
+                    if (this.ab?.creeper) this.creeper()
+                    break // Creeper
             }
-
-            else if (this.ab?.abilityPage === 2 && this.ab?.enderman) { this.enderman() }
-
             system.clearRun(runIntervalId);
         }, this.power)
     }
@@ -164,12 +194,25 @@ export class UseAbilityManager {
         await system.waitTicks(3);
         this.player.playSound("mob.endermen.portal", { pitch: 1.2 })
     }
+
+    creeper() {
+        const explodeLoc = this.target.location;
+        system.runTimeout(() =>
+            this.player.dimension.createExplosion(explodeLoc, 3, {
+                causesFire: true,
+                breaksBlocks: false,
+            }), 2);
+
+        this.target.teleport(this.player.location)
+    }
 }
 
-export function abilityBar(player) {
+export function abilityBar(player, e) {
     if (!player.isSneaking) return
+    e.cancel = true;
+
     const ab = abilitiesData.get(player.id) ?? {};
-    const maxAbility = 2;
+    const maxAbility = 3;
 
     ab.abilityPage = (ab?.abilityPage ?? -1) + 1;
     abilitiesData.set(player.id, ab);
@@ -190,6 +233,10 @@ export function abilityBar(player) {
             case 2:
                 player.sendMessage(">> Enderman");
                 if (!ab?.enderman) player.sendMessage({ rawtext: [{ text: ">>§a " }, { translate: texts.howToUnlockEnderman }] });
+                break
+            case 3:
+                player.sendMessage(">> Creeper");
+                if (!ab?.creeper) player.sendMessage({ rawtext: [{ text: ">>§a " }, { translate: texts.howToUnlockCreeper }] });
                 break
         }
     });

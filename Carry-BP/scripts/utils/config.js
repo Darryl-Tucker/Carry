@@ -3,8 +3,9 @@ import { world, system } from "@minecraft/server";
 import { abilitiesData } from "../player/ability";
 import { riderData } from "./ride";
 
-export const allowMobs = [
+export const allowEntities = [  // Slime, Armor Stand, Bat, Nautilus, Spider, Zombie Pigman, Dolphin, Creeper, Tnt-Hopper-Command-Chest Minecart, Minecart, Armor Stand
     // -------------------------------------------------------------- No property
+
     { typeId: "minecraft:cod" },
     { typeId: "minecraft:cat" },
     { typeId: "minecraft:strider" },
@@ -16,22 +17,46 @@ export const allowMobs = [
     { typeId: "minecraft:rabbit" },
     { typeId: "minecraft:fox" },
     { typeId: "minecraft:frog" },
+
     // -------------------------------------------------------------- No property
+
+    // -------------------------------------------------------------- Non-mob Entity
+
+    { typeId: "minecraft:minecart", nonMobEntity: true },
+    { typeId: "minecraft:chest_minecart", nonMobEntity: true },
+    { typeId: "minecraft:hopper_minecart", nonMobEntity: true },
+    { typeId: "minecraft:tnt_minecart", nonMobEntity: true },
+    { typeId: "minecraft:command_block_minecart", nonMobEntity: true },
+    { typeId: "minecraft:armor_stand", nonMobEntity: true },
+    { typeId: "minecraft:boat", nonMobEntity: true },
+
+    // -------------------------------------------------------------- Non-mob Entity
 
     // -------------------------------------------------------------- Slow falling
     { typeId: "minecraft:chicken", effect: "slow_falling", amplifier: 2 },
     // -------------------------------------------------------------- Slow falling
 
+    // -------------------------------------------------------------- Oozing
+    { typeId: "minecraft:slime", effect: "oozing", amplifier: 2 },
+    // -------------------------------------------------------------- Oozing
+
     // -------------------------------------------------------------- Levitation
     { typeId: "minecraft:bat", effect: "levitation", amplifier: 1 },
     { typeId: "minecraft:allay", effect: "levitation", amplifier: 1 },
     { typeId: "minecraft:parrot", effect: "levitation", amplifier: 1 },
+    // -------------------------------------------------------------- Levitation
 
     // -------------------------------------------------------------- Neutral Mob
     { typeId: "minecraft:bee", effect: "levitation", amplifier: 1, neutralMob: true },
     // -------------------------------------------------------------- Neutral Mob
 
     // -------------------------------------------------------------- Levitation
+
+    // -------------------------------------------------------------- Regeneration
+
+    { typeId: "minecraft:axolotl", effect: "regeneration", amplifier: 0 },
+
+    // -------------------------------------------------------------- Regeneration
 
     // -------------------------------------------------------------- Slowness
     { typeId: "minecraft:iron_golem", effect: "slowness", amplifier: 5 },
@@ -41,14 +66,13 @@ export const allowMobs = [
     { typeId: "minecraft:copper_golem", effect: "slowness", amplifier: 4 },
     { typeId: "minecraft:pig", effect: "slowness", amplifier: 1 },
     { typeId: "minecraft:horse", effect: "slowness", amplifier: 2 },
-    { typeId: "minecraft:axolotl", effect: "regeneration", amplifier: 1 },
     { typeId: "minecraft:armadillo" },
     { typeId: "minecraft:camel", effect: "slowness", amplifier: 5 },
     { typeId: "minecraft:wandering_trader", effect: "slowness", amplifier: 2 },
     { typeId: "minecraft:camel_husk", effect: "slowness", amplifier: 5 },
     { typeId: "minecraft:goat", effect: "slowness", amplifier: 1 },
     { typeId: "minecraft:sniffer", effect: "slowness", amplifier: 5 },
-    { typeId: "minecraft:snow_golem", effect: "slowness", amplifier: 2 },
+    { typeId: "minecraft:snow_golem", effect: "freezing", amplifier: 2 },
     { typeId: "minecraft:donkey", effect: "slowness", amplifier: 2 },
     { typeId: "minecraft:mooshroom", effect: "slowness", amplifier: 1 },
     { typeId: "minecraft:mule", effect: "slowness", amplifier: 2 },
@@ -63,6 +87,8 @@ export const allowMobs = [
     { typeId: "minecraft:polar_bear", effect: "slowness", amplifier: 5, neutralMob: true },
     { typeId: "minecraft:panda", effect: "slowness", amplifier: 5, neutralMob: true },
     { typeId: "minecraft:enderman", effect: "slowness", amplifier: 3, neutralMob: true },
+    { typeId: "minecraft:piglin", effect: "slowness", amplifier: 2, neutralMob: true },
+    { typeId: "minecraft:zombie_pigman", effect: "slowness", amplifier: 2, neutralMob: true },
     // -------------------------------------------------------------- Neutral Mobs
 
     // -------------------------------------------------------------- Slowness
@@ -70,11 +96,14 @@ export const allowMobs = [
     // -------------------------------------------------------------- Neutral Mobs
     { typeId: "minecraft:wolf", neutralMob: true },
     { typeId: "minecraft:dolphin", neutralMob: true },
-    { typeId: "minecraft:piglin", neutralMob: true }
     // -------------------------------------------------------------- Neutral Mobs
+
+    // -------------------------------------------------------------- Monsters
+    { typeId: "minecraft:creeper" },
+    // -------------------------------------------------------------- Monsters
 ];
 
-export const excludeBlocks = [
+export const excludeBlocks = new Set([
     "minecraft:air",
     "minecraft:structure_void",
     "minecraft:light_block",
@@ -316,7 +345,7 @@ export const excludeBlocks = [
     "minecraft:pale_oak_fence_gate",
     "minecraft:bamboo_fence_gate",
     "minecraft:crimson_fence_gate",
-];
+]);
 
 export function addonTutorial(player) {
     system.runTimeout(() => {
@@ -353,7 +382,8 @@ export function DiskToRAM({ Player, WorldLoadEvent }) {
     const abilities = [
         "boomerang",
         "skySpinner",
-        "enderman"
+        "enderman",
+        "creeper"
     ];
 
     for (const ability of abilities.filter(a => Player.getDynamicProperty(a))) ab[ability] = true

@@ -1,11 +1,11 @@
 import { system } from "@minecraft/server";
-import { mobCarrying, powerCount } from "./mob/carry";
+import { entityCarrying, powerCount } from "./entity/carry";
 import { playerAnimation } from "./player/data";
 import { entityRiding } from "./utils/ride";
-import "./utils/events";
+import "./utils/event";
 
 system.runInterval(() => {
-    mobCarrying();
+    entityCarrying();
     entityRiding()
 });
 
