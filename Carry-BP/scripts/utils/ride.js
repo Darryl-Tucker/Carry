@@ -70,6 +70,7 @@ export function addEntityRide({ Player, Target, StartRun, EndRun }) {
         "minecraft:tnt_minecart",
         "minecraft:chest_minecart",
         "minecraft:boat",
+        "wind_charge_projectile"
     ];
 
     if (Target.getComponent("minecraft:riding") || excludeTypes.includes(Target.typeId)) {
