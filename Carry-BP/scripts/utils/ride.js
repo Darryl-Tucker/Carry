@@ -1,4 +1,5 @@
 import { world, system } from "@minecraft/server";
+import { excludeEntities } from "./config";
 
 export const riderData = new Map();
 export const carrierData = new Map();
@@ -59,21 +60,7 @@ export function addEntityRide({ Player, Target, StartRun, EndRun }) {
     }
     // ----------------------------------------------------------------
 
-    const excludeTypes = [
-        "minecraft:player",
-        "minecraft:item",
-        "minecraft:arrow",
-        "minecraft:xp_orb",
-        "minecraft:minecart",
-        "minecraft:command_block_minecart",
-        "minecraft:hopper_minecart",
-        "minecraft:tnt_minecart",
-        "minecraft:chest_minecart",
-        "minecraft:boat",
-        "wind_charge_projectile"
-    ];
-
-    if (Target.getComponent("minecraft:riding") || excludeTypes.includes(Target.typeId)) {
+    if (Target.getComponent("minecraft:riding") || excludeEntities.includes(Target.typeId)) {
         if (StartRun && EndRun) {
             system.clearRun(StartRun); // Run'ları temizleyebiliriz gerek kalmadı
             system.clearRun(EndRun)
@@ -84,7 +71,7 @@ export function addEntityRide({ Player, Target, StartRun, EndRun }) {
     const carrier = Target.dimension.getEntities({
         location: Target.location,
         maxDistance: 1.75,
-        excludeTypes: excludeTypes
+        excludeTypes: excludeEntities
     }).find(c => c.id !== Target.id && !riderData.has(c.id)); // Taşıyıcıyı bul
 
     if (!carrier || carrierData.has(Target.id)) return // Eğer taşıyıcı varsa

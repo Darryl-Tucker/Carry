@@ -8,7 +8,6 @@ export const carryEntityData = new Map();
 
 const texts = {
     mobCarryWarn: "mob.carry.warn",
-    sneakToCancel: "sneakTo.cancel"
 };
 
 const sounds = {
@@ -24,8 +23,7 @@ class entityComponentManager {
     constructor(player, entity) {
         this.player = player;
         this.rot = this.player.getRotation();
-
-        this.entity = entity
+        this.entity = entity;
     }
 
     entityHealthShow() { if (!carryEntityData.get(this.player.id)?.power) this.player.onScreenDisplay.setActionBar("[ " + (carryEntityData.get(this.player.id).health ?? 0.50) + " ]") }
@@ -107,7 +105,7 @@ export function entityCarrying() {
         const cd = carryEntityData.get(player.id);
         const entity = player.dimension.getEntities({ location: player.location }).find(e => cd?.id === e.id);
 
-        if (player.isSprinting || player.isJumping || player.isEmoting || mainHand || offHand || gamemode === "Spectator" || !entity) {
+        if (player.isSprinting || player.isJumping || player.isEmoting || mainHand || offHand || gamemode === "Spectator" || !entity || !entity?.isValid) {
             if (entity && entity.typeId !== "minecraft:player") addEntityRide({ Player: player, Target: entity })
             // Bindirme işlemi sadece oyuncu olmayanlar için geçerli
 
@@ -149,7 +147,7 @@ export function powerCount({ Player, Target, EventCancel } = {}) {
         if (Player.isSneaking) return
         EventCancel.cancel = true; // Non-mob entity'nin üstüne veya container'ı açmamak için event'i iptal ediyorum
 
-        if (allowEntities.find(a => a.typeId === Target.typeId && a.nonMobEntity)) return // Non-mob entity ise geri dön
+        if (allowEntities.find(a => a.typeId === Target.typeId && a.nonPush)) return // Non-push ise geri dön
 
         const data = carryEntityData.get(Player.id);
 
@@ -162,24 +160,22 @@ export function powerCount({ Player, Target, EventCancel } = {}) {
         const data = carryEntityData.get(player.id) ?? {};
         data.power = data.power ?? 0;
 
-        if (data.powerCount && data.power < 15) {
+        if (data.powerCount && data.power < 10) {
             system.run(() => player.playSound(sounds.powerCount, { pitch: 2 }));
             data.power = data.power + 1
         }
 
-        if (data.power > 0) {
-            const maxBar = 15;
-            const greenBars = "§a▌".repeat(data.power);
-            const whiteBars = "§f▌".repeat(Math.abs(maxBar - data.power));
-            system.run(() => player.onScreenDisplay.setActionBar({ rawtext: [{ text: `${greenBars}${whiteBars}§f ${data.power} §l` }, { translate: texts.sneakToCancel }] }))
+        if (data.power === 0) return
 
-            if (player.isSneaking) {
-                data.power = null;
-                data.powerCount = null;
+        if (player.isSneaking) {
+            data.power = null;
+            data.powerCount = null;
 
-                player.playSound(sounds.powerCanceled)
-            }
+            player.playSound(sounds.powerCanceled);
+            continue
         }
+
+        system.run(() => player.onScreenDisplay.setActionBar(`[ ${data.power}§f ]`))
     }
 }
 
@@ -188,7 +184,7 @@ export function takeEntity(player, target, e) {
         carryEntityData.get(target.id)?.id === player.id || // Eğer target zaten oyuncuyu taşıyorsa
         world.getAllPlayers().find(p => carryEntityData.get(p.id)?.id === target.id) ||  // Bir oyuncu taşıyor veya
         !allowEntities.find(m => target.typeId === m.typeId) || // Geçerli listesinden değil veya
-        player.isGliding || player.isJumping || !player.isSneaking || // Gliding yapıyor, zıplıyorsa veya eğilmiyorsa
+        player.isGliding || player.isJumping || player.isEmoting || !player.isSneaking || // Gliding yapıyor, emoji kullanıyor, zıplıyorsa veya eğilmiyorsa
         riderData.has(target.id) && target.typeId === "minecraft:player" // riderData'ya sahip ve oyuncu ise
     ) return // Bunlardan biri sağlanıyorsa geri dön
 
@@ -225,19 +221,18 @@ export function pushEntity(player, target, e) {
     if (power > 0) {
         const viewDirection = player.getViewDirection();
 
-        const targetLoc = {
-            x: viewDirection.x * power,
-            z: viewDirection.z * power
-        };
+        const pushLoc = { x: viewDirection.x * power, y: viewDirection.y * power, z: viewDirection.z * power };
+
+        if (power > 2) pushLoc.y = viewDirection.y * 2 // Çok yukarı uçmasın diye kontrol
 
         const Unlockmanager = new UnlockAbilityManager(player);
-        const UseManager = new UseAbilityManager(player, viewDirection, target, targetLoc);
+        const UseManager = new UseAbilityManager(player, viewDirection, target, pushLoc);
 
-        Unlockmanager.skySpinner();
+        Unlockmanager.breeze();
         UseManager.loop();
 
         system.run(() => {
-            target.applyKnockback(targetLoc, viewDirection.y);
+            target.applyImpulse(pushLoc);
             player.playSound(sounds.mobPush)
         })
     }

@@ -3,7 +3,7 @@ import { world, system } from "@minecraft/server";
 import { abilitiesData } from "../player/ability";
 import { riderData } from "./ride";
 
-export const allowEntities = [  // Slime, Armor Stand, Bat, Nautilus, Spider, Zombie Pigman, Dolphin, Creeper, Tnt-Hopper-Command-Chest Minecart, Minecart, Armor Stand
+export const allowEntities = [
     // -------------------------------------------------------------- No property
 
     { typeId: "minecraft:cod" },
@@ -20,17 +20,17 @@ export const allowEntities = [  // Slime, Armor Stand, Bat, Nautilus, Spider, Zo
 
     // -------------------------------------------------------------- No property
 
-    // -------------------------------------------------------------- Non-mob Entity
+    // -------------------------------------------------------------- Non-push
 
-    { typeId: "minecraft:minecart", nonMobEntity: true },
-    { typeId: "minecraft:chest_minecart", nonMobEntity: true },
-    { typeId: "minecraft:hopper_minecart", nonMobEntity: true },
-    { typeId: "minecraft:tnt_minecart", nonMobEntity: true },
-    { typeId: "minecraft:command_block_minecart", nonMobEntity: true },
-    { typeId: "minecraft:armor_stand", nonMobEntity: true },
-    { typeId: "minecraft:boat", nonMobEntity: true },
+    { typeId: "minecraft:minecart", nonPush: true },
+    { typeId: "minecraft:chest_minecart", nonPush: true },
+    { typeId: "minecraft:hopper_minecart", nonPush: true },
+    { typeId: "minecraft:tnt_minecart", nonPush: true },
+    { typeId: "minecraft:command_block_minecart", nonPush: true },
+    { typeId: "minecraft:boat", nonPush: true },
+    { typeId: "minecraft:armor_stand", nonPush: true },
 
-    // -------------------------------------------------------------- Non-mob Entity
+    // -------------------------------------------------------------- Non-push
 
     // -------------------------------------------------------------- Slow falling
     { typeId: "minecraft:chicken", effect: "slow_falling", amplifier: 2 },
@@ -46,10 +46,6 @@ export const allowEntities = [  // Slime, Armor Stand, Bat, Nautilus, Spider, Zo
     { typeId: "minecraft:parrot", effect: "levitation", amplifier: 1 },
     // -------------------------------------------------------------- Levitation
 
-    // -------------------------------------------------------------- Neutral Mob
-    { typeId: "minecraft:bee", effect: "levitation", amplifier: 1, neutralMob: true },
-    // -------------------------------------------------------------- Neutral Mob
-
     // -------------------------------------------------------------- Levitation
 
     // -------------------------------------------------------------- Regeneration
@@ -59,7 +55,6 @@ export const allowEntities = [  // Slime, Armor Stand, Bat, Nautilus, Spider, Zo
     // -------------------------------------------------------------- Regeneration
 
     // -------------------------------------------------------------- Slowness
-    { typeId: "minecraft:iron_golem", effect: "slowness", amplifier: 5 },
     { typeId: "minecraft:cow", effect: "slowness", amplifier: 1 },
     { typeId: "minecraft:sheep", effect: "slowness", amplifier: 1 },
     { typeId: "minecraft:villager_v2", effect: "slowness", amplifier: 2 },
@@ -79,8 +74,11 @@ export const allowEntities = [  // Slime, Armor Stand, Bat, Nautilus, Spider, Zo
     { typeId: "minecraft:turtle", effect: "slowness", amplifier: 4 },
     { typeId: "minecraft:player", effect: "slowness", amplifier: 2 },
     { typeId: "minecraft:nautilus", effect: "slowness", amplifier: 3 },
+    // -------------------------------------------------------------- Slowness
 
     // -------------------------------------------------------------- Neutral Mobs
+    { typeId: "minecraft:wolf", neutralMob: true },
+    { typeId: "minecraft:dolphin", neutralMob: true },
     { typeId: "minecraft:trader_llama", effect: "slowness", amplifier: 2, neutralMob: true },
     { typeId: "minecraft:spider", effect: "slowness", amplifier: 3, climbing: true, neutralMob: true },
     { typeId: "minecraft:llama", effect: "slowness", amplifier: 2, neutralMob: true },
@@ -89,13 +87,8 @@ export const allowEntities = [  // Slime, Armor Stand, Bat, Nautilus, Spider, Zo
     { typeId: "minecraft:enderman", effect: "slowness", amplifier: 3, neutralMob: true },
     { typeId: "minecraft:piglin", effect: "slowness", amplifier: 2, neutralMob: true },
     { typeId: "minecraft:zombie_pigman", effect: "slowness", amplifier: 2, neutralMob: true },
-    // -------------------------------------------------------------- Neutral Mobs
-
-    // -------------------------------------------------------------- Slowness
-
-    // -------------------------------------------------------------- Neutral Mobs
-    { typeId: "minecraft:wolf", neutralMob: true },
-    { typeId: "minecraft:dolphin", neutralMob: true },
+    { typeId: "minecraft:bee", effect: "levitation", amplifier: 1, neutralMob: true },
+    { typeId: "minecraft:iron_golem", effect: "slowness", amplifier: 5, neutralMob: true },
     // -------------------------------------------------------------- Neutral Mobs
 
     // -------------------------------------------------------------- Monsters
@@ -103,27 +96,39 @@ export const allowEntities = [  // Slime, Armor Stand, Bat, Nautilus, Spider, Zo
     // -------------------------------------------------------------- Monsters
 ];
 
+export const excludeEntities = [
+    "minecraft:player",
+    "minecraft:item",
+    "minecraft:arrow",
+    "minecraft:xp_orb",
+    "minecraft:minecart",
+    "minecraft:command_block_minecart",
+    "minecraft:hopper_minecart",
+    "minecraft:tnt_minecart",
+    "minecraft:chest_minecart",
+    "minecraft:boat",
+    "wind_charge_projectile"
+];
+
 export const excludeBlocks = new Set([
     "minecraft:air",
     "minecraft:structure_void",
     "minecraft:light_block",
-
     "minecraft:water",
     "minecraft:flowing_water",
     "minecraft:lava",
     "minecraft:flowing_lava",
     "minecraft:bubble_column",
-
     "minecraft:short_grass",
     "minecraft:tall_grass",
     "minecraft:fern",
     "minecraft:large_fern",
     "minecraft:deadbush",
+    "minecraft:firefly_bush",
     "minecraft:leaf_litter",
     "minecraft:reeds",
     "minecraft:short_dry_grass",
     "minecraft:tall_dry_grass",
-
     "minecraft:dandelion",
     "minecraft:poppy",
     "minecraft:blue_orchid",
@@ -138,12 +143,10 @@ export const excludeBlocks = new Set([
     "minecraft:lily_of_the_valley",
     "minecraft:wither_rose",
     "minecraft:wildflowers",
-
     "minecraft:sunflower",
     "minecraft:lilac",
     "minecraft:rose_bush",
     "minecraft:peony",
-
     "minecraft:wheat",
     "minecraft:potatoes",
     "minecraft:carrots",
@@ -155,7 +158,6 @@ export const excludeBlocks = new Set([
     "minecraft:pitcher_crop",
     "minecraft:sweet_berry_bush",
     "minecraft:cocoa",
-
     "minecraft:oak_sapling",
     "minecraft:spruce_sapling",
     "minecraft:birch_sapling",
@@ -169,7 +171,6 @@ export const excludeBlocks = new Set([
     "minecraft:red_mushroom",
     "minecraft:crimson_fungus",
     "minecraft:warped_fungus",
-
     "minecraft:vine",
     "minecraft:weeping_vines",
     "minecraft:twisting_vines",
@@ -177,13 +178,11 @@ export const excludeBlocks = new Set([
     "minecraft:cave_vines_body_with_berries",
     "minecraft:hanging_roots",
     "minecraft:glow_lichen",
-
     "minecraft:nether_wart",
     "minecraft:crimson_roots",
     "minecraft:warped_roots",
     "minecraft:nether_sprouts",
     "minecraft:seagrass",
-
     "minecraft:tube_coral",
     "minecraft:brain_coral",
     "minecraft:bubble_coral",
@@ -204,7 +203,6 @@ export const excludeBlocks = new Set([
     "minecraft:dead_bubble_coral_fan",
     "minecraft:dead_fire_coral_fan",
     "minecraft:dead_horn_coral_fan",
-
     "minecraft:redstone_wire",
     "minecraft:redstone_torch",
     "minecraft:unlit_redstone_torch",
@@ -212,7 +210,6 @@ export const excludeBlocks = new Set([
     "minecraft:tripwire_hook",
     "minecraft:trip_wire",
     "minecraft:sculk_sensor",
-
     "minecraft:stone_button",
     "minecraft:wooden_button",
     "minecraft:spruce_button",
@@ -226,7 +223,6 @@ export const excludeBlocks = new Set([
     "minecraft:bamboo_button",
     "minecraft:crimson_button",
     "minecraft:warped_button",
-
     "minecraft:stone_pressure_plate",
     "minecraft:wooden_pressure_plate",
     "minecraft:spruce_pressure_plate",
@@ -242,14 +238,12 @@ export const excludeBlocks = new Set([
     "minecraft:warped_pressure_plate",
     "minecraft:polished_blackstone_pressure_plate",
     "minecraft:light_weighted_pressure_plate",
-
     "minecraft:torch",
     "minecraft:soul_torch",
     "minecraft:fire",
     "minecraft:soul_fire",
     "minecraft:sea_pickle",
     "minecraft:spore_blossom",
-
     "minecraft:carpet",
     "minecraft:white_carpet",
     "minecraft:light_gray_carpet",
@@ -268,9 +262,9 @@ export const excludeBlocks = new Set([
     "minecraft:magenta_carpet",
     "minecraft:pink_carpet",
     "minecraft:moss_carpet",
-
     "minecraft:standing_sign",
-    "minecraft:wall_sign",
+    "minecraft:spruce_wall_sign",
+    "minecraft:spruce_standing_sign",
     "minecraft:oak_hanging_sign",
     "minecraft:spruce_hanging_sign",
     "minecraft:birch_hanging_sign",
@@ -282,17 +276,13 @@ export const excludeBlocks = new Set([
     "minecraft:pale_oak_hanging_sign",
     "minecraft:bamboo_hanging_sign",
     "minecraft:crimson_hanging_sign",
-
     "minecraft:standing_banner",
     "minecraft:wall_banner",
-
     "minecraft:portal",
     "minecraft:end_portal",
-
     "minecraft:web",
     "minecraft:snow_layer",
     "minecraft:powder_snow",
-
     "minecraft:wooden_door",
     "minecraft:iron_door",
     "minecraft:spruce_door",
@@ -313,7 +303,6 @@ export const excludeBlocks = new Set([
     "minecraft:waxed_copper_door",
     "minecraft:waxed_exposed_copper_door",
     "minecraft:waxed_weathered_copper_door",
-
     "minecraft:trapdoor",
     "minecraft:iron_trapdoor",
     "minecraft:spruce_trapdoor",
@@ -333,7 +322,6 @@ export const excludeBlocks = new Set([
     "minecraft:oxidized_copper_trapdoor",
     "minecraft:waxed_copper_trapdoor",
     "minecraft:waxed_exposed_copper_trapdoor",
-
     "minecraft:fence_gate",
     "minecraft:spruce_fence_gate",
     "minecraft:birch_fence_gate",
@@ -345,6 +333,9 @@ export const excludeBlocks = new Set([
     "minecraft:pale_oak_fence_gate",
     "minecraft:bamboo_fence_gate",
     "minecraft:crimson_fence_gate",
+    "minecraft:red_shrub",
+    "minecraft:calibrated_sculk_sensor",
+    "minecraft:bush"
 ]);
 
 export function addonTutorial(player) {
@@ -380,10 +371,12 @@ export function DiskToRAM({ Player, WorldLoadEvent }) {
     const ab = abilitiesData.get(Player.id) ?? {};
 
     const abilities = [
-        "boomerang",
-        "skySpinner",
+        "ghast",
+        "breeze",
         "enderman",
-        "creeper"
+        "creeper",
+        "snowGolem",
+        "blaze"
     ];
 
     for (const ability of abilities.filter(a => Player.getDynamicProperty(a))) ab[ability] = true

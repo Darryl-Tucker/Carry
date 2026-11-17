@@ -12,22 +12,22 @@ tutorial.form.button=Don't show again
 
 ## carry.js
 mob.carry.warn=Your hands are full!
-sneakTo.cancel=Block\nSneak to cancel
 
 ## ../player/ride.js
 rode.player=Crouch or jump to dismount from the player
 carried.player=Sneak, then jump to drop the player off
 
 ## ability.js
-name.boomerang=Boomerang
-name.skySpinner=Sky Spinner
-
-unlocked.boomerang=Return to sender! [UNLOCKED]
-unlocked.skySpinner=Let's take to the skies! [UNLOCKED]
+unlocked.ghast=Return to sender! [UNLOCKED]
+unlocked.breeze=Let's explore space! [UNLOCKED]
 unlocked.enderman=Carrying an Enderman huh! [UNLOCKED]
 unlocked.creeper=A little prank! [UNLOCKED]
+unlocked.snowGolem=Be patient one day we'll throw a cold one! [UNLOCKED]
+unlocked.blaze=Heatblast! [UNLOCKED]
 
-howTounlock.boomerang=Shoot yourself with 1 arrow to unlock the Boomerang ability
-howTounlock.skySpinner=Launch 3 mobs to unlock Sky Spinner
-howTounlock.enderman=Carry an Enderman to unlock the Enderman ability
-howTounlock.creeper=To unlock the Creeper ability, carry the Creeper and make it explode
+howTounlock.ghast=Shoot yourself with 1 arrow [LOCKED]
+howTounlock.breeze=Launch 3 mobs [LOCKED]
+howTounlock.enderman=Carry an Enderman [LOCKED]
+howTounlock.creeper=Carry the Creeper and make it explode [LOCKED]
+howTounlock.snowGolem=Carry a Snow Golem and take damage [LOCKED]
+howTounlock.blaze=Take damage from a Blaze's fireball [LOCKED]

@@ -12,22 +12,22 @@ tutorial.form.button=Bunu bir daha gösterme
 
 ## carry.js
 mob.carry.warn=Ellerin dolu!
-sneakTo.cancel=Blok\nİptal etmek için eğil
 
 ## ../player/ride.js
 rode.player=Oyuncudan inmek için eğilin ya da zıplayın
 carried.player=Oyuncuyu sırtınızdan atmak için ilk önce eğilin ardından zıplayın
 
 ## ability.js
-name.boomerang=Bumerang
-name.skySpinner=Uçan Pervane
-
-unlocked.boomerang=Gönderene iade! [AÇILDI]
-unlocked.skySpinner=Gökyüzüne gidelim! [AÇILDI]
+unlocked.ghast=Gönderene iade! [AÇILDI]
+unlocked.breeze=Hadi uzayı araştıralım! [AÇILDI]
 unlocked.enderman=Enderman taşımak ha! [AÇILDI]
 unlocked.creeper=Küçük bir şaka! [AÇILDI]
+unlocked.snowGolem=Sabırlı ol bir gün buz gibi bir şeyler fırlatırız! [AÇILDI]
+unlocked.blaze=Ateş Topu! [AÇILDI]
 
-howTounlock.boomerang=Bumerang yeteneğini açmak için kendinize 1 ok fırlatın
-howTounlock.skySpinner=Uçan Pervane yeteneğini açmak için 3 canlıyı havaya fırlatın
-howTounlock.enderman=Enderman yeteneğini açmak için bir Enderman taşıyınız
-howTounlock.creeper=Creeper yeteneğini açabilmek için Creeper'ı taşıyın ve patlatın
+howTounlock.ghast=Kendinize 1 ok fırlatın [KILITLI]
+howTounlock.breeze=3 canlıyı havaya fırlatın [KILITLI]
+howTounlock.enderman=Bir Enderman taşıyın [KILITLI]
+howTounlock.creeper=Creeper'ı taşıyın ve patlatın [KILITLI]
+howTounlock.snowGolem=Kardan adamı taşıyın ve hasar yiyin [KILITLI]
+howTounlock.blaze=Blaze'in attığı ateş topundan hasar yiyin [KILITLI]

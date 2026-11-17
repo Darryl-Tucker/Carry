@@ -27,30 +27,35 @@ world.afterEvents.playerSpawn.subscribe(e => {
 world.beforeEvents.entityHurt.subscribe(e => {
     const { damageSource, hurtEntity } = e;
 
-    const manager = new UnlockAbilityManager(hurtEntity);
-    manager.boomerang(damageSource, hurtEntity);
+    if (hurtEntity.typeId === "minecraft:player") { // Hasar yiyen tipi player mı?
+        const manager = new UnlockAbilityManager(hurtEntity);
+        manager.ghast(damageSource, hurtEntity);
+        manager.snowGolem(damageSource, hurtEntity);
+        manager.blaze(damageSource);
+    }
 
     if (carryEntityData.get(damageSource.damagingEntity?.id)?.id === hurtEntity.id) { // Hasar veren oyuncunun verisindeki id ile hasar yiyen canlı id eşit mi?
         pushEntity(damageSource.damagingEntity, hurtEntity, e);
         return
     }
 
-    if (hurtEntity.typeId === "minecraft:player" && carryEntityData.has(hurtEntity.id)) { // Hasar yiyen oyuncu ve carryEntityData varsa
-        playerDataManage({ Player: hurtEntity, carryDelete: true });
+    if (carryEntityData.has(hurtEntity.id)) { // Hasar yiyen oyuncu ve carryEntityData varsa
+        const rider = world.getAllPlayers().find(r => carryEntityData.get(hurtEntity.id)?.id === r.id); //  Hasar yiyen canlının veri id === rider id
+        playerDataManage({ Player: hurtEntity, Target: rider, carryDelete: true });
         return
     }
 
+    const rider = world.getAllPlayers().find(r => carryEntityData.get(r.id)?.id === hurtEntity.id); // rider'ın veri id === Hasar yiyen canlı id
+    if (rider) playerDataManage({ Player: rider, Target: hurtEntity, carryDelete: true }) // Eğer bulduysa sil
+
     clearEntityRide({ Entity: hurtEntity }); // Ride verisini temizle
     clearCarrierData(hurtEntity);
-
-    const player = world.getAllPlayers().find(p => carryEntityData.get(p.id)?.id === hurtEntity.id); //  Hasar yiyen canlı id === oyuncunun veri id bul
-    if (player) playerDataManage({ Player: player, carryDelete: true }) // Eğer bulduysa sil
 });
 
 world.beforeEvents.playerInteractWithEntity.subscribe(e => {
     const { player, target } = e;
 
-    if (carryEntityData.has(player.id)) { // Oyuncular
+    if (carryEntityData.get(player.id)?.id === target.id) { // carryEntityData verisindeki id ile target id mi?
         abilityBar(player, e);
         powerCount({ Player: player, Target: target, EventCancel: e });
         return
@@ -68,7 +73,6 @@ world.beforeEvents.explosion.subscribe(e => {
 
         if (!player) return
         const manager = new UnlockAbilityManager(player);
-
         manager.creeper(e)
 
         playerDataManage({ Player: player, carryDelete: true }) // Creeper elde patlarsa Carry datasını sil

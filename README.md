@@ -69,3 +69,4 @@ Iron Golem, Cow, Sheep, Chicken, Villager, Cod, Cat, Wolf, Copper Golem, Pig, Ho
 - **November 07, 2026**: Added 2 new abilities, fixed bugs, and optimized.
 - **November 12, 2026**: Added mobs, bug fixed.
 - **November 14, 2026**: Added mobs, animation rendering, handcuffs & key deleted, bug fixed.
+- **November 17, 2026**: I've made new tweaks and improvements.
