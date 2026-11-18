@@ -17,20 +17,15 @@ export const allowEntities = [
     { typeId: "minecraft:rabbit" },
     { typeId: "minecraft:fox" },
     { typeId: "minecraft:frog" },
+    { typeId: "minecraft:minecart" },
+    { typeId: "minecraft:chest_minecart" },
+    { typeId: "minecraft:hopper_minecart" },
+    { typeId: "minecraft:tnt_minecart" },
+    { typeId: "minecraft:command_block_minecart" },
+    { typeId: "minecraft:boat" },
+    { typeId: "minecraft:armor_stand" },
 
     // -------------------------------------------------------------- No property
-
-    // -------------------------------------------------------------- Non-push
-
-    { typeId: "minecraft:minecart", nonPush: true },
-    { typeId: "minecraft:chest_minecart", nonPush: true },
-    { typeId: "minecraft:hopper_minecart", nonPush: true },
-    { typeId: "minecraft:tnt_minecart", nonPush: true },
-    { typeId: "minecraft:command_block_minecart", nonPush: true },
-    { typeId: "minecraft:boat", nonPush: true },
-    { typeId: "minecraft:armor_stand", nonPush: true },
-
-    // -------------------------------------------------------------- Non-push
 
     // -------------------------------------------------------------- Slow falling
     { typeId: "minecraft:chicken", effect: "slow_falling", amplifier: 2 },
@@ -74,22 +69,24 @@ export const allowEntities = [
     { typeId: "minecraft:turtle", effect: "slowness", amplifier: 4 },
     { typeId: "minecraft:player", effect: "slowness", amplifier: 2 },
     { typeId: "minecraft:nautilus", effect: "slowness", amplifier: 3 },
+    { typeId: "minecraft:llama", effect: "slowness", amplifier: 2 },
+    { typeId: "minecraft:polar_bear", effect: "slowness", amplifier: 5 },
+    { typeId: "minecraft:panda", effect: "slowness", amplifier: 5 },
+    { typeId: "minecraft:enderman", effect: "slowness", amplifier: 3 },
+    { typeId: "minecraft:piglin", effect: "slowness", amplifier: 2 },
+    { typeId: "minecraft:zombie_pigman", effect: "slowness", amplifier: 2 },
+    { typeId: "minecraft:bee", effect: "levitation", amplifier: 1 },
+    { typeId: "minecraft:iron_golem", effect: "slowness", amplifier: 5 },
+    { typeId: "minecraft:wolf" },
+    { typeId: "minecraft:dolphin" },
+    { typeId: "minecraft:trader_llama", effect: "slowness", amplifier: 2 },
     // -------------------------------------------------------------- Slowness
 
-    // -------------------------------------------------------------- Neutral Mobs
-    { typeId: "minecraft:wolf", neutralMob: true },
-    { typeId: "minecraft:dolphin", neutralMob: true },
-    { typeId: "minecraft:trader_llama", effect: "slowness", amplifier: 2, neutralMob: true },
-    { typeId: "minecraft:spider", effect: "slowness", amplifier: 3, climbing: true, neutralMob: true },
-    { typeId: "minecraft:llama", effect: "slowness", amplifier: 2, neutralMob: true },
-    { typeId: "minecraft:polar_bear", effect: "slowness", amplifier: 5, neutralMob: true },
-    { typeId: "minecraft:panda", effect: "slowness", amplifier: 5, neutralMob: true },
-    { typeId: "minecraft:enderman", effect: "slowness", amplifier: 3, neutralMob: true },
-    { typeId: "minecraft:piglin", effect: "slowness", amplifier: 2, neutralMob: true },
-    { typeId: "minecraft:zombie_pigman", effect: "slowness", amplifier: 2, neutralMob: true },
-    { typeId: "minecraft:bee", effect: "levitation", amplifier: 1, neutralMob: true },
-    { typeId: "minecraft:iron_golem", effect: "slowness", amplifier: 5, neutralMob: true },
-    // -------------------------------------------------------------- Neutral Mobs
+    // -------------------------------------------------------------- Climbing
+
+    { typeId: "minecraft:spider", effect: "slowness", amplifier: 3, climbing: true },
+
+    // -------------------------------------------------------------- Climbing
 
     // -------------------------------------------------------------- Monsters
     { typeId: "minecraft:creeper" },

@@ -119,7 +119,7 @@ export class UnlockAbilityManager {
     blaze(damageSource) {
         if (this.data?.blaze) return
 
-        if (damageSource.damagingEntity?.typeId === "minecraft:blaze") {
+        if (damageSource.damagingEntity?.typeId === "minecraft:blaze" && damageSource.cause === "projectile") {
             this.data.blaze = true;
             abilitiesData.set(this.player.id, this.data);
 
@@ -213,7 +213,7 @@ export class UseAbilityManager {
 
     ghast(returnBom = null) {
         if (returnBom) {
-            this.target.applyImpulse({ x: -this.pushLoc.x, y: 0.1, z: -this.pushLoc.z });
+            this.target.applyImpulse({ x: -this.pushLoc.x, y: 0.50, z: -this.pushLoc.z });
             return
         }
 
@@ -296,7 +296,7 @@ export class UseAbilityManager {
             if (fireLoc.y > 319 || fireLoc.y < -63) return
             const block = this.target.dimension.getBlock(fireLoc);
 
-            if (block.typeId === "minecraft:air") block.setType("minecraft:fire")
+            if (block?.typeId === "minecraft:air") block.setType("minecraft:fire")
         }
 
         for (let i = 0; i < 3; i++)

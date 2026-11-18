@@ -34,12 +34,7 @@ world.beforeEvents.entityHurt.subscribe(e => {
         manager.blaze(damageSource);
     }
 
-    if (carryEntityData.get(damageSource.damagingEntity?.id)?.id === hurtEntity.id) { // Hasar veren oyuncunun verisindeki id ile hasar yiyen canlı id eşit mi?
-        pushEntity(damageSource.damagingEntity, hurtEntity, e);
-        return
-    }
-
-    if (carryEntityData.has(hurtEntity.id)) { // Hasar yiyen oyuncu ve carryEntityData varsa
+    if (carryEntityData.has(hurtEntity.id)) { // carryEntityData varsa
         const rider = world.getAllPlayers().find(r => carryEntityData.get(hurtEntity.id)?.id === r.id); //  Hasar yiyen canlının veri id === rider id
         playerDataManage({ Player: hurtEntity, Target: rider, carryDelete: true });
         return
@@ -107,4 +102,12 @@ const worldLoad = world.afterEvents.worldLoad.subscribe(() => {
         playerDataManage({ Player: player })
     }
     world.afterEvents.worldLoad.unsubscribe(worldLoad)
+})
+
+world.afterEvents.playerSwingStart.subscribe(e => {
+    const player = e.player;
+
+    const target = player.getEntitiesFromViewDirection({ maxDistance: 1 }).find(t => carryEntityData.get(player.id)?.id === t.entity.id);
+    if (!target) return // undefined dönme önlemi alıyorum
+    pushEntity(player, target.entity, e)
 })

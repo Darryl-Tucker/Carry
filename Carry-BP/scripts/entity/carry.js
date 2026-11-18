@@ -96,13 +96,14 @@ class entityComponentManager {
 
 export function entityCarrying() {
     for (const player of world.getAllPlayers().filter(p => carryEntityData.has(p.id))) {
+        player.addEffect("weakness", 7, { amplifier: 255, showParticles: false });
+
         const selectedSlot = player.selectedSlotIndex;
         const mainHand = player.getComponent("minecraft:inventory").container.getItem(selectedSlot);
         const offHand = player.getComponent(EntityComponentTypes.Equippable)?.getEquipment(EquipmentSlot.Offhand);
-
         const gamemode = player.getGameMode();
-
         const cd = carryEntityData.get(player.id);
+
         const entity = player.dimension.getEntities({ location: player.location }).find(e => cd?.id === e.id);
 
         if (player.isSprinting || player.isJumping || player.isEmoting || mainHand || offHand || gamemode === "Spectator" || !entity || !entity?.isValid) {
@@ -146,8 +147,6 @@ export function powerCount({ Player, Target, EventCancel } = {}) {
     if (EventCancel) { // Switch mantığı
         if (Player.isSneaking) return
         EventCancel.cancel = true; // Non-mob entity'nin üstüne veya container'ı açmamak için event'i iptal ediyorum
-
-        if (allowEntities.find(a => a.typeId === Target.typeId && a.nonPush)) return // Non-push ise geri dön
 
         const data = carryEntityData.get(Player.id);
 
@@ -237,19 +236,7 @@ export function pushEntity(player, target, e) {
         })
     }
 
-    else if (target.typeId !== "minecraft:player") addEntityRide({ Player: player, Target: target })
+    else if (target?.typeId !== "minecraft:player") addEntityRide({ Player: player, Target: target })
 
     playerDataManage({ Player: player, Target: target, carryDelete: true });
-
-    if (allowEntities.find(a => !a.neutralMob && a.typeId === target.typeId)) return
-
-    const difficulty = world.getDifficulty();
-
-    if (difficulty !== "Peaceful") {
-        const playerGamemode = player.getGameMode();
-        system.run(() => { // Canlının agresifleşmesini önlemek için oyun motorunu sabote etme
-            player.setGameMode(GameMode.Spectator);
-            system.runTimeout(() => player.setGameMode(playerGamemode), 1)
-        })
-    }
 }
