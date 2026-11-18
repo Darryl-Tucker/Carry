@@ -1,7 +1,3 @@
-## item_texture.json
-item.carry:handcuffs=Kelepçe
-item.carry:key=Anahtar
-
 ## config.js
 tutorial.form.title=NASIL OYNANIR?
 
@@ -13,7 +9,7 @@ tutorial.form.button=Bunu bir daha gösterme
 ## carry.js
 mob.carry.warn=Ellerin dolu!
 
-## ../player/ride.js
+## ride.js
 rode.player=Oyuncudan inmek için eğilin ya da zıplayın
 carried.player=Oyuncuyu sırtınızdan atmak için ilk önce eğilin ardından zıplayın
 

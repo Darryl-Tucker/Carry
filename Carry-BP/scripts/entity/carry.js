@@ -19,7 +19,7 @@ const sounds = {
     mobCarryWarn: "mob.villager.no"
 };
 
-class entityComponentManager {
+class EntityComponentManager {
     constructor(player, entity) {
         this.player = player;
         this.rot = this.player.getRotation();
@@ -110,7 +110,7 @@ export function entityCarrying() {
             if (entity && entity.typeId !== "minecraft:player") addEntityRide({ Player: player, Target: entity })
             // Bindirme işlemi sadece oyuncu olmayanlar için geçerli
 
-            player.playSound(sounds.mobDropped, { volume: 20 });
+            player.playSound(sounds.mobDropped, { volume: 1 });
             playerDataManage({ Player: player, Target: entity, carryDelete: true });
             return
         }
@@ -135,7 +135,7 @@ export function entityCarrying() {
 
         entity.teleport(targetLoc, { facingLocation: targetFacingLocation });
 
-        const manager = new entityComponentManager(player, entity);
+        const manager = new EntityComponentManager(player, entity);
 
         manager.entityHealthShow();
         manager.suffocationBlock();
