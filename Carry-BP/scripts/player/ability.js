@@ -132,13 +132,13 @@ export class UnlockAbilityManager {
 
 
 export class UseAbilityManager {
-    constructor(player, viewDirection, target, pushLoc) {
+    constructor(player, viewDirection, power, target, pushEntityLoc) {
         this.player = player;
         this.target = target;
-        this.power = carryEntityData.get(this.player.id)?.power;
+        this.power = power;
         this.ab = abilitiesData.get(this.player.id);
         this.viewDirection = viewDirection;
-        this.pushLoc = pushLoc;
+        this.pushEntityLoc = pushEntityLoc;
         this.entities = null;
         this.excludeTypes = excludeEntities.slice(1)
     }
@@ -213,7 +213,7 @@ export class UseAbilityManager {
 
     ghast(returnBom = null) {
         if (returnBom) {
-            this.target.applyImpulse({ x: -this.pushLoc.x, y: 0.50, z: -this.pushLoc.z });
+            this.target.applyImpulse({ x: -this.pushEntityLoc.x, y: 0.50, z: -this.pushEntityLoc.z })
             return
         }
 

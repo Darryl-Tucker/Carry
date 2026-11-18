@@ -217,26 +217,32 @@ export function pushEntity(player, target, e) {
     const power = carryEntityData.get(player.id)?.power;
     e.cancel = true;
 
+    playerDataManage({ Player: player, Target: target, carryDelete: true });
+
     if (power > 0) {
         const viewDirection = player.getViewDirection();
+        const pushEntityLoc = { x: viewDirection.x * power, y: viewDirection.y * power, z: viewDirection.z * power };
 
-        const pushLoc = { x: viewDirection.x * power, y: viewDirection.y * power, z: viewDirection.z * power };
-
-        if (power > 2) pushLoc.y = viewDirection.y * 2 // Çok yukarı uçmasın diye kontrol
+        if (power > 2) pushEntityLoc.y = viewDirection.y * 2
+        // Çok yukarı uçmasın diye kontrol   
 
         const Unlockmanager = new UnlockAbilityManager(player);
-        const UseManager = new UseAbilityManager(player, viewDirection, target, pushLoc);
+        const UseManager = new UseAbilityManager(player, viewDirection, power, target, pushEntityLoc);
 
         Unlockmanager.breeze();
         UseManager.loop();
 
-        system.run(() => {
-            target.applyImpulse(pushLoc);
-            player.playSound(sounds.mobPush)
-        })
+        if (target.typeId !== "minecraft:player")
+            target.applyImpulse(pushEntityLoc)
+
+        else
+            system.runTimeout(() => {
+                if (target && target.isValid)
+                    target.applyImpulse(pushEntityLoc)
+            }, 1.50) // milisaniye bekletiyorum çünkü teleport çakışması oluyor
+
+        player.playSound(sounds.mobPush)
     }
 
     else if (target?.typeId !== "minecraft:player") addEntityRide({ Player: player, Target: target })
-
-    playerDataManage({ Player: player, Target: target, carryDelete: true });
 }
