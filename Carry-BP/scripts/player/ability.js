@@ -106,7 +106,7 @@ export class UnlockAbilityManager {
     snowGolem(damageSource, hurtEntity) {
         if (this.data?.snowGolem) return
 
-        if (damageSource.cause === "freezing" && carryEntityData.get(hurtEntity.id).typeId === "minecraft:snow_golem") {
+        if (damageSource.cause === "freezing" && carryEntityData.get(hurtEntity.id)?.typeId === "minecraft:snow_golem") {
             this.data.snowGolem = true;
             abilitiesData.set(this.player.id, this.data);
 

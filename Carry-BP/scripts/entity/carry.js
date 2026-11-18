@@ -43,7 +43,7 @@ class entityComponentManager {
             if (b.y > 319 || b.y < -63) continue
 
             const block = this.entity.dimension.getBlock({ x: b.x, y: b.y, z: b.z });
-            if (excludeBlocks.has(block.typeId)) continue
+            if (excludeBlocks.has(block?.typeId)) continue
 
             const direction = this.player.getViewDirection();
             this.player.applyKnockback({ x: -direction.x, z: -direction.z }, -50)
@@ -68,7 +68,7 @@ class entityComponentManager {
                 if (b.y > 319 || b.y < -63) continue
 
                 const block = this.player.dimension.getBlock({ x: b.x, y: b.y, z: b.z });
-                if (excludeBlocks.has(block.typeId)) continue
+                if (excludeBlocks.has(block?.typeId)) continue
 
                 if (this.rot.x <= -45) this.player.addEffect("levitation", 20, { amplifier: mobData.amplifier, showParticles: false });
             }

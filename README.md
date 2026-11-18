@@ -15,7 +15,9 @@ Carry/
 │   └── scripts/       # Carrying, throwing, stacking, riding
 └── Carry-RP/
     ├── texts/         # en_US, tr_TR
-    ├── animations.../    # animations
+    ├── animations/ # animations
+    ├── entity/ # entity
+    ├── render_controllers # render
 ```
 
 ## 🎮 Gameplay
@@ -43,7 +45,7 @@ Interact with another player without sneaking to ride them. The carrier gets Slo
 
 ### Supported Mobs
 
-Iron Golem, Cow, Sheep, Chicken, Villager, Cod, Cat, Wolf, Copper Golem, Pig, Horse, Axolotl, Llama, Armadillo, Camel, Trader Llama, Wandering Trader, Camel Husk, Bee, Sulfur Cube, Rabbit, Fox, Frog, Goat, Sniffer, Panda, Snow Golem, Ocelot, Donkey, Mooshroom, Mule, Parrot, Polar bear, Turtle, Enderman, Squid, Glow Squid, Tadpole, Allay, Player, Piglin, Strider.
+Iron Golem, Cow, Sheep, Chicken, Villager, Cod, Cat, Wolf, Copper Golem, Pig, Horse, Axolotl, Llama, Armadillo, Camel, Trader Llama, Wandering Trader, Camel Husk, Bee, Sulfur Cube, Rabbit, Fox, Frog, Goat, Sniffer, Panda, Snow Golem, Ocelot, Donkey, Mooshroom, Mule, Parrot, Polar bear, Turtle, Enderman, Squid, Glow Squid, Tadpole, Allay, Player, Piglin, Strider, Slime, Armor Stand, Bat, Nautilus, Spider, Zombie Pigman, Dolphin, Creeper, Tnt-Hopper-Command-Chest Minecart, Minecart, Boat.
 
 ## ⚙️ Requirements & Compatibility
 
