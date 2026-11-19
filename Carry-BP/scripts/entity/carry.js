@@ -1,8 +1,9 @@
-import { world, system, GameMode, EquipmentSlot, EntityComponentTypes } from "@minecraft/server";
+import { world, system, EquipmentSlot, EntityComponentTypes } from "@minecraft/server";
 import { UnlockAbilityManager, UseAbilityManager } from "../player/ability";
 import { playerDataManage } from "../player/data";
 import { allowEntities, excludeBlocks } from "../utils/config";
 import { addEntityRide, clearEntityRide, riderData } from "../utils/ride";
+import { placeBlock } from "../block/data";
 
 export const carryEntityData = new Map();
 
@@ -53,7 +54,7 @@ class EntityComponentManager {
     useEntityProperties() {
         const mobData = allowEntities.find(mob => mob.typeId === this.entity.typeId);
 
-        if (mobData.climbing) {
+        if (mobData?.climbing) {
             const distance = 1.50;
 
             const blockLocs = [
@@ -74,7 +75,7 @@ class EntityComponentManager {
             }
         }
 
-        if (mobData.effect) {
+        if (mobData?.effect) {
             if (mobData.effect === "levitation") {
                 if (this.rot.x >= -45) return
 
@@ -107,6 +108,8 @@ export function entityCarrying() {
         const gamemode = player.getGameMode();
 
         if (player.isSprinting || player.isEmoting || mainHand || offHand || gamemode === "Spectator" || !entity || !entity?.isValid) {
+            if (entity && entity.typeId === "carry_throw:block") placeBlock(player, entity)
+            else world.structureManager.delete("block:" + player.id)
 
             player.playSound(sounds.mobDropped, { volume: 1 });
             playerDataManage({ Player: player, Target: entity, carryDelete: true });
@@ -218,6 +221,7 @@ export function pushEntity(player, target, e) {
     e.cancel = true;
 
     playerDataManage({ Player: player, Target: target, carryDelete: true });
+    placeBlock(player, target, e);
 
     if (power > 0) {
         const viewDirection = player.getViewDirection();
@@ -241,8 +245,10 @@ export function pushEntity(player, target, e) {
                     target.applyImpulse(pushEntityLoc)
             }, 1.50) // milisaniye bekletiyorum çünkü teleport çakışması oluyor
 
-        player.playSound(sounds.mobPush)
+        player.playSound(sounds.mobPush);
+        return
     }
 
-    else if (target?.typeId !== "minecraft:player") addEntityRide({ Player: player, Target: target })
+    if (target.typeId !== "minecraft:player") addEntityRide({ Player: player, Target: target })
+
 }

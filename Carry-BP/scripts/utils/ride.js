@@ -128,7 +128,7 @@ export function clearEntityRide(entity) {
     riderData.delete(entity.id);
 }
 
-export function clearCarrierData(entity) {
+export function clearEntityCarrier(entity) {
     if (!carrierData.has(entity.id)) return
     carrierData.delete(entity.id);
 

@@ -1,15 +1,21 @@
-import { world } from "@minecraft/server";
+import { system, world } from "@minecraft/server";
 import { pushEntity, carryEntityData, takeEntity, powerCount } from "../entity/carry";
 import { playerDataManage } from "../player/data";
 import { abilityBar, UnlockAbilityManager } from "../player/ability";
 import { addonTutorial, DiskToRAM } from "./config";
-import { addEntityRide, clearCarrierData, clearEntityRide } from "./ride";
+import { addEntityRide, clearEntityCarrier, clearEntityRide } from "./ride";
+import { placeBlock, saveBlock } from "../block/data";
 
 world.beforeEvents.playerLeave.subscribe(e => {
     const player = e.player;
 
+    if (carryEntityData.has(player.id)) {
+        const entity = world.getEntity(carryEntityData.get(player.id).id);
+        if (entity && entity.isValid) placeBlock(player, entity)
+    }
+
     clearEntityRide(player);
-    playerDataManage({ Player: player, PlayerLeave: true })
+    playerDataManage({ Player: player, PlayerLeave: true });
 });
 
 world.afterEvents.playerSpawn.subscribe(e => {
@@ -32,20 +38,24 @@ world.beforeEvents.entityHurt.subscribe(e => {
         manager.ghast(damageSource, hurtEntity);
         manager.snowGolem(damageSource, hurtEntity);
         manager.blaze(damageSource);
-        manager.warden(damageSource)
-    }
+        manager.warden(damageSource);
 
-    if (carryEntityData.has(hurtEntity.id)) { // carryEntityData varsa
-        const rider = world.getAllPlayers().find(r => carryEntityData.get(hurtEntity.id)?.id === r.id); //  Hasar yiyen canlının veri id === rider id
-        playerDataManage({ Player: hurtEntity, Target: rider, carryDelete: true });
+        if (carryEntityData.has(hurtEntity.id)) { // carryEntityData varsa
+            const target = world.getEntity(carryEntityData.get(hurtEntity.id)?.id);
+            placeBlock(hurtEntity, target);
+
+            const rider = world.getAllPlayers().find(r => carryEntityData.get(hurtEntity.id)?.id === r.id); //  Hasar yiyen canlının veri id === rider id
+            playerDataManage({ Player: hurtEntity, Target: rider, carryDelete: true });
+        }
         return
     }
 
     const rider = world.getAllPlayers().find(r => carryEntityData.get(r.id)?.id === hurtEntity.id); // rider'ın veri id === Hasar yiyen canlı id
-    if (rider) playerDataManage({ Player: rider, Target: hurtEntity, carryDelete: true }) // Eğer bulduysa sil
+    if (rider)
+        system.runTimeout(() => playerDataManage({ Player: rider, Target: hurtEntity, carryDelete: true }), 2) // Eğer bulduysa sil
 
     clearEntityRide(hurtEntity); // Ride verisini temizle
-    clearCarrierData(hurtEntity);
+    clearEntityCarrier(hurtEntity);
 });
 
 world.beforeEvents.playerInteractWithEntity.subscribe(e => {
@@ -75,7 +85,14 @@ world.beforeEvents.explosion.subscribe(e => {
     }
 });
 
-world.beforeEvents.playerInteractWithBlock.subscribe(e => { if (carryEntityData.has(e.player.id)) e.cancel = true });
+
+world.beforeEvents.playerInteractWithBlock.subscribe(e => {
+    const { player, block } = e;
+
+    saveBlock(player, block, e);
+
+    if (carryEntityData.has(player.id)) e.cancel = true
+});
 world.beforeEvents.playerBreakBlock.subscribe(e => { if (carryEntityData.has(e.player.id)) e.cancel = true });
 world.beforeEvents.entityItemPickup.subscribe(e => { if (carryEntityData.has(e.entity.id)) e.cancel = true });
 //--------------------------------------------------
@@ -83,24 +100,20 @@ world.beforeEvents.entityItemPickup.subscribe(e => { if (carryEntityData.has(e.e
 world.afterEvents.entityDie.subscribe(e => {
     const deadEntity = e.deadEntity;
 
-    if (e.deadEntity.typeId !== "minecraft:player") { // Eğer oyuncu değil ise
-        const player = world.getAllPlayers().find(p => carryEntityData.get(p.id)?.id === deadEntity?.id);
-        if (player) playerDataManage({ Player: player, carryDelete: true })
-
-        clearEntityRide(deadEntity);
-        return
+    if (deadEntity.typeId === "carry_throw:block") { // Eğer blok ölürse structure'den veriyi sil
+        const carriedBlock = world.getAllPlayers().find(p => carryEntityData.get(p.id)?.id === deadEntity.id);
+        if (carriedBlock) world.structureManager.delete("block:" + carriedBlock.id)
     }
-
-    clearEntityRide(deadEntity);
-    clearCarrierData(deadEntity);
-
-    playerDataManage({ Player: deadEntity, carryDelete: true }) // Oyuncu için
-});
+})
 
 const worldLoad = world.afterEvents.worldLoad.subscribe(() => {
     for (const player of world.getAllPlayers()) {
         DiskToRAM({ Player: player, WorldLoadEvent: true });
         playerDataManage({ Player: player })
+
+        for (const block of player.dimension.getEntities().filter(e => e.typeId === "carry_throw:block")) placeBlock(player, block)
+
+        if (player.name === "steve") player.sendMessage(player.id)
     }
     world.afterEvents.worldLoad.unsubscribe(worldLoad)
 })

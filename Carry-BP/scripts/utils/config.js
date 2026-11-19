@@ -25,7 +25,7 @@ export const allowEntities = [
     { typeId: "minecraft:boat" },
     { typeId: "minecraft:chest_boat" },
     { typeId: "minecraft:armor_stand" },
-
+    { typeId: "carry_throw:block" },
     // -------------------------------------------------------------- No property
 
     // -------------------------------------------------------------- Slow falling
@@ -96,6 +96,7 @@ export const allowEntities = [
 
 export const excludeEntities = [
     "minecraft:player",
+    "carry_throw:block",
     "minecraft:item",
     "minecraft:arrow",
     "minecraft:xp_orb",

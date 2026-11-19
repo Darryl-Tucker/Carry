@@ -1,0 +1,161 @@
+{
+  "format_version": "1.21.50",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "carry_throw:block",
+      "is_spawnable": false,
+      "is_summonable": true,
+      "is_experimental": false
+    },
+    "component_groups": {
+      "stone": {
+        "minecraft:variant": {
+          "value": 0
+        }
+      },
+      "dirt": {
+        "minecraft:variant": {
+          "value": 1
+        }
+      },
+      "diamond": {
+        "minecraft:variant": {
+          "value": 2
+        }
+      },
+      "crafting_table": {
+        "minecraft:variant": {
+          "value": 3
+        }
+      },
+      "chest": {
+        "minecraft:variant": {
+          "value": 4
+        }
+      }
+    },
+    "components": {
+      "minecraft:dimension_bound": {},
+      "minecraft:variant": {
+        "value": 0
+      },
+      "minecraft:type_family": {
+        "family": [
+          "movable",
+          "inanimate"
+        ]
+      },
+      "minecraft:collision_box": {
+        "width": 0.5,
+        "height": 0.5
+      },
+      "minecraft:physics": {
+        "has_gravity": true,
+        "has_collision": true
+      },
+      "minecraft:pushable": {
+        "is_pushable": false,
+        "is_pushable_by_piston": false
+      },
+      "minecraft:damage_sensor": {
+        "triggers": [
+          {
+            "deals_damage": "no"
+          }
+        ]
+      },
+      "minecraft:health": {
+        "value": 0.50,
+        "max": 0.50
+      },
+      "minecraft:knockback_resistance": {
+        "value": 1.0
+      },
+      "minecraft:fire_immune": true
+    },
+    "events": {
+      "minecraft:entity_spawned": {
+        "add": {
+          "component_groups": [
+            "stone"
+          ]
+        }
+      },
+      "stone": {
+        "remove": {
+          "component_groups": [
+            "dirt",
+            "diamond",
+            "crafting_table",
+            "chest"
+          ]
+        },
+        "add": {
+          "component_groups": [
+            "stone"
+          ]
+        }
+      },
+      "dirt": {
+        "remove": {
+          "component_groups": [
+            "stone",
+            "diamond",
+            "crafting_table",
+            "chest"
+          ]
+        },
+        "add": {
+          "component_groups": [
+            "dirt"
+          ]
+        }
+      },
+      "diamond": {
+        "remove": {
+          "component_groups": [
+            "stone",
+            "dirt",
+            "crafting_table",
+            "chest"
+          ]
+        },
+        "add": {
+          "component_groups": [
+            "diamond"
+          ]
+        }
+      },
+      "crafting_table": {
+        "remove": {
+          "component_groups": [
+            "stone",
+            "dirt",
+            "diamond",
+            "chest"
+          ]
+        },
+        "add": {
+          "component_groups": [
+            "crafting_table"
+          ]
+        }
+      },
+      "chest": {
+        "remove": {
+          "component_groups": [
+            "stone",
+            "dirt",
+            "diamond",
+            "crafting_table"
+          ]
+        },
+        "add": {
+          "component_groups": [
+            "chest"
+          ]
+        }
+      }
+    }
+  }
+}

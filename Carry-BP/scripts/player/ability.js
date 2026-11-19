@@ -1,6 +1,6 @@
 import { system, EntityDamageCause } from "@minecraft/server";
 import { carryEntityData } from "../entity/carry";
-import { addEntityRide, clearCarrierData, clearEntityRide } from "../utils/ride";
+import { addEntityRide, clearEntityCarrier, clearEntityRide } from "../utils/ride";
 import { excludeEntities } from "../utils/config";
 
 export const abilitiesData = new Map();
@@ -233,10 +233,7 @@ export class UseAbilityManager {
                     break
 
                 case 6: // Warden
-                    if (this.ab?.warden) {
-                        await system.waitTicks(this.power + 60);
-                        this.warden(true)
-                    }
+                    if (this.ab?.warden) this.warden(true)
                     break
             }
             system.clearRun(runIntervalId);
@@ -341,9 +338,6 @@ export class UseAbilityManager {
     }
 
     warden(destroyed = null) {
-        for (const entity of this.player.dimension.getEntities().filter(e => this.target.id !== e.id && this.player.id !== e.id))
-            entity.teleport(entity.location)
-
         if (destroyed) {
             const target = this.player.dimension.getEntities().find(t => this.targetData.get("destroying")?.id === t.id);
             if (!target) return
@@ -353,11 +347,10 @@ export class UseAbilityManager {
                 target.kill()
             }
             else {
-                clearCarrierData(target);
+                clearEntityCarrier(target);
                 clearEntityRide(target);
                 target.remove()
-            } 
-
+            }
             return
         }
 
@@ -368,6 +361,10 @@ export class UseAbilityManager {
                 break
             }
         }
+
+        else
+            for (const entity of this.player.dimension.getEntities().filter(e => this.target.id !== e.id))
+                entity.teleport(entity.location)
     }
 }
 
