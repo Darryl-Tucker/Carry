@@ -15,8 +15,8 @@ Carry/
 │   └── scripts/       # Carrying, throwing, stacking, riding
 └── Carry-RP/
     ├── texts/         # en_US, tr_TR
-    ├── animations/ # animations
-    ├── entity/ # entity
+    ├── animations/    # animations
+    ├── entity/        # entity
     ├── render_controllers # render
 ```
 
@@ -28,10 +28,10 @@ Carry/
 |---|---|
 | Pick up a mob | Sneak and interact with a supported mob, both hands empty |
 | Start/stop charging | Interact with the carried mob (toggle, no need to hold) |
-| Throw | Hit the carried mob while charging (up to 15 blocks) |
+| Throw | Hit the carried mob while charging |
 | Cancel charge | Sneak |
 | Place | Hit the carried mob without charging |
-| Drop | Sprint or hold an item |
+
 
 While carrying, you cannot jump, break blocks, interact with blocks, or pick up items. Heavier mobs (Iron Golem, Camel, Panda, etc.) slow you down more.
 
@@ -50,8 +50,6 @@ Iron Golem, Cow, Sheep, Chicken, Villager, Cod, Cat, Wolf, Copper Golem, Pig, Ho
 ## ⚙️ Requirements & Compatibility
 
 - **No Experimental Settings Required!** This add-on is fully optimized using the stable Bedrock Script API. You **do not** need to enable "Beta APIs" or any other experimental toggles in your world settings.
-- **Multiplayer Ready:** Perfectly optimized for multiplayer servers and co-op worlds with local cache and memory management.
-
 
 ## 📅 Development Timeline
 
