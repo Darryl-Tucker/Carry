@@ -95,20 +95,18 @@ class EntityComponentManager {
 }
 
 export function entityCarrying() {
-    for (const player of world.getAllPlayers().filter(p => carryEntityData.has(p.id))) {
+    for (const [playerId, entityId] of carryEntityData.entries()) {
+        const player = world.getEntity(playerId);
+        const entity = world.getEntity(entityId.id);
+
         player.addEffect("weakness", 7, { amplifier: 255, showParticles: false });
 
         const selectedSlot = player.selectedSlotIndex;
         const mainHand = player.getComponent("minecraft:inventory").container.getItem(selectedSlot);
         const offHand = player.getComponent(EntityComponentTypes.Equippable)?.getEquipment(EquipmentSlot.Offhand);
         const gamemode = player.getGameMode();
-        const cd = carryEntityData.get(player.id);
 
-        const entity = player.dimension.getEntities({ location: player.location }).find(e => cd?.id === e.id);
-
-        if (player.isSprinting || player.isJumping || player.isEmoting || mainHand || offHand || gamemode === "Spectator" || !entity || !entity?.isValid) {
-            if (entity && entity.typeId !== "minecraft:player") addEntityRide({ Player: player, Target: entity })
-            // Bindirme işlemi sadece oyuncu olmayanlar için geçerli
+        if (player.isSprinting || player.isEmoting || mainHand || offHand || gamemode === "Spectator" || !entity || !entity?.isValid) {
 
             player.playSound(sounds.mobDropped, { volume: 1 });
             playerDataManage({ Player: player, Target: entity, carryDelete: true });
@@ -143,7 +141,7 @@ export function entityCarrying() {
     }
 }
 
-export function powerCount({ Player, Target, EventCancel } = {}) {
+export function powerCount({ Player, EventCancel } = {}) {
     if (EventCancel) { // Switch mantığı
         if (Player.isSneaking) return
         EventCancel.cancel = true; // Non-mob entity'nin üstüne veya container'ı açmamak için event'i iptal ediyorum
@@ -155,7 +153,9 @@ export function powerCount({ Player, Target, EventCancel } = {}) {
         return
     }
 
-    for (const player of world.getAllPlayers().filter(p => carryEntityData.has(p.id))) {
+    for (const [playerId] of carryEntityData.entries()) {
+        const player = world.getEntity(playerId);
+
         const data = carryEntityData.get(player.id) ?? {};
         data.power = data.power ?? 0;
 
@@ -183,7 +183,7 @@ export function takeEntity(player, target, e) {
         carryEntityData.get(target.id)?.id === player.id || // Eğer target zaten oyuncuyu taşıyorsa
         world.getAllPlayers().find(p => carryEntityData.get(p.id)?.id === target.id) ||  // Bir oyuncu taşıyor veya
         !allowEntities.find(m => target.typeId === m.typeId) || // Geçerli listesinden değil veya
-        player.isGliding || player.isJumping || player.isEmoting || !player.isSneaking || // Gliding yapıyor, emoji kullanıyor, zıplıyorsa veya eğilmiyorsa
+        player.isGliding || player.isEmoting || !player.isSneaking || // Gliding yapıyor, emoji kullanıyor, zıplıyorsa veya eğilmiyorsa
         riderData.has(target.id) && target.typeId === "minecraft:player" // riderData'ya sahip ve oyuncu ise
     ) return // Bunlardan biri sağlanıyorsa geri dön
 
@@ -201,7 +201,7 @@ export function takeEntity(player, target, e) {
         const manager = new UnlockAbilityManager(player);
         manager.enderman();
 
-        clearEntityRide({ Entity: target });
+        clearEntityRide(target);
         playerDataManage({ Player: player, Target: target });
         system.run(() => player.playSound(sounds.mobTake));
         return

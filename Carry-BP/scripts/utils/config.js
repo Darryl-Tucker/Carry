@@ -23,6 +23,7 @@ export const allowEntities = [
     { typeId: "minecraft:tnt_minecart" },
     { typeId: "minecraft:command_block_minecart" },
     { typeId: "minecraft:boat" },
+    { typeId: "minecraft:chest_boat" },
     { typeId: "minecraft:armor_stand" },
 
     // -------------------------------------------------------------- No property
@@ -104,6 +105,7 @@ export const excludeEntities = [
     "minecraft:tnt_minecart",
     "minecraft:chest_minecart",
     "minecraft:boat",
+    "minecraft:chest_boat",
     "wind_charge_projectile"
 ];
 
@@ -373,7 +375,8 @@ export function DiskToRAM({ Player, WorldLoadEvent }) {
         "enderman",
         "creeper",
         "snowGolem",
-        "blaze"
+        "blaze",
+        "warden"
     ];
 
     for (const ability of abilities.filter(a => Player.getDynamicProperty(a))) ab[ability] = true

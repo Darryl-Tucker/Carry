@@ -8,7 +8,7 @@ import { addEntityRide, clearCarrierData, clearEntityRide } from "./ride";
 world.beforeEvents.playerLeave.subscribe(e => {
     const player = e.player;
 
-    clearEntityRide({ Entity: player });
+    clearEntityRide(player);
     playerDataManage({ Player: player, PlayerLeave: true })
 });
 
@@ -32,6 +32,7 @@ world.beforeEvents.entityHurt.subscribe(e => {
         manager.ghast(damageSource, hurtEntity);
         manager.snowGolem(damageSource, hurtEntity);
         manager.blaze(damageSource);
+        manager.warden(damageSource)
     }
 
     if (carryEntityData.has(hurtEntity.id)) { // carryEntityData varsa
@@ -43,7 +44,7 @@ world.beforeEvents.entityHurt.subscribe(e => {
     const rider = world.getAllPlayers().find(r => carryEntityData.get(r.id)?.id === hurtEntity.id); // rider'ın veri id === Hasar yiyen canlı id
     if (rider) playerDataManage({ Player: rider, Target: hurtEntity, carryDelete: true }) // Eğer bulduysa sil
 
-    clearEntityRide({ Entity: hurtEntity }); // Ride verisini temizle
+    clearEntityRide(hurtEntity); // Ride verisini temizle
     clearCarrierData(hurtEntity);
 });
 
@@ -52,7 +53,7 @@ world.beforeEvents.playerInteractWithEntity.subscribe(e => {
 
     if (carryEntityData.get(player.id)?.id === target.id) { // carryEntityData verisindeki id ile target id mi?
         abilityBar(player, e);
-        powerCount({ Player: player, Target: target, EventCancel: e });
+        powerCount({ Player: player, EventCancel: e });
         return
     }
 
@@ -72,7 +73,7 @@ world.beforeEvents.explosion.subscribe(e => {
 
         playerDataManage({ Player: player, carryDelete: true }) // Creeper elde patlarsa Carry datasını sil
     }
-})
+});
 
 world.beforeEvents.playerInteractWithBlock.subscribe(e => { if (carryEntityData.has(e.player.id)) e.cancel = true });
 world.beforeEvents.playerBreakBlock.subscribe(e => { if (carryEntityData.has(e.player.id)) e.cancel = true });
@@ -86,11 +87,11 @@ world.afterEvents.entityDie.subscribe(e => {
         const player = world.getAllPlayers().find(p => carryEntityData.get(p.id)?.id === deadEntity?.id);
         if (player) playerDataManage({ Player: player, carryDelete: true })
 
-        clearEntityRide({ Entity: deadEntity });
+        clearEntityRide(deadEntity);
         return
     }
 
-    clearEntityRide({ Entity: deadEntity });
+    clearEntityRide(deadEntity);
     clearCarrierData(deadEntity);
 
     playerDataManage({ Player: deadEntity, carryDelete: true }) // Oyuncu için

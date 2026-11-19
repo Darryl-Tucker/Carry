@@ -5,43 +5,39 @@ export const riderData = new Map();
 export const carrierData = new Map();
 
 export function entityRiding() {
-    const dimensions = [
-        world.getDimension("overworld"),
-        world.getDimension("nether"),
-        world.getDimension("the_end")
-    ];
+    for (const [riderId, carrierId] of riderData.entries()) {
+        const rider = world.getEntity(riderId);
+        const carrier = world.getEntity(carrierId.id);
+        if (!carrier) {
 
-    for (const dimension of dimensions) {
-        for (const rider of dimension.getEntities().filter(r => riderData.has(r.id))) {
-            const carrier = rider.dimension.getEntities().find(c => riderData.get(rider.id).id === c.id)
-            if (!carrier) continue
-
-            const checkDimension = carrier.dimension.id === rider.dimension.id; // boyut değiştirirken hata almamak için
-
-            if (!checkDimension ||
-                (carrier.typeId === "minecraft:player" && carrier.isSneaking && carrier.isJumping) || // Taşıyıcı oyuncu, eğiliyorsa ve zıplıyorsa
-                (rider.typeId === "minecraft:player" && rider.isSneaking || rider.isJumping) // Binici oyuncu, eğiliyorsa veya zıplıyorsa
-            ) {
-                clearEntityRide({ Entity: rider });
-                continue
-            }
-
-            const headPos = carrier.getHeadLocation();
-            const viewDir = carrier.getViewDirection();
-
-            const targetFacingLocation = {
-                x: headPos.x + viewDir.x * 5,
-                y: headPos.y + viewDir.y * 5,
-                z: headPos.z + viewDir.z * 5
-            };
-
-            const carrierLoc = {
-                x: carrier.location.x,
-                y: carrier.location.y + riderData.get(rider.id)?.level,
-                z: carrier.location.z
-            };
-            rider.teleport(carrierLoc, { facingLocation: targetFacingLocation })
+            continue
         }
+
+        const checkDimension = carrier.dimension.id === rider.dimension.id; // boyut değiştirirken hata almamak için
+
+        if (!checkDimension ||
+            (carrier.typeId === "minecraft:player" && carrier.isSneaking && carrier.isJumping) || // Taşıyıcı oyuncu, eğiliyorsa ve zıplıyorsa
+            (rider.typeId === "minecraft:player" && rider.isSneaking || rider.isJumping) // Binici oyuncu, eğiliyorsa veya zıplıyorsa
+        ) {
+            clearEntityRide(rider);
+            continue
+        }
+
+        const headPos = carrier.getHeadLocation();
+        const viewDir = carrier.getViewDirection();
+
+        const targetFacingLocation = {
+            x: headPos.x + viewDir.x * 5,
+            y: headPos.y + viewDir.y * 5,
+            z: headPos.z + viewDir.z * 5
+        };
+
+        const carrierLoc = {
+            x: carrier.location.x,
+            y: carrier.location.y + riderData.get(rider.id)?.level,
+            z: carrier.location.z
+        };
+        rider.teleport(carrierLoc, { facingLocation: targetFacingLocation })
     }
 }
 
@@ -89,14 +85,14 @@ export function addEntityRide({ Player, Target, StartRun, EndRun }) {
     system.clearRun(EndRun)
 }
 
-export function clearEntityRide({ Entity }) {
-    if (Entity.typeId === "minecraft:player") {
+export function clearEntityRide(entity) {
+    if (entity.typeId === "minecraft:player") {
         system.run(() => {
-            if (Entity && Entity.isValid)
-                Entity.playAnimation("animation.player.bob.stationary", { blendOutTime: 0.1, controller: "player_sit" })
+            if (entity && entity.isValid)
+                entity.playAnimation("animation.player.bob.stationary", { blendOutTime: 0.1, controller: "player_sit" })
         });
 
-        const rodePlayer = world.getAllPlayers().find(r => r.id !== Entity.id && riderData.get(r.id)?.id === Entity.id);
+        const rodePlayer = world.getAllPlayers().find(r => r.id !== entity.id && riderData.get(r.id)?.id === entity.id);
         if (rodePlayer) {
             system.run(() => rodePlayer.playAnimation("animation.player.bob.stationary", { blendOutTime: 0.1, controller: "player_sit" }));
             riderData.delete(rodePlayer.id);
@@ -104,32 +100,32 @@ export function clearEntityRide({ Entity }) {
             return
         }
 
-        riderData.delete(Entity.id);
-        Entity.setDynamicProperty("ride", undefined);
+        riderData.delete(entity.id);
+        entity.setDynamicProperty("ride", undefined);
         return
     }
     // ----------------------------------------------------------------
-    if (!riderData.get(Entity.id)?.id) return
+    if (!riderData.get(entity.id)?.id) return
 
-    const carrier = Entity.dimension.getEntities().find(c => carrierData.has(c.id) && riderData.get(Entity.id)?.id === c.id);
+    const carrier = entity.dimension.getEntities().find(c => carrierData.has(c.id) && riderData.get(entity.id)?.id === c.id);
     if (!carrier) return
     const data = carrierData.get(carrier.id) ?? {};
     const currentCarriedLevel = data?.carriedLevel - 1;
 
-    if (data.carriedLevel === riderData.get(Entity.id).level) {
+    if (data.carriedLevel === riderData.get(entity.id).level) {
         data.carriedLevel--;
-        riderData.delete(Entity.id);
+        riderData.delete(entity.id);
 
         if (data.carriedLevel < 1) carrierData.delete(carrier.id)
         return
     }
 
-    for (const rider of carrier.dimension.getEntities().filter(r => riderData.get(r.id)?.id === carrier.id && Entity.id !== r.id)) {
+    for (const rider of carrier.dimension.getEntities().filter(r => riderData.get(r.id)?.id === carrier.id && entity.id !== r.id)) {
         data.carriedLevel--;
         riderData.get(rider.id).level = data.carriedLevel
     }
     data.carriedLevel = currentCarriedLevel
-    riderData.delete(Entity.id);
+    riderData.delete(entity.id);
 }
 
 export function clearCarrierData(entity) {

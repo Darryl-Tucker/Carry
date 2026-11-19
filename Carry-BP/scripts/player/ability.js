@@ -1,6 +1,6 @@
 import { system, EntityDamageCause } from "@minecraft/server";
 import { carryEntityData } from "../entity/carry";
-import { addEntityRide } from "../utils/ride";
+import { addEntityRide, clearCarrierData, clearEntityRide } from "../utils/ride";
 import { excludeEntities } from "../utils/config";
 
 export const abilitiesData = new Map();
@@ -12,13 +12,16 @@ const texts = {
     unlockedCreeper: "unlocked.creeper",
     unlockedSnowGolem: "unlocked.snowGolem",
     unlockedBlaze: "unlocked.blaze",
+    unlockedWarden: "unlocked.warden",
 
     howToUnlockGhast: "howTounlock.ghast",
     howToUnlockBreeze: "howTounlock.breeze",
     howToUnlockEnderman: "howTounlock.enderman",
     howToUnlockCreeper: "howTounlock.creeper",
     howToUnlockSnowGolem: "howTounlock.snowGolem",
-    howToUnlockBlaze: "howTounlock.blaze"
+    howToUnlockBlaze: "howTounlock.blaze",
+    howToUnlockWarden: "howTounlock.warden"
+
 };
 
 const sounds = {
@@ -128,16 +131,32 @@ export class UnlockAbilityManager {
             system.run(() => this.unlockedAbilityMessage(texts.unlockedBlaze))
         }
     }
+
+    warden(damageSource) {
+        if (this.data?.warden) return
+
+        if (damageSource.cause === "drowning") {
+            this.data.warden = true;
+            abilitiesData.set(this.player.id, this.data);
+
+            this.player.setDynamicProperty("warden", true);
+
+            system.run(() => this.unlockedAbilityMessage(texts.unlockedWarden))
+        }
+    }
 }
 
 
 export class UseAbilityManager {
     constructor(player, viewDirection, power, target, pushEntityLoc) {
-        this.player = player;
         this.target = target;
-        this.power = power;
+        this.targetData = new Map();
+
+        this.player = player;
         this.ab = abilitiesData.get(this.player.id);
         this.viewDirection = viewDirection;
+        this.power = power;
+
         this.pushEntityLoc = pushEntityLoc;
         this.entities = null;
         this.excludeTypes = excludeEntities.slice(1)
@@ -160,23 +179,33 @@ export class UseAbilityManager {
                 default: // normal
                     this.normal(runIntervalId, runTimeOutId)
                     break
+
                 case 0: // Boomerang
                     if (this.ab?.ghast) this.ghast()
                     break
+
                 case 1: // Sky Spinner
                     if (this.ab?.breeze) this.breeze(runIntervalId, runTimeOutId)
                     break
+
                 case 2: // Enderman
                     if (this.ab?.enderman) system.clearRun(runIntervalId)
                     break
+
                 case 3: // Creeper
                     if (this.ab?.creeper) system.clearRun(runIntervalId)
                     break
+
                 case 4: // Snow Golem
                     if (this.ab?.snowGolem) this.snowGolem()
                     break
+
                 case 5: // Blaze
                     if (this.ab?.blaze) this.blaze()
+                    break
+
+                case 6: // Warden
+                    if (this.ab?.warden) this.warden()
                     break
             }
         });
@@ -188,19 +217,27 @@ export class UseAbilityManager {
             }
 
             switch (this.ab?.abilityPage) {
-                case 0:
+                case 0: // Boomerang
                     if (this.ab?.ghast) {
                         this.ghast(true);
                         await system.waitTicks(this.power)
-                    } // Boomerang 
+                    }
                     break
 
-                case 2:
+                case 2: // Enderman
                     if (this.ab?.enderman) this.enderman()
-                    break // Enderman
-                case 3:
+                    break
+
+                case 3: // Creeper
                     if (this.ab?.creeper) this.creeper()
-                    break // Creeper
+                    break
+
+                case 6: // Warden
+                    if (this.ab?.warden) {
+                        await system.waitTicks(this.power + 60);
+                        this.warden(true)
+                    }
+                    break
             }
             system.clearRun(runIntervalId);
         }, this.power + 5)
@@ -253,8 +290,6 @@ export class UseAbilityManager {
             causesFire: false,
             breaksBlocks: true,
         })
-
-
     }
 
     snowGolem() {
@@ -304,6 +339,36 @@ export class UseAbilityManager {
 
         for (const entity of this.entities) entity.setOnFire(5)
     }
+
+    warden(destroyed = null) {
+        for (const entity of this.player.dimension.getEntities().filter(e => this.target.id !== e.id && this.player.id !== e.id))
+            entity.teleport(entity.location)
+
+        if (destroyed) {
+            const target = this.player.dimension.getEntities().find(t => this.targetData.get("destroying")?.id === t.id);
+            if (!target) return
+
+            if (target.typeId === "minecraft:player") {
+                target.addEffect("invisibility", 100, { showParticles: false });
+                target.kill()
+            }
+            else {
+                clearCarrierData(target);
+                clearEntityRide(target);
+                target.remove()
+            } 
+
+            return
+        }
+
+        if (!this.targetData.has("destroying")) {
+            for (const doomed of this.entities) {
+                doomed.dimension.spawnParticle("minecraft:warden_dig", { x: doomed.location.x, y: doomed.location.y + 0.50, z: doomed.location.z });
+                this.targetData.set("destroying", { id: doomed.id });
+                break
+            }
+        }
+    }
 }
 
 export function abilityBar(player, e) {
@@ -311,7 +376,7 @@ export function abilityBar(player, e) {
     e.cancel = true;
 
     const ab = abilitiesData.get(player.id) ?? {};
-    const maxAbility = 5;
+    const maxAbility = 6;
 
     ab.abilityPage = (ab?.abilityPage ?? -1) + 1;
     abilitiesData.set(player.id, ab);
@@ -331,13 +396,13 @@ export function abilityBar(player, e) {
                 break
 
             case 2:
-                if (!ab?.enderman) player.sendMessage({ rawtext: [{ text: ">> Enderman -->§c " }, { translate: texts.howToUnlockEnderman }] })
-                else player.sendMessage(">> Enderman")
+                if (!ab?.enderman) player.sendMessage({ rawtext: [{ text: ">> §dEnderman §r-->§c " }, { translate: texts.howToUnlockEnderman }] })
+                else player.sendMessage(">> §dEnderman")
                 break
 
             case 3:
-                if (!ab?.creeper) player.sendMessage({ rawtext: [{ text: ">> Creeper -->§c " }, { translate: texts.howToUnlockCreeper }] })
-                else player.sendMessage(">> Creeper")
+                if (!ab?.creeper) player.sendMessage({ rawtext: [{ text: ">> §2Creeper §r-->§c " }, { translate: texts.howToUnlockCreeper }] })
+                else player.sendMessage(">> §2Creeper")
                 break
 
             case 4:
@@ -346,8 +411,13 @@ export function abilityBar(player, e) {
                 break
 
             case 5:
-                if (!ab?.blaze) player.sendMessage({ rawtext: [{ text: ">> Blaze -->§c " }, { translate: texts.howToUnlockBlaze }] })
-                else player.sendMessage(">> Blaze")
+                if (!ab?.blaze) player.sendMessage({ rawtext: [{ text: ">> §6Blaze §r-->§c " }, { translate: texts.howToUnlockBlaze }] })
+                else player.sendMessage(">> §6Blaze")
+                break
+
+            case 6:
+                if (!ab?.warden) player.sendMessage({ rawtext: [{ text: ">> §0Warden §r-->§c " }, { translate: texts.howToUnlockWarden }] })
+                else player.sendMessage(">> §0Warden")
                 break
         }
     });
