@@ -16,7 +16,7 @@ export function saveBlock(player, block, e) {
 
     if (!mainHand && !offHand) {
         e.cancel = true;
-        system.run(async () => {
+        system.run(() => {
             if (world.structureManager.get("block:" + player.id)) return // zaten kayıtlı varsa geri dön
 
             const entityBlock = player.dimension.spawnEntity("carry_throw:block", player.location);
