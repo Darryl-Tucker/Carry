@@ -30,7 +30,7 @@ class EntityComponentManager {
     entityHealthShow() { if (!carryEntityData.get(this.player.id)?.power) this.player.onScreenDisplay.setActionBar("[ " + (carryEntityData.get(this.player.id).health ?? 0.50) + " ]") }
 
     suffocationBlock() {
-        const distance = 0.50;
+        const distance = 0.10;
 
         const blockLocs = [
             { x: this.entity.location.x + distance, y: this.entity.location.y, z: this.entity.location.z },
@@ -186,7 +186,7 @@ export function takeEntity(player, target, e) {
         carryEntityData.get(target.id)?.id === player.id || // Eğer target zaten oyuncuyu taşıyorsa
         world.getAllPlayers().find(p => carryEntityData.get(p.id)?.id === target.id) ||  // Bir oyuncu taşıyor veya
         !allowEntities.find(m => target.typeId === m.typeId) || // Geçerli listesinden değil veya
-        player.isGliding || player.isEmoting || !player.isSneaking || // Gliding yapıyor, emoji kullanıyor, zıplıyorsa veya eğilmiyorsa
+        player.isGliding || player.isEmoting || !player.isSneaking || // Gliding yapıyor, emoji kullanıyor veya eğilmiyorsa
         riderData.has(target.id) && target.typeId === "minecraft:player" // riderData'ya sahip ve oyuncu ise
     ) return // Bunlardan biri sağlanıyorsa geri dön
 
@@ -250,5 +250,4 @@ export function pushEntity(player, target, e) {
     }
 
     if (target.typeId !== "minecraft:player") addEntityRide({ Player: player, Target: target })
-
 }

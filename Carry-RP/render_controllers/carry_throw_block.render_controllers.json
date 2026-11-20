@@ -7,13 +7,28 @@
           "Array.skins": [
             "Texture.stone",
             "Texture.dirt",
-            "Texture.diamond",
+            "Texture.diamond_block",
             "Texture.crafting_table",
-            "Texture.chest"
+            "Texture.chest",
+            "Texture.mob_spawner",
+            "Texture.torch",
+            "Texture.barrel",
+            "Texture.obsidian",
+            "Texture.glass",
+            "Texture.glass_pane",
+            "Texture.crying_obsidian",
+            "Texture.grass_block",
+            "Texture.lit_furnace",
+            "Texture.furnace",
+            "Texture.lit_blast_furnace",
+            "Texture.blast_furnace",
+            "Texture.bookshelf",
+            "Texture.anvil",
+            "Texture.enchanting_table"
           ]
         }
       },
-      "geometry": "Geometry.default",
+      "geometry": "query.variant == 18 ? Geometry.anvil : (query.variant == 19 ? Geometry.enchanting_table : Geometry.default)",
       "materials": [
         {
           "*": "Material.default"

@@ -94,6 +94,29 @@ export const allowEntities = [
     // -------------------------------------------------------------- Monsters
 ];
 
+export const allowBlocks = new Set([
+    "minecraft:stone",
+    "minecraft:dirt",
+    "minecraft:diamond_block",
+    "minecraft:crafting_table",
+    "minecraft:chest",
+    "minecraft:mob_spawner",
+    "minecraft:torch",
+    "minecraft:barrel",
+    "minecraft:obsidian",
+    "minecraft:glass",
+    "minecraft:glass_pane",
+    "minecraft:crying_obsidian",
+    "minecraft:grass_block",
+    "minecraft:lit_furnace",
+    "minecraft:furnace",
+    "minecraft:lit_blast_furnace",
+    "minecraft:blast_furnace",
+    "minecraft:bookshelf",
+    "minecraft:anvil",
+    "minecraft:enchanting_table"
+]);
+
 export const excludeEntities = [
     "minecraft:player",
     "carry_throw:block",
@@ -236,6 +259,7 @@ export const excludeBlocks = new Set([
     "minecraft:bamboo_pressure_plate",
     "minecraft:crimson_pressure_plate",
     "minecraft:warped_pressure_plate",
+    "minecraft:ladder",
     "minecraft:polished_blackstone_pressure_plate",
     "minecraft:light_weighted_pressure_plate",
     "minecraft:torch",

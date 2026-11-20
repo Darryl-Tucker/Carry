@@ -9,12 +9,29 @@
       "textures": {
         "stone": "textures/entity/blocks/stone",
         "dirt": "textures/entity/blocks/dirt",
-        "diamond": "textures/entity/blocks/diamond_block",
+        "diamond_block": "textures/entity/blocks/diamond_block",
         "crafting_table": "textures/entity/blocks/crafting_table",
-        "chest": "textures/entity/blocks/chest"
+        "chest": "textures/entity/blocks/chest",
+        "mob_spawner": "textures/entity/blocks/mob_spawner",
+        "torch": "textures/entity/blocks/torch",
+        "barrel": "textures/entity/blocks/barrel",
+        "obsidian": "textures/entity/blocks/obsidian",
+        "glass": "textures/entity/blocks/glass",
+        "glass_pane": "textures/entity/blocks/glass_pane",
+        "crying_obsidian": "textures/entity/blocks/crying_obsidian",
+        "grass_block": "textures/entity/blocks/grass_block",
+        "lit_furnace": "textures/entity/blocks/lit_furnace",
+        "furnace": "textures/entity/blocks/furnace",
+        "lit_blast_furnace": "textures/entity/blocks/lit_blast_furnace",
+        "blast_furnace": "textures/entity/blocks/blast_furnace",
+        "bookshelf": "textures/entity/blocks/bookshelf",
+        "anvil": "textures/entity/blocks/anvil",
+        "enchanting_table": "textures/entity/blocks/enchanting_table"
       },
       "geometry": {
-        "default": "geometry.carry_throw_block"
+        "default": "geometry.carry_throw_block",
+        "anvil": "geometry.carry_throw_anvil",
+        "enchanting_table": "geometry.carry_throw_enchanting_table"
       },
       "scripts": {
         "scale": "0.5"

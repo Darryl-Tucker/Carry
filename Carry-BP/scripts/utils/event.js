@@ -11,7 +11,7 @@ world.beforeEvents.playerLeave.subscribe(e => {
 
     if (carryEntityData.has(player.id)) {
         const entity = world.getEntity(carryEntityData.get(player.id).id);
-        if (entity && entity.isValid) placeBlock(player, entity)
+        if (entity) placeBlock(player, entity)
     }
 
     clearEntityRide(player);
@@ -24,6 +24,10 @@ world.afterEvents.playerSpawn.subscribe(e => {
     if (e.initialSpawn) {
         DiskToRAM({ Player: player });
         addonTutorial(player);
+
+        for (const entity of player.dimension.getEntities().filter(e => e.typeId === "carry_throw:block")) 
+            placeBlock(player,entity)    
+
         return // Oyuncu ilk kez dünyaya girdiğinde işlemleri yap
     }
 
@@ -112,8 +116,6 @@ const worldLoad = world.afterEvents.worldLoad.subscribe(() => {
         playerDataManage({ Player: player })
 
         for (const block of player.dimension.getEntities().filter(e => e.typeId === "carry_throw:block")) placeBlock(player, block)
-
-        if (player.name === "steve") player.sendMessage(player.id)
     }
     world.afterEvents.worldLoad.unsubscribe(worldLoad)
 })
