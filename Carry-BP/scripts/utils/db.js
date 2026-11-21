@@ -49,7 +49,7 @@ export const entityProperties = [
     { typeId: "minecraft:axolotl", medic: true },
     // -------------------------------------------------------------- Medic
 
-    // -------------------------------------------------------------- Weights
+    // -------------------------------------------------------------- Weight
     { typeId: "minecraft:cow", weight: 1 },
     { typeId: "minecraft:sheep", weight: 1 },
     { typeId: "minecraft:pig", weight: 1 },
@@ -85,7 +85,7 @@ export const entityProperties = [
     { typeId: "minecraft:panda", weight: 5 },
     { typeId: "minecraft:iron_golem", weight: 5 },
     { typeId: "minecraft:ravager", weight: 5 }
-    // -------------------------------------------------------------- Weights
+    // -------------------------------------------------------------- Weight
 ];
 
 export const excludeEntities = [
