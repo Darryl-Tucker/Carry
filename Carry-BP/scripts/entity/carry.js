@@ -1,24 +1,11 @@
 import { world, system, EquipmentSlot, EntityComponentTypes } from "@minecraft/server";
 import { UnlockAbilityManager, UseAbilityManager } from "../player/ability";
-import { playerDataManage } from "../player/data";
-import { entityProperties, excludeBlocks, excludeEntities } from "../utils/db";
+import { managePlayerData } from "../player/dataManager";
+import { entityProperties, excludeBlocks, excludeEntities, sounds } from "../utils/db";
 import { addEntityRide, clearEntityRide, riderData } from "./ride";
-import { placeBlock } from "../block/data";
+import { placeBlock } from "../block/dataManager";
 
 export const carryEntityData = new Map();
-
-const texts = {
-    mobCarryWarn: "mob.carry.warn",
-};
-
-const sounds = {
-    mobTake: "mob.chicken.plop",
-    powerCount: "random.orb",
-    mobPush: "mob.shulker.shoot",
-    mobDropped: "mob.horse.armor",
-    powerCanceled: "mob.villager.no",
-    mobCarryWarn: "mob.villager.no"
-};
 
 class EntityComponentManager {
     constructor(player, entity) {
@@ -114,7 +101,7 @@ class EntityComponentManager {
             const block = this.player.dimension.getBlock(entityBlockLoc);
 
             if (this.entity.typeId === "carry_throw:block" && (block.typeId === "minecraft:portal" || block.typeId === "minecraft:end_portal")) {
-                playerDataManage({ Player: this.player, carryDelete: true });
+                managePlayerData({ Player: this.player, carryDelete: true });
                 placeBlock(this.player, this.entity);
                 continue
             }
@@ -137,8 +124,8 @@ export function entityCarrying() {
         if (player.isSprinting || player.isEmoting || mainHand || offHand || gamemode === "Spectator" || !entity || !entity?.isValid) {
             if (entity && entity.typeId === "carry_throw:block") placeBlock(player, entity)
 
-            player.playSound(sounds.mobDropped, { volume: 1 });
-            playerDataManage({ Player: player, Target: entity, carryDelete: true });
+            player.playSound(sounds.carry.mobDropped, { volume: 1 });
+            managePlayerData({ Player: player, Target: entity, carryDelete: true });
             return
         }
 
@@ -190,7 +177,7 @@ export function powerCount({ Player, EventCancel } = {}) {
         data.power = data.power ?? 0;
 
         if (data.powerCount && data.power < 10) {
-            system.run(() => player.playSound(sounds.powerCount, { pitch: 2 }));
+            system.run(() => player.playSound(sounds.carry.powerCount, { pitch: 2 }));
             data.power = data.power + 1
         }
 
@@ -200,7 +187,7 @@ export function powerCount({ Player, EventCancel } = {}) {
             data.power = null;
             data.powerCount = null;
 
-            player.playSound(sounds.powerCanceled);
+            player.playSound(sounds.carry.powerCanceled);
             continue
         }
 
@@ -234,14 +221,14 @@ export function takeEntity(player, target, e) {
         manager.enderman();
 
         clearEntityRide(target);
-        playerDataManage({ Player: player, Target: target });
-        system.run(() => player.playSound(sounds.mobTake));
+        managePlayerData({ Player: player, Target: target });
+        system.run(() => player.playSound(sounds.carry.mobTake));
         return
     }
 
     system.run(() => {
-        player.sendMessage({ rawtext: [{ text: "§c>> " }, { translate: texts.mobCarryWarn }] });
-        player.playSound(sounds.mobCarryWarn)
+        player.sendMessage({ rawtext: [{ text: "§c>> " }, { translate: "mob.carry.warn" }] });
+        player.playSound(sounds.carry.mobCarryWarn)
     })
 }
 
@@ -249,7 +236,7 @@ export function pushEntity(player, target, e) {
     const power = carryEntityData.get(player.id)?.power;
     e.cancel = true;
 
-    playerDataManage({ Player: player, Target: target, carryDelete: true });
+    managePlayerData({ Player: player, Target: target, carryDelete: true });
     placeBlock(player, target, e);
 
     if (power > 0) {
@@ -274,7 +261,7 @@ export function pushEntity(player, target, e) {
                     target.applyImpulse(pushEntityLoc)
             }, 3) // milisaniye bekletiyorum çünkü teleport çakışması oluyor
 
-        player.playSound(sounds.mobPush);
+        player.playSound(sounds.carry.mobPush);
         return
     }
 

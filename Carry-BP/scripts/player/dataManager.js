@@ -1,11 +1,11 @@
 import { world, system } from "@minecraft/server";
 import { carryEntityData } from "../entity/carry";
-import { abilitiesData } from "./ability";
+import { abilityData } from "./ability";
 
-export function playerDataManage({ Player, Target, PlayerLeave, carryDelete }) {
+export function managePlayerData({ Player, Target, PlayerLeave, carryDelete }) {
     if (PlayerLeave) { // Eğer oyuncu çıkıyorsa verileri temizle
         carryEntityData.delete(Player.id);
-        abilitiesData.delete(Player.id);
+        abilityData.delete(Player.id);
         return
     }
 

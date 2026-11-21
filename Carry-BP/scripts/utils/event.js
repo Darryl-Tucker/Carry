@@ -1,9 +1,9 @@
 import { world, system } from "@minecraft/server";
 import { pushEntity, carryEntityData, takeEntity, powerCount } from "../entity/carry";
-import { playerDataManage } from "../player/data";
+import { managePlayerData } from "../player/dataManager";
 import { abilityBar, UnlockAbilityManager } from "../player/ability";
 import { addEntityRide, clearEntityCarrier, clearEntityRide } from "../entity/ride";
-import { blockData, placeBlock, saveBlock } from "../block/data";
+import { blockData, placeBlock, saveBlock } from "../block/dataManager";
 import { addonTutorial, DiskToRAM } from "./init";
 
 world.beforeEvents.playerLeave.subscribe(e => {
@@ -16,7 +16,7 @@ world.beforeEvents.playerLeave.subscribe(e => {
 
     blockData.delete(player.id);
     clearEntityRide(player);
-    playerDataManage({ Player: player, PlayerLeave: true });
+    managePlayerData({ Player: player, PlayerLeave: true });
 });
 
 world.afterEvents.playerSpawn.subscribe(e => {
@@ -32,7 +32,7 @@ world.afterEvents.playerSpawn.subscribe(e => {
         return // Oyuncu ilk kez dünyaya girdiğinde işlemleri yap
     }
 
-    playerDataManage({ Player: player })
+    managePlayerData({ Player: player })
 });
 
 world.beforeEvents.entityHurt.subscribe(e => {
@@ -50,14 +50,14 @@ world.beforeEvents.entityHurt.subscribe(e => {
             placeBlock(hurtEntity, target);
 
             const rider = world.getAllPlayers().find(r => carryEntityData.get(hurtEntity.id)?.id === r.id); //  Hasar yiyen canlının veri id === rider id
-            playerDataManage({ Player: hurtEntity, Target: rider, carryDelete: true })
+            managePlayerData({ Player: hurtEntity, Target: rider, carryDelete: true })
         }
         return
     }
 
     const rider = world.getAllPlayers().find(r => carryEntityData.get(r.id)?.id === hurtEntity.id); // rider'ın veri id === Hasar yiyen canlı id
     if (rider)
-        playerDataManage({ Player: rider, Target: hurtEntity, carryDelete: true }) // Eğer bulduysa sil
+        managePlayerData({ Player: rider, Target: hurtEntity, carryDelete: true }) // Eğer bulduysa sil
 
     clearEntityRide(hurtEntity); // Ride verisini temizle
     clearEntityCarrier(hurtEntity);
@@ -118,7 +118,7 @@ world.beforeEvents.entityItemPickup.subscribe(e => { if (carryEntityData.has(e.e
 const worldLoad = world.afterEvents.worldLoad.subscribe(() => {
     for (const player of world.getAllPlayers()) {
         DiskToRAM({ Player: player, WorldLoadEvent: true });
-        playerDataManage({ Player: player })
+        managePlayerData({ Player: player })
 
         for (const block of player.dimension.getEntities().filter(e => e.typeId === "carry_throw:block")) placeBlock(player, block)
     }

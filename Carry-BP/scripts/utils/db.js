@@ -382,3 +382,36 @@ export const excludeBlocks = new Set([
     "minecraft:bush",
     "minecraft:kelp"
 ]);
+
+export const texts = {
+    unlockedAbilities: {
+        ghast: "unlocked.ghast",
+        breeze: "unlocked.breeze",
+        enderman: "unlocked.enderman",
+        creeper: "unlocked.creeper",
+        snowGolem: "unlocked.snowGolem",
+        blaze: "unlocked.blaze",
+        warden: "unlocked.warden",
+    },
+
+    howToUnlockAbilities: {
+        ghast: "howToUnlock.ghast",
+        breeze: "howToUnlock.breeze",
+        enderman: "howToUnlock.enderman",
+        creeper: "howToUnlock.creeper",
+        snowGolem: "howToUnlock.snowGolem",
+        blaze: "howToUnlock.blaze",
+        warden: "howToUnlock.warden"
+    }
+};
+
+export const sounds = {
+    carry: {
+        mobTake: "mob.chicken.plop",
+        powerCount: "random.orb",
+        mobPush: "mob.shulker.shoot",
+        mobDropped: "mob.horse.armor",
+        powerCanceled: "mob.villager.no",
+        mobCarryWarn: "mob.villager.no"
+    }
+}

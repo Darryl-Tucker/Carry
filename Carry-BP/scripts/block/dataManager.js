@@ -1,6 +1,6 @@
 import { world, system, StructureSaveMode, EntityComponentTypes, EquipmentSlot } from "@minecraft/server";
 import { carryEntityData } from "../entity/carry";
-import { playerDataManage } from "../player/data";
+import { managePlayerData } from "../player/dataManager";
 import { horizontalDoubleBlocks, verticalDoubleBlocks } from "../utils/db";
 
 export const blockData = new Map();
@@ -27,7 +27,7 @@ export function saveBlock(player, block, e) {
             carryEntityData.set(player.id, { id: entityBlock.id, typeId: entityBlock.typeId });
             blockData.set(player.id, { id: entityBlock.id, typeId: block.typeId });
 
-            playerDataManage({ Player: player, Target: entityBlock });
+            managePlayerData({ Player: player, Target: entityBlock });
             player.playSound("mob.chicken.plop");
 
             if (horizontalDoubleBlocks.has(block.typeId))

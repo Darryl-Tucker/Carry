@@ -1,38 +1,15 @@
-import { world, system, EntityDamageCause } from "@minecraft/server";
+import { system, EntityDamageCause } from "@minecraft/server";
 import { carryEntityData } from "../entity/carry";
 import { addEntityRide, clearEntityCarrier, clearEntityRide } from "../entity/ride";
-import { excludeEntities } from "../utils/db";
+import { excludeEntities, texts } from "../utils/db";
 
-export const abilitiesData = new Map();
-
-const texts = {
-    unlockedGhast: "unlocked.ghast",
-    unlockedBreeze: "unlocked.breeze",
-    unlockedEnderman: "unlocked.enderman",
-    unlockedCreeper: "unlocked.creeper",
-    unlockedSnowGolem: "unlocked.snowGolem",
-    unlockedBlaze: "unlocked.blaze",
-    unlockedWarden: "unlocked.warden",
-
-    howToUnlockGhast: "howTounlock.ghast",
-    howToUnlockBreeze: "howTounlock.breeze",
-    howToUnlockEnderman: "howTounlock.enderman",
-    howToUnlockCreeper: "howTounlock.creeper",
-    howToUnlockSnowGolem: "howTounlock.snowGolem",
-    howToUnlockBlaze: "howTounlock.blaze",
-    howToUnlockWarden: "howTounlock.warden"
-
-};
-
-const sounds = {
-    unlockedAbility: "random.levelup",
-};
+export const abilityData = new Map();
 
 export class UnlockAbilityManager {
     constructor(player) {
         this.player = player;
         this.carryEntityData = carryEntityData.get(this.player.id);
-        this.data = abilitiesData.get(this.player.id) ?? {};
+        this.data = abilityData.get(this.player.id) ?? {};
 
         this.unlockedParticleLoc = {
             x: this.player.location.x,
@@ -44,7 +21,7 @@ export class UnlockAbilityManager {
     unlockedAbilityMessage(unlockedAbilityText) {
         this.player.sendMessage({ rawtext: [{ text: ">>§a " }, { translate: unlockedAbilityText }] });
         this.player.dimension.spawnParticle("minecraft:totem_particle", this.unlockedParticleLoc);
-        this.player.playSound(sounds.unlockedAbility, { volume: 1, pitch: 0.5 })
+        this.player.playSound("random.levelup", { volume: 1, pitch: 0.5 })
     }
 
     ghast(damageSource, hurtEntity) {
@@ -55,10 +32,10 @@ export class UnlockAbilityManager {
             damageSource.damagingEntity.id === hurtEntity.id // Hasar veren ile hasar yiyen id'leri eşit ise
         ) {
             this.data.ghast = true;
-            abilitiesData.set(this.player.id, this.data);
+            abilityData.set(this.player.id, this.data);
 
             this.player.setDynamicProperty("ghast", true);
-            system.run(() => this.unlockedAbilityMessage(texts.unlockedGhast))
+            system.run(() => this.unlockedAbilityMessage(texts.unlockedAbilities.ghast))
         }
     }
 
@@ -68,7 +45,7 @@ export class UnlockAbilityManager {
         const rot = this.player.getRotation();
         if (rot.x <= -45) {
             this.data.AUS_breeze = (this.data.AUS_breeze ?? 0) + 1;
-            abilitiesData.set(this.player.id, this.data);
+            abilityData.set(this.player.id, this.data);
         }
 
         if (this.data.AUS_breeze !== 3) return
@@ -78,7 +55,7 @@ export class UnlockAbilityManager {
         this.player.setDynamicProperty("breeze", true);
 
 
-        system.run(() => this.unlockedAbilityMessage(texts.unlockedBreeze))
+        system.run(() => this.unlockedAbilityMessage(texts.unlockedAbilities.breeze))
     }
 
     enderman() {
@@ -86,11 +63,11 @@ export class UnlockAbilityManager {
 
         if (this.carryEntityData.typeId === "minecraft:enderman") {
             this.data.enderman = true;
-            abilitiesData.set(this.player.id, this.data);
+            abilityData.set(this.player.id, this.data);
 
             this.player.setDynamicProperty("enderman", true);
 
-            system.run(() => this.unlockedAbilityMessage(texts.unlockedEnderman))
+            system.run(() => this.unlockedAbilityMessage(texts.unlockedAbilities.enderman))
         }
     }
 
@@ -99,11 +76,11 @@ export class UnlockAbilityManager {
         e.cancel = true;
 
         this.data.creeper = true;
-        abilitiesData.set(this.player.id, this.data);
+        abilityData.set(this.player.id, this.data);
 
         this.player.setDynamicProperty("creeper", true);
 
-        system.run(() => this.unlockedAbilityMessage(texts.unlockedCreeper))
+        system.run(() => this.unlockedAbilityMessage(texts.unlockedAbilities.creeper))
     }
 
     snowGolem(damageSource, hurtEntity) {
@@ -111,11 +88,11 @@ export class UnlockAbilityManager {
 
         if (damageSource.cause === "freezing" && carryEntityData.get(hurtEntity.id)?.typeId === "minecraft:snow_golem") {
             this.data.snowGolem = true;
-            abilitiesData.set(this.player.id, this.data);
+            abilityData.set(this.player.id, this.data);
 
             this.player.setDynamicProperty("snowGolem", true);
 
-            system.run(() => this.unlockedAbilityMessage(texts.unlockedSnowGolem))
+            system.run(() => this.unlockedAbilityMessage(texts.unlockedAbilities.snowGolem))
         }
     }
 
@@ -124,11 +101,11 @@ export class UnlockAbilityManager {
 
         if (damageSource.damagingEntity?.typeId === "minecraft:blaze" && damageSource.cause === "projectile") {
             this.data.blaze = true;
-            abilitiesData.set(this.player.id, this.data);
+            abilityData.set(this.player.id, this.data);
 
             this.player.setDynamicProperty("blaze", true);
 
-            system.run(() => this.unlockedAbilityMessage(texts.unlockedBlaze))
+            system.run(() => this.unlockedAbilityMessage(texts.unlockedAbilities.blaze))
         }
     }
 
@@ -137,11 +114,11 @@ export class UnlockAbilityManager {
 
         if (damageSource.cause === "drowning") {
             this.data.warden = true;
-            abilitiesData.set(this.player.id, this.data);
+            abilityData.set(this.player.id, this.data);
 
             this.player.setDynamicProperty("warden", true);
 
-            system.run(() => this.unlockedAbilityMessage(texts.unlockedWarden))
+            system.run(() => this.unlockedAbilityMessage(texts.unlockedAbilities.warden))
         }
     }
 }
@@ -153,7 +130,7 @@ export class UseAbilityManager {
         this.targetData = new Map();
 
         this.player = player;
-        this.ab = abilitiesData.get(this.player.id);
+        this.ab = abilityData.get(this.player.id);
         this.viewDirection = viewDirection;
         this.power = power;
 
@@ -380,52 +357,52 @@ export function abilityBar(player, e) {
     if (!player.isSneaking) return
     e.cancel = true;
 
-    const ab = abilitiesData.get(player.id) ?? {};
+    const ab = abilityData.get(player.id) ?? {};
     const maxAbility = 6;
 
     ab.abilityPage = (ab?.abilityPage ?? -1) + 1;
-    abilitiesData.set(player.id, ab);
+    abilityData.set(player.id, ab);
 
     system.run(() => {
         switch (ab?.abilityPage) {
             default: player.sendMessage(">> Normal"); break
 
             case 0:
-                if (!ab?.ghast) player.sendMessage({ rawtext: [{ text: ">> Ghast -->§c " }, { translate: texts.howToUnlockGhast }] })
+                if (!ab?.ghast) player.sendMessage({ rawtext: [{ text: ">> Ghast -->§c " }, { translate: texts.howToUnlockAbilities.ghast }] })
                 else player.sendMessage(">> Ghast")
                 break
 
             case 1:
-                if (!ab?.breeze) player.sendMessage({ rawtext: [{ text: ">> Breeze -->§c " }, { translate: texts.howToUnlockBreeze }] })
+                if (!ab?.breeze) player.sendMessage({ rawtext: [{ text: ">> Breeze -->§c " }, { translate: texts.howToUnlockAbilities.breeze }] })
                 else player.sendMessage(">> Breeze")
                 break
 
             case 2:
-                if (!ab?.enderman) player.sendMessage({ rawtext: [{ text: ">> §dEnderman §r-->§c " }, { translate: texts.howToUnlockEnderman }] })
+                if (!ab?.enderman) player.sendMessage({ rawtext: [{ text: ">> §dEnderman §r-->§c " }, { translate: texts.howToUnlockAbilities.enderman }] })
                 else player.sendMessage(">> §dEnderman")
                 break
 
             case 3:
-                if (!ab?.creeper) player.sendMessage({ rawtext: [{ text: ">> §2Creeper §r-->§c " }, { translate: texts.howToUnlockCreeper }] })
+                if (!ab?.creeper) player.sendMessage({ rawtext: [{ text: ">> §2Creeper §r-->§c " }, { translate: texts.howToUnlockAbilities.creeper }] })
                 else player.sendMessage(">> §2Creeper")
                 break
 
             case 4:
-                if (!ab?.snowGolem) player.sendMessage({ rawtext: [{ text: ">> Snow Golem -->§c " }, { translate: texts.howToUnlockSnowGolem }] })
+                if (!ab?.snowGolem) player.sendMessage({ rawtext: [{ text: ">> Snow Golem -->§c " }, { translate: texts.howToUnlockAbilities.snowGolem }] })
                 else player.sendMessage(">> Snow Golem")
                 break
 
             case 5:
-                if (!ab?.blaze) player.sendMessage({ rawtext: [{ text: ">> §6Blaze §r-->§c " }, { translate: texts.howToUnlockBlaze }] })
+                if (!ab?.blaze) player.sendMessage({ rawtext: [{ text: ">> §6Blaze §r-->§c " }, { translate: texts.howToUnlockAbilities.blaze }] })
                 else player.sendMessage(">> §6Blaze")
                 break
 
             case 6:
-                if (!ab?.warden) player.sendMessage({ rawtext: [{ text: ">> §0Warden §r-->§c " }, { translate: texts.howToUnlockWarden }] })
+                if (!ab?.warden) player.sendMessage({ rawtext: [{ text: ">> §0Warden §r-->§c " }, { translate: texts.howToUnlockAbilities.warden }] })
                 else player.sendMessage(">> §0Warden")
                 break
         }
     });
 
-    if (ab?.abilityPage > maxAbility) abilitiesData.set(player.id, { ...ab, abilityPage: undefined });
+    if (ab?.abilityPage > maxAbility) abilityData.set(player.id, { ...ab, abilityPage: undefined });
 }

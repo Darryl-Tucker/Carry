@@ -1,6 +1,6 @@
 import { world, system } from "@minecraft/server";
 import { ActionFormData } from "@minecraft/server-ui";
-import { abilitiesData } from "../player/ability";
+import { abilityData } from "../player/ability";
 import { riderData } from "../entity/ride";
 
 export function addonTutorial(player) {
@@ -33,7 +33,7 @@ export function DiskToRAM({ Player, WorldLoadEvent }) {
         if (findCarrier) riderData.set(Player.id, { id: findCarrier.id, level: 1 })
     }
 
-    const ab = abilitiesData.get(Player.id) ?? {};
+    const ab = abilityData.get(Player.id) ?? {};
 
     const abilities = [
         "ghast",
@@ -46,5 +46,5 @@ export function DiskToRAM({ Player, WorldLoadEvent }) {
     ];
 
     for (const ability of abilities.filter(a => Player.getDynamicProperty(a))) ab[ability] = true
-    abilitiesData.set(Player.id, ab)
+    abilityData.set(Player.id, ab)
 }
