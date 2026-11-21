@@ -1,12 +1,12 @@
 import { world, system, StructureSaveMode, EntityComponentTypes, EquipmentSlot } from "@minecraft/server";
-
 import { carryEntityData } from "../entity/carry";
 import { playerDataManage } from "../player/data";
-import { allowBlocks } from "../utils/config";
+import { horizontalDoubleBlocks, verticalDoubleBlocks } from "../utils/db";
+
+export const blockData = new Map();
 
 export function saveBlock(player, block, e) {
-    if (!allowBlocks.has(block.typeId) ||
-        carryEntityData.has(player.id) ||
+    if (carryEntityData.has(player.id) ||
         player.isGliding || player.isEmoting || !player.isSneaking // Gliding yapıyor, emoji kullanıyor veya eğilmiyorsa
     ) return
 
@@ -17,20 +17,27 @@ export function saveBlock(player, block, e) {
     if (!mainHand && !offHand) {
         e.cancel = true;
         system.run(() => {
-            if (world.structureManager.get("block:" + player.id)) return // zaten kayıtlı varsa geri dön
+            const identifier = "blockId:" + player.id;
+
+            if (world.structureManager.get(identifier)) return // zaten kayıtlı varsa geri dön
 
             const entityBlock = player.dimension.spawnEntity("carry_throw:block", player.location);
-            try { entityBlock.triggerEvent(block.typeId.split(":")[1]); } catch (error) { console.warn(error) }
+            try { entityBlock.triggerEvent(block.typeId.split(":")[1]); } catch { }
 
-            carryEntityData.set(player.id, { id: entityBlock.id, typeId: entityBlock.typeId, carry: true });
+            carryEntityData.set(player.id, { id: entityBlock.id, typeId: entityBlock.typeId });
+            blockData.set(player.id, { id: entityBlock.id, typeId: block.typeId });
+
             playerDataManage({ Player: player, Target: entityBlock });
             player.playSound("mob.chicken.plop");
 
-            if (block.typeId === "minecraft:chest") saveDoubleBlock(player, block)
+            if (horizontalDoubleBlocks.has(block.typeId))
+                saveHorizontalBlock(player, block)
+            else if (verticalDoubleBlocks.has(block.typeId))
+                saveVerticalBlock(player, block)
 
-            if (!world.structureManager.get("block:" + player.id)) {
+            if (!world.structureManager.get(identifier)) {
                 world.structureManager.createFromWorld(
-                    "block:" + player.id,
+                    identifier,
                     player.dimension, block.location, block.location,
                     { saveMode: StructureSaveMode.World, includeBlocks: true, includeEntities: false }
                 )
@@ -38,7 +45,7 @@ export function saveBlock(player, block, e) {
 
             const inventory = block.getComponent("minecraft:inventory");
 
-            if (inventory && inventory.container) { 
+            if (inventory && inventory.container) {
                 const container = inventory.container;
                 for (let i = 0; i < container.size; i++) container.setItem(i, undefined)
             }
@@ -46,37 +53,9 @@ export function saveBlock(player, block, e) {
             block.setType("minecraft:air")
         })
     }
-
 }
 
-export function placeBlock(player, target) {
-    if (target.typeId !== "carry_throw:block") return
-
-    const runIntervalId = system.runInterval(() => {
-        if (!target?.isValid) {
-            system.clearRun(runIntervalId);
-            return
-        }
-
-        const block = target.dimension.getBlock({ x: target.location.x, y: target.location.y - 1, z: target.location.z });
-        if (!block || !block?.isValid || block.isAir || block.isLiquid || (block.y + 1) > 319 || (block.y + 1) < -63) return
-
-        block.dimension.runCommand(`setblock ${block.x} ${block.y + 1} ${block.z} air destroy`); // Güvenli bir şekilde kırıyoruz
-
-        if (world.structureManager.get("block:" + player.id)) { // Var ise devam et
-            world.structureManager.place(
-                "block:" + player.id,
-                target.dimension, { x: block.location.x, y: block.location.y + 1, z: block.location.z }, { x: block.location.x, y: block.location.y + 1, z: block.location.z }
-            )
-
-            world.structureManager.delete("block:" + player.id);
-        }
-        target.remove();
-        system.clearRun(runIntervalId)
-    })
-}
-
-function saveDoubleBlock(player, block) {
+function saveHorizontalBlock(player, block) {
     const blockLocs = [
         { x: block.location.x + 1, y: block.location.y, z: block.location.z },
         { x: block.location.x - 1, y: block.location.y, z: block.location.z },
@@ -89,25 +68,92 @@ function saveDoubleBlock(player, block) {
 
     for (const blockLoc of blockLocs) {
         const side = player.dimension.getBlock(blockLoc);
-
         const sideDirection = side.permutation.getState("minecraft:cardinal_direction");
 
-        if (side.typeId === "minecraft:chest" && sideDirection && sideDirection === blockDirection) {
-            world.structureManager.createFromWorld(
-                "block:" + player.id,
-                player.dimension, block.location, blockLoc,
-                { saveMode: StructureSaveMode.World, includeBlocks: true, includeEntities: false }
-            );
+        if (side.typeId !== block.typeId && sideDirection !== blockDirection) continue
 
-            const inventory = side.getComponent("minecraft:inventory");
+        world.structureManager.createFromWorld(
+            "blockId:" + player.id,
+            player.dimension, block.location, blockLoc,
+            { saveMode: StructureSaveMode.World, includeBlocks: true, includeEntities: false }
+        );
 
-            if (inventory && inventory.container) {
-                const container = inventory.container;
-                for (let i = 0; i < container.size; i++) container.setItem(i, undefined)
-            }
+        const inventory = side.getComponent("minecraft:inventory");
 
-            side.setType("minecraft:air");
-            break
+        if (inventory && inventory.container) {
+            const container = inventory.container;
+            for (let i = 0; i < container.size; i++) container.setItem(i, undefined)
         }
+
+        side.setType("minecraft:air");
+        break
     }
+}
+
+function saveVerticalBlock(player, block) {
+    const blockLocs = [
+        { x: block.location.x, y: block.location.y + 1, z: block.location.z },
+        { x: block.location.x, y: block.location.y - 1, z: block.location.z },
+    ];
+
+    for (const blockLoc of blockLocs) {
+        const side = player.dimension.getBlock(blockLoc);
+
+        if (side.typeId !== block.typeId) continue
+
+        world.structureManager.createFromWorld(
+            "blockId:" + player.id,
+            player.dimension, block.location, blockLoc,
+            { saveMode: StructureSaveMode.World, includeBlocks: true, includeEntities: false }
+        );
+
+        side.setType("minecraft:air");
+        break
+    }
+}
+
+export function placeBlock(player, target) {
+    if (target.typeId !== "carry_throw:block") return
+
+    const tolerance = 5;
+    let entityBlockDuration = 0;
+
+    const runIntervalId = system.runInterval(() => {
+        const identifier = "blockId:" + player.id;
+
+        if (!target.isValid || !world.structureManager.get(identifier)) {
+            system.clearRun(runIntervalId);
+            return
+        }
+
+        if (target.location.y > 319 || target.location.y < -63) return
+
+        const block = target.dimension.getBlock(target.location);
+        if (!block || !block?.isValid) return
+
+        if (!target.isOnGround) { // Bloğun hasar verebilmesi için
+            for (const entity of target.dimension.getEntities({ location: target.location, maxDistance: 1 }))
+                entity.applyDamage(1)
+            return
+        }
+
+        if (block.isLiquid) // Sıvı ise direk havaya dönüştür çünkü blok ile birleşmesini engellemek için
+            block.dimension.runCommand(`setblock ${block.x} ${block.y} ${block.z} air`)
+
+        else
+            block.dimension.runCommand(`setblock ${block.x} ${block.y} ${block.z} air destroy`) // Güvenli bir şekilde kırıyoruz
+
+        if (entityBlockDuration >= tolerance) {
+            try {
+                world.structureManager.place(
+                    identifier,
+                    target.dimension, block.location, block.location
+                );
+
+                world.structureManager.delete(identifier);
+                target.remove()
+            } catch { }
+        }
+        else entityBlockDuration++
+    })
 }

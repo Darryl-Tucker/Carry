@@ -107,6 +107,41 @@
         "minecraft:variant": {
           "value": 19
         }
+      },
+      "oak_log": {
+        "minecraft:variant": {
+          "value": 20
+        }
+      },
+      "lit_smoker": {
+        "minecraft:variant": {
+          "value": 21
+        }
+      },
+      "smoker": {
+        "minecraft:variant": {
+          "value": 22
+        }
+      },
+      "chipped_anvil": {
+        "minecraft:variant": {
+          "value": 23
+        }
+      },
+      "damaged_anvil": {
+        "minecraft:variant": {
+          "value": 24
+        }
+      },
+      "cobblestone": {
+        "minecraft:variant": {
+          "value": 25
+        }
+      },
+      "poppy": {
+        "minecraft:variant": {
+          "value": 26
+        }
       }
     },
     "components": {
@@ -353,6 +388,76 @@
         "add": {
           "component_groups": [
             "enchanting_table"
+          ]
+        }
+      },
+      "oak_log": {
+        "remove": {
+          "remove_all": true
+        },
+        "add": {
+          "component_groups": [
+            "oak_log"
+          ]
+        }
+      },
+      "lit_smoker": {
+        "remove": {
+          "remove_all": true
+        },
+        "add": {
+          "component_groups": [
+            "lit_smoker"
+          ]
+        }
+      },
+      "smoker": {
+        "remove": {
+          "remove_all": true
+        },
+        "add": {
+          "component_groups": [
+            "smoker"
+          ]
+        }
+      },
+      "chipped_anvil": {
+        "remove": {
+          "remove_all": true
+        },
+        "add": {
+          "component_groups": [
+            "chipped_anvil"
+          ]
+        }
+      },
+      "damaged_anvil": {
+        "remove": {
+          "remove_all": true
+        },
+        "add": {
+          "component_groups": [
+            "damaged_anvil"
+          ]
+        }
+      },
+      "cobblestone": {
+        "remove": {
+          "remove_all": true
+        },
+        "add": {
+          "component_groups": [
+            "cobblestone"
+          ]
+        }
+      },
+      "poppy": {
+        "remove": {
+          "remove_all": true
+        },
+        "add": {
+          "component_groups": [
+            "poppy"
           ]
         }
       }

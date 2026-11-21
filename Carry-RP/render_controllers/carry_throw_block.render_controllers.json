@@ -3,6 +3,37 @@
   "render_controllers": {
     "controller.render.carry_throw_block": {
       "arrays": {
+        "geometries": {
+          "Array.geos": [
+            "Geometry.default",
+            "Geometry.default",
+            "Geometry.default",
+            "Geometry.default",
+            "Geometry.default",
+            "Geometry.default",
+            "Geometry.default",
+            "Geometry.default",
+            "Geometry.default",
+            "Geometry.default",
+            "Geometry.default",
+            "Geometry.default",
+            "Geometry.default",
+            "Geometry.default",
+            "Geometry.default",
+            "Geometry.default",
+            "Geometry.default",
+            "Geometry.default",
+            "Geometry.anvil",
+            "Geometry.enchanting_table",
+            "Geometry.default",
+            "Geometry.default",
+            "Geometry.default",
+            "Geometry.anvil",
+            "Geometry.anvil",
+            "Geometry.default",
+            "Geometry.default"
+          ]
+        },
         "textures": {
           "Array.skins": [
             "Texture.stone",
@@ -24,11 +55,18 @@
             "Texture.blast_furnace",
             "Texture.bookshelf",
             "Texture.anvil",
-            "Texture.enchanting_table"
+            "Texture.enchanting_table",
+            "Texture.oak_log",
+            "Texture.lit_smoker",
+            "Texture.smoker",
+            "Texture.chipped_anvil",
+            "Texture.damaged_anvil",
+            "Texture.cobblestone",
+            "Texture.poppy"
           ]
         }
       },
-      "geometry": "query.variant == 18 ? Geometry.anvil : (query.variant == 19 ? Geometry.enchanting_table : Geometry.default)",
+      "geometry": "Array.geos[query.variant]",
       "materials": [
         {
           "*": "Material.default"

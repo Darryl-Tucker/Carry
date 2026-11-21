@@ -1,11 +1,5 @@
-import { ActionFormData } from "@minecraft/server-ui";
-import { world, system } from "@minecraft/server";
-import { abilitiesData } from "../player/ability";
-import { riderData } from "./ride";
-
-export const allowEntities = [
+export const entityProperties = [
     // -------------------------------------------------------------- No property
-
     { typeId: "minecraft:cod" },
     { typeId: "minecraft:cat" },
     { typeId: "minecraft:strider" },
@@ -13,7 +7,6 @@ export const allowEntities = [
     { typeId: "minecraft:glow_squid" },
     { typeId: "minecraft:tadpole" },
     { typeId: "minecraft:ocelot" },
-    { typeId: "minecraft:sulfur_cube" },
     { typeId: "minecraft:rabbit" },
     { typeId: "minecraft:fox" },
     { typeId: "minecraft:frog" },
@@ -25,97 +18,75 @@ export const allowEntities = [
     { typeId: "minecraft:boat" },
     { typeId: "minecraft:chest_boat" },
     { typeId: "minecraft:armor_stand" },
-    { typeId: "carry_throw:block" },
-    // -------------------------------------------------------------- No property
-
-    // -------------------------------------------------------------- Slow falling
-    { typeId: "minecraft:chicken", effect: "slow_falling", amplifier: 2 },
-    // -------------------------------------------------------------- Slow falling
-
-    // -------------------------------------------------------------- Oozing
-    { typeId: "minecraft:slime", effect: "oozing", amplifier: 2 },
-    // -------------------------------------------------------------- Oozing
-
-    // -------------------------------------------------------------- Levitation
-    { typeId: "minecraft:bat", effect: "levitation", amplifier: 1 },
-    { typeId: "minecraft:allay", effect: "levitation", amplifier: 1 },
-    { typeId: "minecraft:parrot", effect: "levitation", amplifier: 1 },
-    // -------------------------------------------------------------- Levitation
-
-    // -------------------------------------------------------------- Levitation
-
-    // -------------------------------------------------------------- Regeneration
-
-    { typeId: "minecraft:axolotl", effect: "regeneration", amplifier: 0 },
-
-    // -------------------------------------------------------------- Regeneration
-
-    // -------------------------------------------------------------- Slowness
-    { typeId: "minecraft:cow", effect: "slowness", amplifier: 1 },
-    { typeId: "minecraft:sheep", effect: "slowness", amplifier: 1 },
-    { typeId: "minecraft:villager_v2", effect: "slowness", amplifier: 2 },
-    { typeId: "minecraft:copper_golem", effect: "slowness", amplifier: 4 },
-    { typeId: "minecraft:pig", effect: "slowness", amplifier: 1 },
-    { typeId: "minecraft:horse", effect: "slowness", amplifier: 2 },
     { typeId: "minecraft:armadillo" },
-    { typeId: "minecraft:camel", effect: "slowness", amplifier: 5 },
-    { typeId: "minecraft:wandering_trader", effect: "slowness", amplifier: 2 },
-    { typeId: "minecraft:camel_husk", effect: "slowness", amplifier: 5 },
-    { typeId: "minecraft:goat", effect: "slowness", amplifier: 1 },
-    { typeId: "minecraft:sniffer", effect: "slowness", amplifier: 5 },
-    { typeId: "minecraft:snow_golem", effect: "freezing", amplifier: 2 },
-    { typeId: "minecraft:donkey", effect: "slowness", amplifier: 2 },
-    { typeId: "minecraft:mooshroom", effect: "slowness", amplifier: 1 },
-    { typeId: "minecraft:mule", effect: "slowness", amplifier: 2 },
-    { typeId: "minecraft:turtle", effect: "slowness", amplifier: 4 },
-    { typeId: "minecraft:player", effect: "slowness", amplifier: 2 },
-    { typeId: "minecraft:nautilus", effect: "slowness", amplifier: 3 },
-    { typeId: "minecraft:llama", effect: "slowness", amplifier: 2 },
-    { typeId: "minecraft:polar_bear", effect: "slowness", amplifier: 5 },
-    { typeId: "minecraft:panda", effect: "slowness", amplifier: 5 },
-    { typeId: "minecraft:enderman", effect: "slowness", amplifier: 3 },
-    { typeId: "minecraft:piglin", effect: "slowness", amplifier: 2 },
-    { typeId: "minecraft:zombie_pigman", effect: "slowness", amplifier: 2 },
-    { typeId: "minecraft:bee", effect: "levitation", amplifier: 1 },
-    { typeId: "minecraft:iron_golem", effect: "slowness", amplifier: 5 },
+    { typeId: "carry_throw:block" },
     { typeId: "minecraft:wolf" },
     { typeId: "minecraft:dolphin" },
-    { typeId: "minecraft:trader_llama", effect: "slowness", amplifier: 2 },
-    // -------------------------------------------------------------- Slowness
+    { typeId: "minecraft:sulfur_cube" },
+    // -------------------------------------------------------------- No property
 
+    // -------------------------------------------------------------- Glider
+    { typeId: "minecraft:chicken", glider: true },
+    // -------------------------------------------------------------- Glider
+
+    // -------------------------------------------------------------- Oozing
+    { typeId: "minecraft:slime", oozing: true },
+    // -------------------------------------------------------------- Oozing
+
+    // -------------------------------------------------------------- Levitation
+    { typeId: "minecraft:bat", levitator: true },
+    { typeId: "minecraft:allay", levitator: true },
+    { typeId: "minecraft:parrot", levitator: true },
+    { typeId: "minecraft:bee", levitator: true },
+    // -------------------------------------------------------------- Levitation
+
+    // -------------------------------------------------------------- Freezer
+    { typeId: "minecraft:snow_golem", Freezer: true },
+    // -------------------------------------------------------------- Freezer
+
+
+    // -------------------------------------------------------------- Medic
+    { typeId: "minecraft:axolotl", medic: true },
+    // -------------------------------------------------------------- Medic
+
+    // -------------------------------------------------------------- Weights
+    { typeId: "minecraft:cow", weight: 1 },
+    { typeId: "minecraft:sheep", weight: 1 },
+    { typeId: "minecraft:pig", weight: 1 },
+    { typeId: "minecraft:goat", weight: 1 },
+    { typeId: "minecraft:mooshroom", weight: 1 },
+
+    { typeId: "minecraft:player", weight: 2 },
+    { typeId: "minecraft:horse", weight: 2 },
+    { typeId: "minecraft:donkey", weight: 2 },
+    { typeId: "minecraft:mule", weight: 2 },
+    { typeId: "minecraft:villager_v2", weight: 2 },
+    { typeId: "minecraft:wandering_trader", weight: 2 },
+    { typeId: "minecraft:llama", weight: 2 },
+    { typeId: "minecraft:piglin", weight: 2 },
+    { typeId: "minecraft:zombie_pigman", weight: 2 },
+    { typeId: "minecraft:trader_llama", weight: 2 },
+    { typeId: "minecraft:zombie", weight: 2 },
+    { typeId: "minecraft:skeleton", weight: 2 },
+    { typeId: "minecraft:creeper", weight: 2 },
+
+    { typeId: "minecraft:copper_golem", weight: 3 },
+    { typeId: "minecraft:nautilus", weight: 3 },
+    { typeId: "minecraft:turtle", weight: 3 },
+    { typeId: "minecraft:enderman", weight: 3 },
+    // -------------------------------------------------------------- Climbing
+    { typeId: "minecraft:spider", weight: 3, wallClimber: true },
     // -------------------------------------------------------------- Climbing
 
-    { typeId: "minecraft:spider", effect: "slowness", amplifier: 3, climbing: true },
-
-    // -------------------------------------------------------------- Climbing
-
-    // -------------------------------------------------------------- Monsters
-    { typeId: "minecraft:creeper" },
-    // -------------------------------------------------------------- Monsters
+    { typeId: "minecraft:camel", weight: 5 },
+    { typeId: "minecraft:camel_husk", weight: 5 },
+    { typeId: "minecraft:sniffer", weight: 5 },
+    { typeId: "minecraft:polar_bear", weight: 5 },
+    { typeId: "minecraft:panda", weight: 5 },
+    { typeId: "minecraft:iron_golem", weight: 5 },
+    { typeId: "minecraft:ravager", weight: 5 }
+    // -------------------------------------------------------------- Weights
 ];
-
-export const allowBlocks = new Set([
-    "minecraft:stone",
-    "minecraft:dirt",
-    "minecraft:diamond_block",
-    "minecraft:crafting_table",
-    "minecraft:chest",
-    "minecraft:mob_spawner",
-    "minecraft:torch",
-    "minecraft:barrel",
-    "minecraft:obsidian",
-    "minecraft:glass",
-    "minecraft:glass_pane",
-    "minecraft:crying_obsidian",
-    "minecraft:grass_block",
-    "minecraft:lit_furnace",
-    "minecraft:furnace",
-    "minecraft:lit_blast_furnace",
-    "minecraft:blast_furnace",
-    "minecraft:bookshelf",
-    "minecraft:anvil",
-    "minecraft:enchanting_table"
-]);
 
 export const excludeEntities = [
     "minecraft:player",
@@ -130,8 +101,57 @@ export const excludeEntities = [
     "minecraft:chest_minecart",
     "minecraft:boat",
     "minecraft:chest_boat",
-    "wind_charge_projectile"
+    "minecraft:wind_charge_projectile",
+    "minecraft:ender_dragon",
+    "minecraft:wither",
+    "minecraft:cushion"
 ];
+
+export const horizontalDoubleBlocks = new Set([
+    "minecraft:chest",
+    "minecraft:trapped_chest",
+    "minecraft:copper_chest",
+    "minecraft:exposed_copper_chest",
+    "minecraft:oxidized_copper_chest",
+    "minecraft:waxed_copper_chest",
+    "minecraft:waxed_exposed_copper_chest",
+    "minecraft:oxidized_copper_chest",
+    "minecraft:waxed_weathered_copper_chest",
+    "minecraft:weathered_copper_chest",
+]);
+
+export const verticalDoubleBlocks = new Set([
+    "minecraft:wooden_door",
+    "minecraft:spruce_door",
+    "minecraft:birch_door",
+    "minecraft:jungle_door",
+    "minecraft:acacia_door",
+    "minecraft:dark_oak_door",
+    "minecraft:crimson_door",
+    "minecraft:warped_door",
+    "minecraft:mangrove_door",
+    "minecraft:bamboo_door",
+    "minecraft:cherry_door",
+    "minecraft:pale_oak_door",
+    "minecraft:poplar_door",
+    "minecraft:iron_door",
+    "minecraft:copper_door",
+    "minecraft:exposed_copper_door",
+    "minecraft:weathered_copper_door",
+    "minecraft:oxidized_copper_door",
+    "minecraft:waxed_copper_door",
+    "minecraft:waxed_exposed_copper_door",
+    "minecraft:waxed_weathered_copper_door",
+    "minecraft:waxed_oxidized_copper_door",
+    "minecraft:tall_grass",
+    "minecraft:large_fern",
+    "minecraft:sunflower",
+    "minecraft:lilac",
+    "minecraft:rose_bush",
+    "minecraft:peony",
+    "minecraft:pitcher_plant",
+    "minecraft:seagrass"
+]);
 
 export const excludeBlocks = new Set([
     "minecraft:air",
@@ -359,51 +379,6 @@ export const excludeBlocks = new Set([
     "minecraft:crimson_fence_gate",
     "minecraft:red_shrub",
     "minecraft:calibrated_sculk_sensor",
-    "minecraft:bush"
+    "minecraft:bush",
+    "minecraft:kelp"
 ]);
-
-export function addonTutorial(player) {
-    system.runTimeout(() => {
-        if (player.getDynamicProperty("ver1")) return
-
-        const versions = ["dontShow_again", "ver0"];
-        for (const ver of versions) player.setDynamicProperty(ver, undefined)
-
-        const form = new ActionFormData();
-
-        form.title({ rawtext: [{ text: "§l§a" }, { translate: "tutorial.form.title" }] })
-
-        form.body({ rawtext: [{ text: "§l" }, { translate: "tutorial.form.body" }] });
-        form.label({ rawtext: [{ translate: "tutorial.form.label" }] });
-
-        form.button({ rawtext: [{ text: "§e" }, { translate: "tutorial.form.button" }] })
-
-        form.show(player).then(reponse => {
-            if (reponse.canceled) return
-
-            if (reponse.selection === 0) player.setDynamicProperty("ver1", true)
-        })
-    }, 100)
-}
-
-export function DiskToRAM({ Player, WorldLoadEvent }) {
-    if (WorldLoadEvent) {
-        const findCarrier = world.getAllPlayers().find(p => Player.getDynamicProperty("ride") === p.id);
-        if (findCarrier) riderData.set(Player.id, { id: findCarrier.id, level: 1 })
-    }
-
-    const ab = abilitiesData.get(Player.id) ?? {};
-
-    const abilities = [
-        "ghast",
-        "breeze",
-        "enderman",
-        "creeper",
-        "snowGolem",
-        "blaze",
-        "warden"
-    ];
-
-    for (const ability of abilities.filter(a => Player.getDynamicProperty(a))) ab[ability] = true
-    abilitiesData.set(Player.id, ab)
-}

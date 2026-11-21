@@ -1,5 +1,5 @@
 import { world, system } from "@minecraft/server";
-import { excludeEntities } from "./config";
+import { excludeEntities } from "../utils/db";
 
 export const riderData = new Map();
 export const carrierData = new Map();
@@ -8,13 +8,8 @@ export function entityRiding() {
     for (const [riderId, carrierId] of riderData.entries()) {
         const rider = world.getEntity(riderId);
         const carrier = world.getEntity(carrierId.id);
-        if (!carrier) {
-
-            continue
-        }
 
         const checkDimension = carrier.dimension.id === rider.dimension.id; // boyut değiştirirken hata almamak için
-
         if (!checkDimension ||
             (carrier.typeId === "minecraft:player" && carrier.isSneaking && carrier.isJumping) || // Taşıyıcı oyuncu, eğiliyorsa ve zıplıyorsa
             (rider.typeId === "minecraft:player" && rider.isSneaking || rider.isJumping) // Binici oyuncu, eğiliyorsa veya zıplıyorsa

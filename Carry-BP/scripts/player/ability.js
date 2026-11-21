@@ -1,7 +1,7 @@
-import { system, EntityDamageCause } from "@minecraft/server";
+import { world, system, EntityDamageCause } from "@minecraft/server";
 import { carryEntityData } from "../entity/carry";
-import { addEntityRide, clearEntityCarrier, clearEntityRide } from "../utils/ride";
-import { excludeEntities } from "../utils/config";
+import { addEntityRide, clearEntityCarrier, clearEntityRide } from "../entity/ride";
+import { excludeEntities } from "../utils/db";
 
 export const abilitiesData = new Map();
 
@@ -210,6 +210,8 @@ export class UseAbilityManager {
             }
         });
 
+        //----------------------------------------------------------
+
         const runTimeOutId = system.runTimeout(async () => {
             if (!this.target || !this.target?.isValid) {
                 system.clearRun(runTimeOutId);
@@ -236,8 +238,10 @@ export class UseAbilityManager {
                     if (this.ab?.warden) this.warden(true)
                     break
             }
-            system.clearRun(runIntervalId);
-        }, this.power + 5)
+
+            system.clearRun(runIntervalId)
+        }, this.power + 5);
+
     }
 
     normal(startRun, endRun) {
@@ -281,12 +285,16 @@ export class UseAbilityManager {
     creeper() {
         const explodeLoc = this.target.location;
         this.player.addEffect("resistance", 20, { amplifier: 255, showParticles: false });
-        this.target.remove();
 
-        this.player.dimension.createExplosion(explodeLoc, 1, {
-            causesFire: false,
-            breaksBlocks: true,
-        })
+        if (this.target.typeId !== "minecraft:player") this.target.remove()
+
+        try {
+            this.player.dimension.createExplosion(explodeLoc, 1, {
+                causesFire: false,
+                breaksBlocks: true,
+            })
+        }
+        catch { }
     }
 
     snowGolem() {

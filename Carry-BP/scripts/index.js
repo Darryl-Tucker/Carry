@@ -1,7 +1,7 @@
 import { system } from "@minecraft/server";
 import { entityCarrying, powerCount } from "./entity/carry";
 import { playerAnimation } from "./player/data";
-import { entityRiding } from "./utils/ride";
+import { entityRiding } from "./entity/ride";
 import "./utils/event";
 
 system.runInterval(() => {

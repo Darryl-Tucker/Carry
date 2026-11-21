@@ -26,7 +26,14 @@
         "blast_furnace": "textures/entity/blocks/blast_furnace",
         "bookshelf": "textures/entity/blocks/bookshelf",
         "anvil": "textures/entity/blocks/anvil",
-        "enchanting_table": "textures/entity/blocks/enchanting_table"
+        "enchanting_table": "textures/entity/blocks/enchanting_table",
+        "oak_log": "textures/entity/blocks/oak_log",
+        "lit_smoker": "textures/entity/blocks/lit_smoker",
+        "smoker": "textures/entity/blocks/smoker",
+        "chipped_anvil": "textures/entity/blocks/chipped_anvil",
+        "damaged_anvil": "textures/entity/blocks/damaged_anvil",
+        "cobblestone": "textures/entity/blocks/cobblestone",
+        "poppy": "textures/entity/blocks/poppy"
       },
       "geometry": {
         "default": "geometry.carry_throw_block",
