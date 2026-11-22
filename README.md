@@ -33,11 +33,11 @@ A fun add-on that lets you pick up, throw, and stack mobs on top of each other i
 
 ## 🐾 Supported Mobs
 
-Iron Golem, Cow, Sheep, Chicken, Villager, Cod, Cat, Wolf, Copper Golem, Pig, Horse, Axolotl, Llama, Armadillo, Camel, Trader Llama, Wandering Trader, Camel Husk, Bee, Sulfur Cube, Rabbit, Fox, Frog, Goat, Sniffer, Panda, Snow Golem, Ocelot, Donkey, Mooshroom, Mule, Parrot, Polar bear, Turtle, Enderman, Squid, Glow Squid, Tadpole, Allay, Player, Piglin, Strider, Slime, Armor Stand, Bat, Nautilus, Spider, Zombie Pigman, Dolphin, Creeper, Tnt-Hopper-Command-Chest Minecart, Minecart, Boat.
+**All Mobs Supported** — Every mob, player, and vehicle (minecarts, boats, armor stands, etc.) in the game can be carried, **except the Ender Dragon and Wither**.
 
 ## 🧊 Supported Blocks
 
-Stone, Dirt, Diamond Block, Crafting Table, Chest, Mob Spawner, Torch, Barrel, Obsidian, Glass, Glass Pane, Crying Obsidian, Grass Block, Furnace, Blast Furnace, Bookshelf, Anvil, Enchanting Table
+**All Blocks Supported** — You can now pick up and carry every block in the game *(Note: Not all blocks have a custom 3D texture when carried)*.
 
 ## 📅 Development Timeline
 
