@@ -80,7 +80,7 @@ function saveHorizontalBlock(player, block) {
         const side = player.dimension.getBlock(blockLoc);
         const sideDirection = side.permutation.getState("minecraft:cardinal_direction");
 
-        if (side.typeId !== block.typeId && sideDirection !== blockDirection) continue
+        if (side.typeId !== block.typeId || sideDirection !== blockDirection) continue
 
         world.structureManager.createFromWorld(
             "blockId:" + player.id,
