@@ -105,13 +105,11 @@ world.beforeEvents.playerInteractWithBlock.subscribe(e => {
 
 world.beforeEvents.entityRemove.subscribe(e => {
     const removedEntity = e.removedEntity;
-    
 
     if (removedEntity.typeId === "carry_throw:block") {
         const carriedBlock = world.getAllPlayers().find(p => blockData.get(p.id)?.id === removedEntity.id);
         system.run(() => { // Eğer blok kaldırılırsa structure'den veriyi sil
             if (!carriedBlock) return
-
             world.structureManager.delete("blockId:" + carriedBlock.id);
             blockData.delete(carriedBlock.id)
         })
