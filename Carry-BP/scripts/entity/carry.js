@@ -1,3 +1,11 @@
+/**
+ * @license MIT
+ * Copyright (c) 2026 DarrylTucker
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 import { world, system, EquipmentSlot, EntityComponentTypes } from "@minecraft/server";
 import { UnlockAbilityManager, UseAbilityManager } from "../player/ability";
 import { managePlayerData } from "../player/dataManager";

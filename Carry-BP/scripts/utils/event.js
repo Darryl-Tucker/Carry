@@ -1,3 +1,11 @@
+/**
+ * @license MIT
+ * Copyright (c) 2026 DarrylTucker
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 import { world, system } from "@minecraft/server";
 import { pushEntity, carryEntityData, takeEntity, powerCount } from "../entity/carry";
 import { managePlayerData } from "../player/dataManager";

@@ -1,3 +1,11 @@
+/**
+ * @license MIT
+ * Copyright (c) 2026 DarrylTucker
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 export const entityProperties = [
     // -------------------------------------------------------------- No property
     { typeId: "minecraft:cod" },
@@ -58,6 +66,7 @@ export const entityProperties = [
 
     { typeId: "minecraft:player", weight: 2 },
     { typeId: "minecraft:horse", weight: 2 },
+    { typeId: "minecraft:drowned", weight: 2 },
     { typeId: "minecraft:donkey", weight: 2 },
     { typeId: "minecraft:mule", weight: 2 },
     { typeId: "minecraft:villager_v2", weight: 2 },
@@ -118,6 +127,8 @@ export const horizontalDoubleBlocks = new Set([
     "minecraft:oxidized_copper_chest",
     "minecraft:waxed_weathered_copper_chest",
     "minecraft:weathered_copper_chest",
+    "minecraft:bed",
+    "minecraft:straw_bed",
 ]);
 
 export const verticalDoubleBlocks = new Set([
@@ -152,6 +163,39 @@ export const verticalDoubleBlocks = new Set([
     "minecraft:pitcher_plant",
     "minecraft:seagrass"
 ]);
+
+export const texts = {
+    unlockedAbilities: {
+        ghast: "unlocked.ghast",
+        breeze: "unlocked.breeze",
+        enderman: "unlocked.enderman",
+        creeper: "unlocked.creeper",
+        snowGolem: "unlocked.snowGolem",
+        blaze: "unlocked.blaze",
+        warden: "unlocked.warden",
+    },
+
+    howToUnlockAbilities: {
+        ghast: "howToUnlock.ghast",
+        breeze: "howToUnlock.breeze",
+        enderman: "howToUnlock.enderman",
+        creeper: "howToUnlock.creeper",
+        snowGolem: "howToUnlock.snowGolem",
+        blaze: "howToUnlock.blaze",
+        warden: "howToUnlock.warden"
+    }
+};
+
+export const sounds = {
+    carry: {
+        mobTake: "mob.chicken.plop",
+        powerCount: "random.orb",
+        mobPush: "mob.shulker.shoot",
+        mobDropped: "mob.horse.armor",
+        powerCanceled: "mob.villager.no",
+        mobCarryWarn: "mob.villager.no"
+    }
+};
 
 export const excludeBlocks = new Set([
     "minecraft:air",
@@ -381,37 +425,4 @@ export const excludeBlocks = new Set([
     "minecraft:calibrated_sculk_sensor",
     "minecraft:bush",
     "minecraft:kelp"
-]);
-
-export const texts = {
-    unlockedAbilities: {
-        ghast: "unlocked.ghast",
-        breeze: "unlocked.breeze",
-        enderman: "unlocked.enderman",
-        creeper: "unlocked.creeper",
-        snowGolem: "unlocked.snowGolem",
-        blaze: "unlocked.blaze",
-        warden: "unlocked.warden",
-    },
-
-    howToUnlockAbilities: {
-        ghast: "howToUnlock.ghast",
-        breeze: "howToUnlock.breeze",
-        enderman: "howToUnlock.enderman",
-        creeper: "howToUnlock.creeper",
-        snowGolem: "howToUnlock.snowGolem",
-        blaze: "howToUnlock.blaze",
-        warden: "howToUnlock.warden"
-    }
-};
-
-export const sounds = {
-    carry: {
-        mobTake: "mob.chicken.plop",
-        powerCount: "random.orb",
-        mobPush: "mob.shulker.shoot",
-        mobDropped: "mob.horse.armor",
-        powerCanceled: "mob.villager.no",
-        mobCarryWarn: "mob.villager.no"
-    }
-}
+])

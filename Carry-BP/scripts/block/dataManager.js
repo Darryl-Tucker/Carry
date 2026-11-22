@@ -1,3 +1,11 @@
+/**
+ * @license MIT
+ * Copyright (c) 2026 DarrylTucker
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 import { world, system, StructureSaveMode, EntityComponentTypes, EquipmentSlot } from "@minecraft/server";
 import { carryEntityData } from "../entity/carry";
 import { managePlayerData } from "../player/dataManager";
@@ -50,8 +58,10 @@ export function saveBlock(player, block, e) {
                 for (let i = 0; i < container.size; i++) container.setItem(i, undefined)
             }
 
-            block.setType("minecraft:air")
+            block.setType("minecraft:air");
+            block.setType("minecraft:air") // iç içe geçmiş bir blok olabileceği için iki kere air yapıyorum
         })
+        return
     }
 }
 
@@ -137,11 +147,7 @@ export function placeBlock(player, target) {
             return
         }
 
-        if (block.isLiquid) // Sıvı ise direk havaya dönüştür çünkü blok ile birleşmesini engellemek için
-            block.dimension.runCommand(`setblock ${block.x} ${block.y} ${block.z} air`)
-
-        else
-            block.dimension.runCommand(`setblock ${block.x} ${block.y} ${block.z} air destroy`) // Güvenli bir şekilde kırıyoruz
+        block.dimension.runCommand(`setblock ${block.x} ${block.y} ${block.z} air destroy`) // Güvenli bir şekilde kırıyorum
 
         if (entityBlockDuration >= tolerance) {
             try {
