@@ -412,5 +412,5 @@ export function abilityBar(player, e) {
         }
     });
 
-    if (ab?.abilityPage > maxAbility) abilityData.set(player.id, { ...ab, abilityPage: undefined });
+    if (ab?.abilityPage > maxAbility) ab.abilityPage = undefined
 }
