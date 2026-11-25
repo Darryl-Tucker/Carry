@@ -31,7 +31,8 @@
             "Geometry.anvil",
             "Geometry.anvil",
             "Geometry.default",
-            "Geometry.default"
+            "Geometry.default",
+            "Geometry.brewing_stand"
           ]
         },
         "textures": {
@@ -62,7 +63,8 @@
             "Texture.chipped_anvil",
             "Texture.damaged_anvil",
             "Texture.cobblestone",
-            "Texture.poppy"
+            "Texture.poppy",
+            "Texture.brewing_stand"
           ]
         }
       },

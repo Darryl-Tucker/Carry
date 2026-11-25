@@ -147,6 +147,11 @@
         "minecraft:variant": {
           "value": 26
         }
+      },
+      "brewing_stand": {
+        "minecraft:variant": {
+          "value": 27
+        }
       }
     },
     "components": {
@@ -470,6 +475,16 @@
         "add": {
           "component_groups": [
             "poppy"
+          ]
+        }
+      },
+      "brewing_stand": {
+        "remove": {
+          "remove_all": true
+        },
+        "add": {
+          "component_groups": [
+            "brewing_stand"
           ]
         }
       }

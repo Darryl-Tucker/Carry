@@ -33,12 +33,14 @@
         "chipped_anvil": "textures/entity/blocks/chipped_anvil",
         "damaged_anvil": "textures/entity/blocks/damaged_anvil",
         "cobblestone": "textures/entity/blocks/cobblestone",
-        "poppy": "textures/entity/blocks/poppy"
+        "poppy": "textures/entity/blocks/poppy",
+        "brewing_stand": "textures/entity/blocks/brewing_stand"
       },
       "geometry": {
-        "default": "geometry.carry_throw_block",
-        "anvil": "geometry.carry_throw_anvil",
-        "enchanting_table": "geometry.carry_throw_enchanting_table"
+        "default": "geometry.block",
+        "anvil": "geometry.anvil",
+        "enchanting_table": "geometry.enchanting_table",
+        "brewing_stand": "geometry.brewing_stand"
       },
       "scripts": {
         "scale": "0.5"
