@@ -13,7 +13,7 @@ export const riderData = new Map();
 export const carrierData = new Map();
 
 export function entityRiding() {
-    for (const [riderId, carrierId] of riderData.entries()) {
+    for (const [riderId, carrierId] of riderData) {
         const rider = world.getEntity(riderId);
         const carrier = world.getEntity(carrierId.id);
 

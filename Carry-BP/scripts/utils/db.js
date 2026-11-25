@@ -100,9 +100,6 @@ export const entityProperties = [
 export const excludeEntities = [
     "minecraft:player",
     "carry_throw:block",
-    "minecraft:item",
-    "minecraft:arrow",
-    "minecraft:xp_orb",
     "minecraft:minecart",
     "minecraft:command_block_minecart",
     "minecraft:hopper_minecart",
@@ -110,10 +107,16 @@ export const excludeEntities = [
     "minecraft:chest_minecart",
     "minecraft:boat",
     "minecraft:chest_boat",
+
+    //-------------------------
+
     "minecraft:wind_charge_projectile",
+    "minecraft:item",
+    "minecraft:arrow",
+    "minecraft:xp_orb",
+    "minecraft:cushion",
     "minecraft:ender_dragon",
     "minecraft:wither",
-    "minecraft:cushion"
 ];
 
 export const horizontalDoubleBlocks = new Set([

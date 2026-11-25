@@ -126,6 +126,7 @@ export function placeBlock(player, target) {
 
     const tolerance = 5;
     let entityBlockDuration = 0;
+    system.run(() => target.triggerEvent("block:blockSize"));
 
     const runIntervalId = system.runInterval(() => {
         const identifier = "blockId:" + player.id;

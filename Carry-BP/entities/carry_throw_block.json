@@ -8,6 +8,11 @@
       "is_experimental": false
     },
     "component_groups": {
+      "block:blockSize": {
+        "minecraft:scale": {
+          "value": 2.0
+        }
+      },
       "stone": {
         "minecraft:variant": {
           "value": 0
@@ -184,6 +189,13 @@
       "minecraft:fire_immune": true
     },
     "events": {
+      "block:blockSize": {
+        "add": {
+          "component_groups": [
+            "block:blockSize"
+          ]
+        }
+      },
       "minecraft:entity_spawned": {
         "add": {
           "component_groups": [

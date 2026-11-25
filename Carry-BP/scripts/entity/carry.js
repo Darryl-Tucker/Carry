@@ -118,7 +118,7 @@ class EntityComponentManager {
 }
 
 export function entityCarrying() {
-    for (const [playerId, entityId] of carryEntityData.entries()) {
+    for (const [playerId, entityId] of carryEntityData) {
         const player = world.getEntity(playerId);
         const entity = world.getEntity(entityId.id);
 
@@ -178,10 +178,9 @@ export function powerCount({ Player, EventCancel } = {}) {
         return
     }
 
-    for (const [playerId] of carryEntityData.entries()) {
+    for (const [playerId, data] of carryEntityData) {
         const player = world.getEntity(playerId);
 
-        const data = carryEntityData.get(player.id) ?? {};
         data.power = data.power ?? 0;
 
         if (data.powerCount && data.power < 10) {
@@ -204,7 +203,7 @@ export function powerCount({ Player, EventCancel } = {}) {
 }
 
 export function takeEntity(player, target, e) {
-    const excludeTypes = excludeEntities.slice(1);
+    const excludeTypes = excludeEntities.slice(9);
 
     if (
         carryEntityData.get(target.id)?.id === player.id || // Eğer target zaten oyuncuyu taşıyorsa
