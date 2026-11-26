@@ -34,13 +34,16 @@
         "damaged_anvil": "textures/entity/blocks/damaged_anvil",
         "cobblestone": "textures/entity/blocks/cobblestone",
         "poppy": "textures/entity/blocks/poppy",
-        "brewing_stand": "textures/entity/blocks/brewing_stand"
+        "brewing_stand": "textures/entity/blocks/brewing_stand",
+        "grindstone": "textures/entity/blocks/grindstone"
+
       },
       "geometry": {
         "default": "geometry.block",
         "anvil": "geometry.anvil",
         "enchanting_table": "geometry.enchanting_table",
-        "brewing_stand": "geometry.brewing_stand"
+        "brewing_stand": "geometry.brewing_stand",
+        "grindstone": "geometry.grindstone"
       },
       "scripts": {
         "scale": "0.5"

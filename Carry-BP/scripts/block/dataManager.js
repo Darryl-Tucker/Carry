@@ -23,10 +23,9 @@ export function saveBlock(player, block, e) {
     const offHand = player.getComponent(EntityComponentTypes.Equippable)?.getEquipment(EquipmentSlot.Offhand);
 
     if (!mainHand && !offHand) {
+        const identifier = "blockId:" + player.id;
         e.cancel = true;
         system.run(() => {
-            const identifier = "blockId:" + player.id;
-
             if (world.structureManager.get(identifier)) return // zaten kayıtlı varsa geri dön
 
             const entityBlock = player.dimension.spawnEntity("carry_throw:block", player.location);
@@ -60,7 +59,7 @@ export function saveBlock(player, block, e) {
 
             block.setType("minecraft:air");
             block.setType("minecraft:air") // iç içe geçmiş bir blok olabileceği için iki kere air yapıyorum
-        })
+        });
     }
 }
 

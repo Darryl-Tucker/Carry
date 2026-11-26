@@ -152,6 +152,11 @@
         "minecraft:variant": {
           "value": 27
         }
+      },
+       "grindstone": {
+        "minecraft:variant": {
+          "value": 28
+        }
       }
     },
     "components": {
@@ -485,6 +490,16 @@
         "add": {
           "component_groups": [
             "brewing_stand"
+          ]
+        }
+      },
+      "grindstone": {
+        "remove": {
+          "remove_all": true
+        },
+        "add": {
+          "component_groups": [
+            "grindstone"
           ]
         }
       }
