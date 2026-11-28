@@ -50,12 +50,12 @@ export function saveBlock(player, block, e) {
                 )
             }
 
-            const inventory = block.getComponent("minecraft:inventory");
+            const container = block.getComponent("minecraft:inventory")?.container;
 
-            if (inventory && inventory.container) {
-                const container = inventory.container;
-                for (let i = 0; i < container.size; i++) container.setItem(i, undefined)
-            }
+            if (container)
+                for (let i = 0; i < container.size; i++)
+                    container.setItem(i, undefined)
+
 
             block.setType("minecraft:air");
             block.setType("minecraft:air") // iç içe geçmiş bir blok olabileceği için iki kere air yapıyorum
