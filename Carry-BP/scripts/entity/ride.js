@@ -17,6 +17,8 @@ export function entityRiding() {
         const rider = world.getEntity(riderId);
         const carrier = world.getEntity(carrierId.id);
 
+        if (!carrier || !rider) continue
+
         const checkDimension = carrier.dimension.id === rider.dimension.id; // boyut değiştirirken hata almamak için
         if (!checkDimension ||
             (carrier.typeId === "minecraft:player" && carrier.isSneaking && carrier.isJumping) || // Taşıyıcı oyuncu, eğiliyorsa ve zıplıyorsa

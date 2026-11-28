@@ -59,7 +59,7 @@ export function saveBlock(player, block, e) {
 
             block.setType("minecraft:air");
             block.setType("minecraft:air") // iç içe geçmiş bir blok olabileceği için iki kere air yapıyorum
-        });
+        })
     }
 }
 
